@@ -1,3 +1,4 @@
+
 # Developer Guidelines
 
 ## Compilation
@@ -42,3 +43,8 @@ IE11 compatible, polyfills are included
 
 ## JQuery
 Not supported and not needed.
+
+## For Running
+yarn add next (in web folder)
+yarn build
+yarn start

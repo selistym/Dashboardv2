@@ -1,0 +1,7 @@
+{
+  "semi": true,
+  "singleQuote": true,
+  "proseWrap": "never",
+  "lineWidth": 120,
+  "printWidth": 120
+}

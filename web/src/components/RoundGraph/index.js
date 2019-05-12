@@ -3,9 +3,8 @@ import ResponsiveWrapper from './ResponsiveWrapper';
 import * as d3 from 'd3';
 
 const RoundGraph = props => {
-  const { params, idx, filters } = props;
+  const { params, idx, filters } = props;  
   
-  console.log(filters, 'roundgraph')
   let dataUpdated = [
     {
       index: 0.7,
@@ -77,7 +76,7 @@ const RoundGraph = props => {
       .style('fill', () => setColor(total));
 
     arcs
-      .attr('opacity', d => filters.indexOf(d.text) != -1 ? 1 : 0)
+      .attr('opacity', d => filters ? (filters.indexOf(d.text) != -1 ? 1 : 0) : 1)
       .style('stroke', '#fff')
       .style('stroke-width', 2)
       .style('cursor','pointer')

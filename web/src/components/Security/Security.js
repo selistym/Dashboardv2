@@ -13,8 +13,6 @@ import  { formatIntl, formatTime, formatDate, formatVolume } from '../../util/fo
 
 import { IntlProvider } from 'react-intl';
 
-const showGraphCase = [true, true, true, true, true];
-
 const Security = (props) => {
 
   const {toggleLocalPortfolio, security} = props;
@@ -95,7 +93,7 @@ const Security = (props) => {
                     <div className="column is-full-mobile is-full-tablet is-one-third-desktop is-one-third-widescreen is-one-third-fullhd" style={{display:'flex',justifyContent:'center',alignItems:'center'}}>
                       <div className={'RoundGraph' + security.id} style={{ width: '230px', height: '230px'}}>
                             {security.calculatedCircular[0] != null
-                            ? <RoundGraph key={security.id} index={security.id} params={security.calculatedCircular[security.calculatedCircular.length-1]} showGraphCase={showGraphCase}/> 
+                            ? <RoundGraph key={security.id} idx={security.id} params={security.calculatedCircular[security.calculatedCircular.length-1]} /> 
                             : <p>No data</p>}
                         </div>
                       </div>

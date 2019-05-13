@@ -1,4 +1,4 @@
-import React, { useContext ,useEffect, useRef, memo, useCallback, useState} from 'react';
+import React, { useContext ,useEffect, useRef, useMemo, useCallback, useState} from 'react';
 
 import LocalPortfolioContainer from '../LocalPortfolio';
 import CustomDropdown from '../CustomDropdown';
@@ -71,15 +71,16 @@ const SecuritySearch = ({ allSectors }) => {
 
   const handleFilterTextChange = async text => await dispatch({type: 'CHANGE_FILTER_TEXT', text: text});
   const handleFilterYearChange = async year => await dispatch({type: 'CHANGE_FILTER_YEAR', year: year});  
-  
+  const handleDropDownItemChange = async (filterAction, checkedItem) => await dispatch({type: filterAction, filter: checkedItem});
+
   return (
     <div>
       <div className="columns is-mobile" style={{ justifyContent: 'center' }}>
         <div className="column is-three-quarters-mobile is-two-thirds-tablet is-two-thirds-desktop is-two-thirds-widescreen is-two-thirds-fullhd"
           style={{ display: 'flex', justifyContent: 'center' }} data-testid="test-input">
           <p className="control has-icons-left" style={{ width: 'inherit', paddingRight: 'inherit' }}>
-              <input className="input" type="text" value={store.securityFilterText} onChange={async event => await handleFilterTextChange(event.target.value)} ref={inputEl}
-                placeholder="Search a specific stock... "/>
+              {useMemo(() => <input className="input" type="text" value={store.securityFilterText} onChange={async event => await handleFilterTextChange(event.target.value)} ref={inputEl}
+                placeholder="Search a specific stock... "/>, [store.securityFilterText])}
           </p>
           <button className="button" style={{ backgroundColor: '#b9b9b9', color: 'white', fontStyle: 'italic' }}>Use VEB-filter</button>
         </div>
@@ -92,10 +93,22 @@ const SecuritySearch = ({ allSectors }) => {
         </div>        
       </div>
       <div className="columns is-mobile" style={{ display: 'flex', flexFlow: 'wrap', justifyContent: 'space-around' }}>
-        {securityFilterCheckboxs.map((items, p) => (
-          <div key={p} className="column" style={{ paddingTop: '25px' }}>
-              <CustomDropdown key={p} title={titles[p]} items={items} index={p} hasSlider={true}/>
-          </div>))} 
+        {useMemo(() =>
+          <div className="column" style={{ paddingTop: '25px' }}>
+              <CustomDropdown key={0} title={titles[0]} items={securityFilterCheckboxs[0]} index={0} hasSlider={false} initial={store.securityFilterLargeCap} onDropDownChange={handleDropDownItemChange} />
+          </div>, [store.securityFilterLargeCap])}
+        {useMemo(() =>
+          <div className="column" style={{ paddingTop: '25px' }}>
+              <CustomDropdown key={1} title={titles[1]} items={securityFilterCheckboxs[1]} index={1} hasSlider={false} initial={store.securityFilterValue} onDropDownChange={handleDropDownItemChange} />
+          </div>, [store.securityFilterValue])}
+        {useMemo(() =>
+          <div className="column" style={{ paddingTop: '25px' }}>
+              <CustomDropdown key={2} title={titles[2]} items={securityFilterCheckboxs[2]} index={2} hasSlider={true} initial={store.securityFilterArea} onDropDownChange={handleDropDownItemChange} />
+          </div>, [store.securityFilterArea])}
+        {useMemo(() =>
+          <div className="column" style={{ paddingTop: '25px' }}>
+              <CustomDropdown key={3} title={titles[3]} items={securityFilterCheckboxs[3]} index={3} hasSlider={false} initial={store.securityFilterSector} onDropDownChange={handleDropDownItemChange} />
+          </div>, [store.securityFilterSector])}
           <div className="column">
               <SingleSlider onChangeYear={handleFilterYearChange} initYear={store.securityFilterYear} width={270} height={70} years={years} />
           </div>
@@ -106,7 +119,7 @@ const SecuritySearch = ({ allSectors }) => {
             filter: {
               name: store.securityFilterText,
               year: store.securityFilterYear,
-              sectors: store.securityFilter[3] //0: LargeCap, 1: Value, 2: value, 3 : Sectors
+              sectors: store.securityFilterSector
             },
             offset: 0,
             limit: SECURITIES_PER_PAGE
@@ -120,7 +133,11 @@ const SecuritySearch = ({ allSectors }) => {
               return ( 
                   <section style={{ paddingTop: '20px' }}>                
                       <div className="columns is-mobile" style={{ display: 'flex', flexFlow: 'wrap', justifyContent: 'space-around' }} data-testid="filtered-securities">
-                        {securities.map((s, k) => store.securityFilter[3] && store.securityFilter[3].indexOf(s.sector) != -1 ? <LocalPortfolioContainer key={s.id} index={s.id} security={s}/> : <></>)}
+                        {securities.map(s => 
+                          store.securityFilterSector && store.securityFilterSector.indexOf(s.sector) != -1 ? 
+                            <LocalPortfolioContainer key={s.id} index={s.id} security={s}/> 
+                            : <></>)
+                        }
                       </div>
                       {areMoreSecurities > 0 ? (
                         <button className="button" onClick={() => loadMoreSecurities(securities, fetchMore)} style={{ backgroundColor: '#b9b9b9', color: 'white' }}>

@@ -27,7 +27,7 @@ const SingleSlider = (props) => {
     useEffect(() => drawAxis(), [width, height, years]);
     useEffect(() => controlHandlers());
 
-    const controlHandlers = () => {        
+    const controlHandlers = () => {
         let trueMouseValue, mouseValue;
         let drag = d3
             .drag()

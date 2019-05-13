@@ -1,37 +1,27 @@
-import React, {useEffect, useState, useContext, memo, useCallback} from 'react';
+import React, {useEffect, useState, useMemo } from 'react';
 import RangeSlider from './RangeSlider';
-import {AppContext} from '../AppContext';
+
+const actions = [
+  "CHANGE_FILTER_LARGECAP",
+  "CHANGE_FILTER_VALUE",
+  "CHANGE_FILTER_AREA",
+  "CHANGE_FILTER_SECTOR"
+];
 
 const DropdownItem = props => {
   
-  const {parent_index, index, item } = props;
-  const {store, dispatch} = useContext(AppContext);
+  const {parent_index, index, item, initCheck, onDropDownItemChange} = props;  
   const [checked, setChecked] = useState(false);
 
-  const onChangeHandler = () => {
-    let filters = store.securityFilter;    
-    let replaces = filters[parent_index];    
-    if(replaces.indexOf(item.code) != -1){
-      replaces = replaces.filter(s => s != item.code);
-    }else{
-      replaces.push(item.code);
-    }
-    replaces.sort();
-    filters.forEach((e, i) => i == parent_index ? filters[i] = replaces : filters[i] = filters[i]);    
-    dispatch({type:'CHANGE_FILTER', filters: filters});
+  const onChangeHandler = () => {    
+    setChecked(!checked);
+    onDropDownItemChange(actions[parent_index], item.code);
   }
 
-  useEffect(() => {    
-    let filters = store.securityFilter[parent_index];
-    if(filters.indexOf(item.code) != -1){
-      setChecked(true);
-    }else{
-      setChecked(false);
-    }
-  });
+  useEffect(() => setChecked(initCheck), [initCheck]);
 
   return (
-    <div className="dropdown-item columns" style={{ width: '190px', padding: '0.2rem', margin: '0px' }}>
+    <div className="dropdown-item columns" style={{ width: '190px', padding: '0.2rem', margin: '0px' }}>{console.log('render' + parent_index + index)}
       <div className="column is-7">
         <p>{item.name}</p>
       </div>
@@ -39,11 +29,11 @@ const DropdownItem = props => {
         <div className="field" style={{ paddingTop: '0.5em' }}>
           {checked ? (
             <input className='is-checkradio is-rtl has-background-color is-danger' id={'checkbox' + parent_index + index} type="checkbox"
-              onChange={onChangeHandler}
+              onChange={() => onChangeHandler()}
               checked={true}/>
           ) : (
             <input className='is-checkradio is-rtl has-background-color' id={'checkbox' + parent_index + index} type="checkbox"
-              onChange={onChangeHandler}
+              onChange={() => onChangeHandler()}
               checked={false}/>
           )}
           <label for={'checkbox' + parent_index + index} />
@@ -54,17 +44,13 @@ const DropdownItem = props => {
 };
 
 const CustomDropdown = props => {
-  const { title, items, index, hasSlider} = props;  
-  const {store, dispatch} = useContext(AppContext);
+  const { title, items, index, initial, hasSlider, onDropDownChange} = props;
 
-  const onViewAll = () => {    
-    let filters = store.securityFilter;
-    filters[index] = [];
-    for(let i = 0; i < items.length; i++){
-      filters[index].push(items[i].code);
-    }    
-    filters[index].sort();    
-    dispatch({type:'CHANGE_FILTER', filters: filters});
+  const [initValue, setInitValue] = useState(initial);
+  const onViewAll = () => {
+    let codes = items.map(d => d.code);
+    onDropDownChange(actions[index], codes);
+    setInitValue(codes);
   };
 
   return (
@@ -75,8 +61,11 @@ const CustomDropdown = props => {
         </a>
         <div className="navbar-dropdown is-boxed" id="dropdown-menu" role="menu" style={{ padding: '0px' }}>
           <div className="dropdown-content" style={{ width: '190px', height: '280px', overflowY: 'scroll', overflowX: 'hidden' }}>
-            <button className="button" onClick={onViewAll}>{title}</button>
-            {items.map((item, i) => (<DropdownItem key={i} item={item} parent_index={index} index={i}/>))}
+            <button className="button" onClick={() => onViewAll()}>{title}</button>
+            {items.map((item, i) => 
+              <DropdownItem key={i} item={item} parent_index={index} index={i} 
+                initCheck={initValue.indexOf(item.code) != -1 ? true : false} 
+                onDropDownItemChange={onDropDownChange}/>)}
             {hasSlider && (
               <div className="dropdown-item" style={{ padding: '0', paddingTop: '1.2em' }}>
                 <RangeSlider width={170} height={40} index={index} />

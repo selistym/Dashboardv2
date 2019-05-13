@@ -74,7 +74,7 @@ const LocalPortfolio = ({ security, index, toggleLocalPortfolio }) => {
       <hr />
       <div className={'RoundGraph' + security.id} style={{ width: '230px', height: '200px' }}>
         {curData != null ? (
-          <RoundGraph key={security.id} idx={security.id + index} params={curData} filters={store.securityFilter[2]} />
+          <RoundGraph key={security.id} idx={security.id + index} params={curData} filterCondition={store.securityFilterArea} />
         ) : (
           <p>No data</p>
         )}

@@ -1,8 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, memo} from 'react';
 import ResponsiveWrapper from './ResponsiveWrapper';
 import * as d3 from 'd3';
 
-const RoundGraph = props => {
+const RoundGraph = memo(props => {
   const { params, idx, filterCondition } = props;
   
   let dataUpdated = [
@@ -154,8 +154,7 @@ const RoundGraph = props => {
       text.attr('transform', 'translate(0,' + -th + ')');
     }
   };
-  const drawRound = () => {
-    console.log(filterCondition, 'filterCondition changed')
+  const drawRound = () => {    
     let colors = { red: '#f45b63', orange: '#f49d73', green: '#72c14a' };
     const setColor = total => total <= 50 ? colors.red : total >= 70 ? colors.green : colors.orange;
     const setFontSize = radius => radius <= 120 ? 11 : radius >= 180 ? 14 : 12;
@@ -278,6 +277,6 @@ const RoundGraph = props => {
       <g className={'line' + idx} ref={lineRef} transform={`translate(${width / 2}, ${height / 2})`} />      
     </svg>
   );
-};
+});
 
 export default ResponsiveWrapper(RoundGraph);

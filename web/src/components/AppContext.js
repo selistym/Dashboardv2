@@ -47,11 +47,11 @@ const securityReducer = (state, action) => {
       return { ...state, securityFilterValue: replaces };
     case 'CHANGE_FILTER_AREA':
       replaces = state.securityFilterArea;
-      if(typeof action.filter === "object"){
+      if(typeof action.filter === "object"){        
         replaces = action.filter;
-      }else{
+      }else{        
         if(replaces.indexOf(action.filter) != -1){        
-          replaces = replaces.filter(e => e != action.filter);
+          replaces = replaces.filter(e => e !== action.filter);
         }else{
           replaces.push(action.filter);
         }
@@ -60,10 +60,10 @@ const securityReducer = (state, action) => {
       return { ...state, securityFilterArea: replaces };
     case 'CHANGE_FILTER_SECTOR':
       replaces = state.securityFilterSector;
-      if(typeof action.filter === "object"){
+      if(typeof action.filter === "object"){        
         replaces = action.filter;
       }else{
-        if(replaces.indexOf(action.filter) != -1){        
+        if(replaces.indexOf(action.filter) != -1){
           replaces = replaces.filter(e => e != action.filter);
         }else{
           replaces.push(action.filter);

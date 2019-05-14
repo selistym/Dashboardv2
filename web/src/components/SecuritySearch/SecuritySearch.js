@@ -71,7 +71,7 @@ const SecuritySearch = ({ allSectors }) => {
 
   const handleFilterTextChange = async text => await dispatch({type: 'CHANGE_FILTER_TEXT', text: text});
   const handleFilterYearChange = async year => await dispatch({type: 'CHANGE_FILTER_YEAR', year: year});  
-  const handleDropDownItemChange = async (filterAction, checkedItem) => await dispatch({type: filterAction, filter: checkedItem});
+  const handleDropDownItemChange = (filterAction, checkedItem) => dispatch({type: filterAction, filter: checkedItem});
 
   return (
     <div>
@@ -90,30 +90,26 @@ const SecuritySearch = ({ allSectors }) => {
           <h3 className="subtitle is-6 has-text-centered" style={{ height: '20px', color: '#a9a9a9' }}>
             All stocks show an average rating score based on Dividend, Balance, Growth and Value.
           </h3>
-        </div>        
+        </div>
       </div>
       <div className="columns is-mobile" style={{ display: 'flex', flexFlow: 'wrap', justifyContent: 'space-around' }}>
-        {useMemo(() =>
           <div className="column" style={{ paddingTop: '25px' }}>
               <CustomDropdown key={0} title={titles[0]} items={securityFilterCheckboxs[0]} index={0} hasSlider={false} initial={store.securityFilterLargeCap} onDropDownChange={handleDropDownItemChange} />
-          </div>, [store.securityFilterLargeCap])}
-        {useMemo(() =>
+          </div>
           <div className="column" style={{ paddingTop: '25px' }}>
-              <CustomDropdown key={1} title={titles[1]} items={securityFilterCheckboxs[1]} index={1} hasSlider={false} initial={store.securityFilterValue} onDropDownChange={handleDropDownItemChange} />
-          </div>, [store.securityFilterValue])}
-        {useMemo(() =>
-          <div className="column" style={{ paddingTop: '25px' }}>
-              <CustomDropdown key={2} title={titles[2]} items={securityFilterCheckboxs[2]} index={2} hasSlider={true} initial={store.securityFilterArea} onDropDownChange={handleDropDownItemChange} />
-          </div>, [store.securityFilterArea])}
-        {useMemo(() =>
+              <CustomDropdown key={1} title={titles[1]} items={securityFilterCheckboxs[1]} index={1} hasSlider={false} initial={store.securityFilterValue} onDropDownChange={(e, b) => handleDropDownItemChange(e, b)} />
+          </div>
+          <div className="column" style={{ paddingTop: '25px' }}>              
+              <CustomDropdown key={2} title={titles[2]} items={securityFilterCheckboxs[2]} index={2} hasSlider={true} initial={store.securityFilterArea} onDropDownChange={(e, b) => handleDropDownItemChange(e, b)} />
+          </div>
           <div className="column" style={{ paddingTop: '25px' }}>
               <CustomDropdown key={3} title={titles[3]} items={securityFilterCheckboxs[3]} index={3} hasSlider={false} initial={store.securityFilterSector} onDropDownChange={handleDropDownItemChange} />
-          </div>, [store.securityFilterSector])}
+          </div>
           <div className="column">
               <SingleSlider onChangeYear={handleFilterYearChange} initYear={store.securityFilterYear} width={270} height={70} years={years} />
           </div>
       </div>
-      {console.log(store, 'query')}
+      {/* {console.log(store, 'query')} */}
       <Query query={SECURITIES_QUERY}
           variables={{
             filter: {
@@ -127,7 +123,7 @@ const SecuritySearch = ({ allSectors }) => {
           {({ loading, error, data: { securities }, fetchMore }) => {
             if (error) return <ErrorMessage message="Error loading posts." />;
             if (loading) return <Loading />;
-            console.log(securities, 'securities query')
+            {/* console.log(securities, 'securities query') */}
             const areMoreSecurities = securities ? securities.length < 3600 : 0;
             if(securities){
               return ( 

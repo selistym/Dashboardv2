@@ -1,13 +1,15 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import CircularGraph from './CircularGraph';
+
 const SecurityCard = ({ security }) => {
   return (
     <div className="column is-4">
       <div className="card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <header className="card-header" style={{ flexGrow: 1 }}>
           <p className="card-header-title">
-            <span>Security Name</span>
+            <span>{security.name}</span>
           </p>
         </header>
 
@@ -25,6 +27,10 @@ const SecurityCard = ({ security }) => {
       </div>
     </div>
   );
+};
+
+SecurityCard.propTypes = {
+  security: PropTypes.object.isRequired
 };
 
 export default React.memo(SecurityCard);

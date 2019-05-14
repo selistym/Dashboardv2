@@ -38,6 +38,7 @@ export const SECURITY_QUERY = gql`
         CEO
         MarketCapitalization
         CompanyFoundedDate
+        Daily_DividendYieldDaily
       }
       calculated {
         PERatioCompany

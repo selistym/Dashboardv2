@@ -57,25 +57,32 @@ const client = new ApolloClient({
   }
 });
 
-beforeAll(() => {});
-jest.setTimeout(30000); // 1 second
-
 describe('SecuritySearch', () => {
-  it('renders', () => {
-    const { getByPlaceholderText } = render(
+  it('renders', async () => {
+    const { getByPlaceholderText, getByTestId, queryByTestId } = render(
       <ApolloProvider client={client}>
         <AppProvider>
           <SecuritySearch />
         </AppProvider>
       </ApolloProvider>
     );
+    const spinnerElemenet = queryByTestId('spinner');
+    if (spinnerElemenet !== null) {
+      await waitForElementToBeRemoved(
+        () => {
+          return getByTestId('spinner');
+        },
+        { timeout: 10000 }
+      );
+    }
+
     const input = getByPlaceholderText(/Search a specific stock.../i);
     expect(input).toBeDefined();
     //expect(input).toHaveAttribute('type', 'text');
     expect(input).toHaveClass('input');
   });
   it('retrieves multiple securities and filters when typing text', async () => {
-    const { getByPlaceholderText, getByTestId, getByText } = render(
+    const { getByPlaceholderText, getByTestId, getByText, queryByTestId } = render(
       <ApolloProvider client={client}>
         <AppProvider>
           <SecuritySearch />
@@ -83,9 +90,15 @@ describe('SecuritySearch', () => {
       </ApolloProvider>
     );
 
-    await waitForElementToBeRemoved(() => {
-      return getByTestId('spinner');
-    }, {timeout: 10000});
+    const spinnerElemenet = queryByTestId('spinner');
+    if (spinnerElemenet !== null) {
+      await waitForElementToBeRemoved(
+        () => {
+          return getByTestId('spinner');
+        },
+        { timeout: 10000 }
+      );
+    }
 
     expect(getByTestId('filtered-securities').children).toHaveLength(10);
     const input = getByPlaceholderText(/Search a specific stock.../i);

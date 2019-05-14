@@ -1,9 +1,11 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import Head from './Head';
 import Footer from './Footer';
 import Header from './Header';
 
-import "../styles/main.sass"
+import '../styles/main.sass';
 
 const LayoutBasic = ({ title, description, session, children, navMenu, signinBtn }) => (
   <>
@@ -23,4 +25,12 @@ const LayoutBasic = ({ title, description, session, children, navMenu, signinBtn
   </>
 );
 
+LayoutBasic.propTypes = {
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  session: PropTypes.object,
+  children: PropTypes.object.isRequired,
+  navMenu: PropTypes.bool.isRequired,
+  signinBtn: PropTypes.bool.isRequired
+};
 export default LayoutBasic;

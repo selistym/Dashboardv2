@@ -92,6 +92,7 @@ const SecuritySearch = ({ allSectors }) => {
           </h3>
         </div>
       </div>
+      {console.log(store, 'store')}
       <div className="columns is-mobile" style={{ display: 'flex', flexFlow: 'wrap', justifyContent: 'space-around' }}>
           <div className="column" style={{ paddingTop: '25px' }}>
               <CustomDropdown key={0} title={titles[0]} items={securityFilterCheckboxs[0]} index={0} hasSlider={false} initial={store.securityFilterLargeCap} onDropDownChange={handleDropDownItemChange} />

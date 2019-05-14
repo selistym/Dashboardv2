@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, memo} from 'react';
+import React, { useEffect, useRef, useMemo} from 'react';
 import ResponsiveWrapper from './ResponsiveWrapper';
 import * as d3 from 'd3';
 
-const RoundGraph = memo(props => {
+const RoundGraph = props => {
   const { params, idx, filterCondition } = props;
-  
+  let strFilter = filterCondition.sort().toString();
+
   let dataUpdated = [
     {
       index: 0.7,
@@ -269,14 +270,17 @@ const RoundGraph = memo(props => {
       };
     }
   };
-  useEffect(() => drawRound());
+
+  useEffect(() => drawRound(),[params.Dividend, params.Balance, params.Growth, params.Value, strFilter]);
 
   return (
-    <svg className={'roundChart' + idx} width={width} height={height}>
-      <g className={'round' + idx} ref={roundRef} transform={`translate(${width / 2}, ${height / 2})`} />
-      <g className={'line' + idx} ref={lineRef} transform={`translate(${width / 2}, ${height / 2})`} />      
-    </svg>
+    <>
+        <svg className={'roundChart' + idx} width={width} height={height}>
+          <g className={'round' + idx} ref={roundRef} transform={`translate(${width / 2}, ${height / 2})`} />
+          <g className={'line' + idx} ref={lineRef} transform={`translate(${width / 2}, ${height / 2})`} />      
+        </svg>
+    </>
   );
-});
+};
 
 export default ResponsiveWrapper(RoundGraph);

@@ -4,7 +4,7 @@ import * as d3 from 'd3';
 
 const RoundGraph = props => {
   const { params, idx, filterCondition } = props;
-  let strFilter = filterCondition.sort().toString();
+  let strFilter = filterCondition ? filterCondition.sort().toString() : '';
 
   let dataUpdated = [
     {

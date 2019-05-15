@@ -1,12 +1,11 @@
 import React, { useEffect, useRef } from 'react';
+import ResponsiveWrapper from './ResponsiveWrapper';
 import { context, version } from '../../util/cubism-es.esm';
 import * as d3 from 'd3';
 
-
-function CubismChart({ data }) {
-  const demoRef = useRef(null);
-
-  const data2 = data.map(d=>{
+function CubismChart({ data, parentWidth }) {
+  const demoRef = useRef(null);  
+  const data2 = data.map(d => {
     return Object.assign({},d,{globalQuotes: d.globalQuotes.sort((x,y)=>d3.descending(x.date,y.date))})
   });
 
@@ -15,11 +14,12 @@ function CubismChart({ data }) {
     var c = context()
       //.serverDelay(30 * 1000)
       //.step(10 * 1000) // ten seconds per value
-      .step(2 * 365 * 24 * 60 * 60 * 1000 / 1112) // ten seconds per value
-      .size(1112) // fetch 1112 values
+      .step(365 * 24 * 60 * 60 * 1000 / parentWidth) // ten seconds per value
+      .size(parentWidth) // fetch 1112 values
       .stop();
 
-
+    d3.select(demoRef.current).selectAll("*").remove();
+    
     d3.select(demoRef.current)
       .selectAll('.axis')
       .data(['bottom'])
@@ -33,8 +33,8 @@ function CubismChart({ data }) {
           .ticks(10)
           .orient(d)
           .render(d3.select(this));
-      });
-
+      });    
+    
     const d = d3
       .select(demoRef.current)
       .append('div')
@@ -42,7 +42,13 @@ function CubismChart({ data }) {
       .attr('id', 'rule');
     c.rule().render(d);
 
+    var bodyRect = document.body.getBoundingClientRect(),
+        elemRect = demoRef.current.getBoundingClientRect(),
+        offset   = elemRect.top - bodyRect.top;
     d.selectAll('.line')
+      .style('top', (offset - 239) + 'px')
+      .style('height', 240 + 'px')
+      .style('width', '1px')
       .style('background', '#000')
       .style('zIndex', 2);
 
@@ -51,16 +57,32 @@ function CubismChart({ data }) {
       .data(data2.map(stock))
       .enter()
       .insert('div', '.bottom')
-      .attr('class', 'horizon');
-
+      .attr('class', 'horizon')
+      .style("height", '40px')
+    
     c.horizon()
       .format(d3.format('+,.2p'))
       .render(d3.selectAll('.horizon'));
 
     c.on('focus', i => {
-      d3.selectAll('.value').style('right', i == null ? null : c.size() - i + 'px');
-    });
-
+      d3.selectAll('.value')
+        .style('color', 'black')
+        .style('right', function(){
+          
+          d.selectAll('.line')
+            .style('top', (offset - 239) + 'px')
+            .style('height', 240 + 'px')
+          if(i == null){
+            return null;
+          }else{            
+            if(i > 100){
+              return c.size() - i + 'px';
+            }else{
+              return (c.size() - i - 100) + 'px';
+            }
+          }          
+        })
+    });    
 
     function stock(datum) {
       var value = 0,
@@ -78,38 +100,17 @@ function CubismChart({ data }) {
         callback(null, values = values.slice((start - stop) / step));
       }, datum.ticker);
     }
-
-    // function stock(datum) {
-    //   const format = d3.timeParse('%Y-%M-%d');
-    //   return c.metric(function(start, stop, step, callback) {
-    //     const rows = datum.globalQuotes
-    //       .map(d => [format(d.date), +d.close])
-    //       //.filter(d => d[1])
-    //       .reverse();
-    //     let date = rows[0][0];
-    //     const compare = rows[rows.length - 1][1];
-    //     let value = rows[0][1];
-    //     const values = [value];
-    //     rows.forEach(d => {
-    //       while ((date = d3.timeDay.offset(date, 1)) < d[0]) {
-    //         values.push(value);
-    //       }
-    //       values.push((value = (d[1] - compare) / compare));
-    //     });
-    //     callback(null, values.slice(-c.size()));
-    //   }, datum.ticker);
-    // }
+    
   });
   return (
-    <div ref={demoRef}>
+    <div ref={demoRef} style={{height:'40px'}}>      
       <style jsx global>{`
         .group {
           margin-bottom: 1em;
         }
 
         .axis {
-          font: 10px sans-serif;
-          //position: fixed;
+          font: 10px sans-serif;          
           padding-bottom: 0px;
           pointer-events: none;
           z-index: 2;
@@ -153,15 +154,15 @@ function CubismChart({ data }) {
 
         .horizon canvas {
           display: block;
+          height: 40px;
         }
 
         .horizon .title,
         .horizon .value {
           bottom: 0;
-          line-height: 30px;
+          line-height: 40px;
           margin: 0 6px;
-          position: absolute;
-          text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+          position: absolute;          
           white-space: nowrap;
         }
 
@@ -174,9 +175,9 @@ function CubismChart({ data }) {
         .horizon .value {
           right: 0;
         }
-      `}</style>
+      `}</style>      
     </div>
   );
 }
 
-export default CubismChart;
+export default ResponsiveWrapper(CubismChart);

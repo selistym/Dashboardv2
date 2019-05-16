@@ -26,7 +26,7 @@ export default ChartComponent =>
       const { containerWidth } = this.state;
       const currentContainerWidth = this.chartContainer.getBoundingClientRect().width;
 
-      const currentContainerHeight = 380;
+      const currentContainerHeight = 430;
 
       const shouldResize = containerWidth !== currentContainerWidth;
 
@@ -39,7 +39,7 @@ export default ChartComponent =>
     }
     renderChart() {
       const parentWidth = this.state.containerWidth;
-      const parentHeight = 380;
+      const parentHeight = 430;
 
       return <ChartComponent {...this.props} parentWidth={parentWidth} parentHeight={parentHeight} />;
     }
@@ -50,7 +50,7 @@ export default ChartComponent =>
 
       return (
         <div
-          style={{ width: '100%', height: '100%', minWidth: '330px', minHeight: '380px' }}
+          style={{ width: '100%', height: '100%', minWidth: '330px', minHeight: '430px' }}
           ref={el => {
             this.chartContainer = el;
           }}

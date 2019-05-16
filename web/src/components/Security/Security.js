@@ -8,6 +8,7 @@ import StockGraph from '../StockGraph';
 import NegativeGraph from '../NegativeGraph';
 import BalanceGraph from '../BalanceGraph';
 import RoundGraph from '../RoundGraph';
+import HorizonGraph from '../HorizonGraph';
 
 import { formatIntl, formatTime, formatDate, formatVolume } from '../../util/format-intl';
 
@@ -250,7 +251,7 @@ const Security = props => {
           </div>
         </div>
       </div>
-      <div className="box  has-text-grey" style={{height: '400px'}}>
+      <div className="box  has-text-grey" style={{height: '430px'}}>
         <h3 className="subtitle is-5 has-text-weight-bold has-text-grey" style={{ height: '10px' }}>
           Historic performance
         </h3>
@@ -265,6 +266,7 @@ const Security = props => {
           <p>No Data</p>
         )}
       </div>
+      
       <div className="box  has-text-grey is-mobile">
         <h3 className="subtitle is-5 has-text-weight-bold has-text-grey" style={{ height: '10px' }}>
           Price basics {security.name}

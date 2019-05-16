@@ -85,7 +85,7 @@ class Axis extends React.Component {
       .remove();
 
     d3.select(this.xAxisElement)
-      .attr('class', 'x axis')
+      .attr('class', 'x-axis-stock')
       .attr('transform', "translate(40," + y(0) + ")")
       .attr('stroke-width', 2)
       .call(xAxis);
@@ -98,7 +98,7 @@ class Axis extends React.Component {
       .style('font-size', '10pt');
 
     d3.select(this.yAxisElement)
-      .attr('class', 'y axis')
+      .attr('class', 'y-axis-stock')
       .attr('transform', 'translate(40, 0)')
       .attr('stroke-width', 1.5)
       .call(yAxis);
@@ -108,8 +108,8 @@ class Axis extends React.Component {
 
     stock
       .append('g')
-      .attr('class', 'group-grey')
-      .selectAll('path-group-grey')
+      .attr('class', 'group-grey-stock')
+      .selectAll('path-group-grey-stock')
       .data(data)
       .enter()
       .append('path')
@@ -139,7 +139,7 @@ class Axis extends React.Component {
       });    
     
     stock
-      .select('.group-grey')
+      .select('.group-grey-stock')
       .selectAll('path')
       .transition().duration(durate)
       .attr('d', (d) => {
@@ -169,8 +169,8 @@ class Axis extends React.Component {
     
     stock
       .append('g')
-      .attr('class', 'group-red')
-      .selectAll('path-group-red')
+      .attr('class', 'group-red-stock')
+      .selectAll('path-group-red-stock')
       .data(data)
       .enter()
       .append('path')      
@@ -196,7 +196,7 @@ class Axis extends React.Component {
       });
 
     stock
-      .select('.group-red')
+      .select('.group-red-stock')
       .selectAll('path')
       .transition().duration(durate)
       .attr('d', (d) => {

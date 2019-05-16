@@ -502,7 +502,7 @@ class AreaChart extends Component {
       .clamp(true);
     let legend_text1_len = this.getTextWidth(companyName, 16, 'Arial');
     let legend_text2_len = this.getTextWidth('Industry', 16, 'Arial');
-    console.log(legend_text1_len);
+    
     return (
       <svg className="areaChartSvg" width={svgDimen.width} height={svgDimen.height}>
         <g className="TopPane" transform={`translate(${margins.left}, ${height / 12})`}>

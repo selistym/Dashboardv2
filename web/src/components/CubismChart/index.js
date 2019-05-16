@@ -4,20 +4,71 @@ import { context, version } from '../../util/cubism-es.esm';
 import * as d3 from 'd3';
 
 function CubismChart({ data, parentWidth }) {
-  const demoRef = useRef(null);  
+  const demoRef = useRef(null);
+  let dataRangeLen = 0;  
+  const getDateArray = (_start, _end) => {
+    var arr = new Array(),
+        dt = new Date(_start);
+    
+    while (dt <= _end) {
+      arr.push(new Date(dt).toISOString().slice(0,10));
+      dt.setDate(dt.getDate() + 1);
+    }      
+    return arr;      
+  }
+  const getConvertData = (input_data) => {
+    let toDate = input_data[0].globalQuotes[input_data[0].globalQuotes.length - 1].date;
+    let fromDate = (new Date(new Date(toDate).getTime() - parentWidth * 24 * 3600 * 1000)).toISOString().slice(0,10);
+    console.log('fromdate', fromDate);
+    // let fromDate = (toDate.split('-')[0] - 2) + '-' + toDate.split('-')[1] + '-' + toDate.split('-')[2];
+    let c_data = [], prv_data = {date: fromDate, close: 0, is_null: true};
+    let dateRange = getDateArray(new Date(fromDate), new Date(toDate));
+    dataRangeLen = dateRange.length;
+    for(let p = 0; p < input_data.length; p++){
+      prv_data = {date: fromDate, close: 0, is_null: true};
+      let c_el = {
+        ticker: input_data[p].ticker,
+        globalQuotes: []
+      };
+      for(let i = 0; i < dateRange.length; i++){
+        let uneq = true;
+        for(let j = 0; j < input_data[p].globalQuotes.length; j++){
+          if(input_data[p].globalQuotes[j].date == dateRange[i]){
+            prv_data = {
+              date: input_data[p].globalQuotes[j].date,
+              close: input_data[p].globalQuotes[j].close,
+              is_null: false
+            };
+            c_el.globalQuotes.push(prv_data);
+            uneq = false;
+            break;
+          }
+        }
+        if(uneq){
+          c_el.globalQuotes.push({
+            date: dateRange[i],
+            close: prv_data.close,
+            is_null: true
+          });
+        }
+      }
+      c_data.push(c_el);
+    }
+    return c_data;
+  }
   const data2 = data.map(d => {
-    return Object.assign({},d,{globalQuotes: d.globalQuotes.sort((x,y)=>d3.descending(x.date,y.date))})
+    return Object.assign( {}, d, {globalQuotes: d.globalQuotes.sort((x,y ) => d3.ascending(x.date,y.date))})
   });
 
-
+  let c_data = getConvertData(data2);
   useEffect(() => {
     var c = context()
       //.serverDelay(30 * 1000)
       //.step(10 * 1000) // ten seconds per value
-      .step(365 * 24 * 60 * 60 * 1000 / parentWidth) // ten seconds per value
+      .step(24 * 60 * 60 * 1000) // ten seconds per value
       .size(parentWidth) // fetch 1112 values
       .stop();
-
+    
     d3.select(demoRef.current).selectAll("*").remove();
     
     d3.select(demoRef.current)
@@ -46,19 +97,19 @@ function CubismChart({ data, parentWidth }) {
         elemRect = demoRef.current.getBoundingClientRect(),
         offset   = elemRect.top - bodyRect.top;
     d.selectAll('.line')
-      .style('top', (offset - 239) + 'px')
-      .style('height', 240 + 'px')
+      .style('top', (offset - 250) + 'px')
+      .style('height', 310 + 'px')
       .style('width', '1px')
       .style('background', '#000')
       .style('zIndex', 2);
 
     d3.select(demoRef.current)
       .selectAll('.horizon')
-      .data(data2.map(stock))
+      .data(c_data.map(stock))
       .enter()
       .insert('div', '.bottom')
       .attr('class', 'horizon')
-      .style("height", '40px')
+      .style("height", '50px')
     
     c.horizon()
       .format(d3.format('+,.2p'))
@@ -70,33 +121,57 @@ function CubismChart({ data, parentWidth }) {
         .style('right', function(){
           
           d.selectAll('.line')
-            .style('top', (offset - 239) + 'px')
-            .style('height', 240 + 'px')
+            .style('top', (offset - 250) + 'px')
+            .style('height', 310 + 'px')
           if(i == null){
             return null;
-          }else{            
-            if(i > 100){
+          }else{
+            if(i > 60)
               return c.size() - i + 'px';
-            }else{
-              return (c.size() - i - 100) + 'px';
-            }
+            else
+              return (c.size() - 60 - i) + 'px';
           }          
         })
     });    
-
+    
+    function getNearest(arr){     
+      for(let i = 0; i < arr.length; i++){
+        if(arr[i].close != 0){
+          return arr[i].close;
+        }
+      }
+      return;
+    }
     function stock(datum) {
+      console.log(datum, ' dataum')
       var value = 0,
         values = [],
-        i = 0,
-        last;
+        i = 0, last;
+          
       return c.metric(function(start, stop, step, callback) {
-        start = +start, stop = +stop;
+        console.log(start, stop, step, 'where?')
+        start = +start, stop = +stop;        
+        let initValue = datum.globalQuotes[0].close == 0 ? getNearest(datum.globalQuotes) : datum.globalQuotes[0].close, 
+            showValue;
+        datum.globalQuotes[0].close = initValue;
+        let prv_data = initValue;        
+        for(let i = 1; i < datum.globalQuotes.length; i++){          
+          if(datum.globalQuotes[i].close == 0){
+            datum.globalQuotes[i].close = prv_data;            
+          }
+          prv_data = datum.globalQuotes[i].close;              
+        }       
+
         if (isNaN(last)) last = start;
         while (last < stop) {
           last += step;
-          value = Math.max(-10, Math.min(10, value + .8 * Math.random() - .4 + .2 * Math.cos(i += 1 * .02)));
-          values.push(value);
+          value = datum.globalQuotes[i].close;
+          showValue = ((value - initValue) / initValue).toFixed(2);
+          values.push(showValue);
+          i++;
         }
+        // console.log(values, ' values')
+
         callback(null, values = values.slice((start - stop) / step));
       }, datum.ticker);
     }
@@ -137,15 +212,13 @@ function CubismChart({ data, parentWidth }) {
           background-image: -ms-linear-gradient(bottom, #fff 0%, rgba(255, 255, 255, 0) 100%);
         }
 
-        .horizon {
-          border-bottom: solid 1px #000;
+        .horizon {          
           overflow: hidden;
           position: relative;
         }
 
         .horizon {
-          border-top: solid 1px #000;
-          border-bottom: solid 1px #000;
+  
         }
 
         .horizon + .horizon {
@@ -153,12 +226,12 @@ function CubismChart({ data, parentWidth }) {
         }
 
         .horizon canvas {
+          
           display: block;
           height: 40px;
         }
 
-        .horizon .title,
-        .horizon .value {
+        .horizon .title {
           bottom: 0;
           line-height: 40px;
           margin: 0 6px;
@@ -171,7 +244,13 @@ function CubismChart({ data, parentWidth }) {
           font-size: 1rem;
           font-weight: 300;
         }
-
+        .horizon .value {
+          bottom: 0;
+          line-height: 50px;
+          margin: 0 6px 12px 6px;
+          position: absolute;          
+          white-space: nowrap;
+        }
         .horizon .value {
           right: 0;
         }

@@ -66,13 +66,39 @@ const SecuritySearch = ({ allSectors }) => {
   
   let {store, dispatch} = useContext(AppContext);
   const inputEl = useRef();
+  const flagRefetch = useRef(true);
 
   useEffect(() => inputEl.current && inputEl.current.focus && inputEl.current.focus());
 
-  const handleFilterTextChange = async text => await dispatch({type: 'CHANGE_FILTER_TEXT', text: text});
-  const handleFilterYearChange = async year => await dispatch({type: 'CHANGE_FILTER_YEAR', year: year});  
-  const handleDropDownItemChange = (filterAction, checkedItem) => dispatch({type: filterAction, filter: checkedItem});
-
+  const handleFilterTextChange = async text => {
+    await dispatch({type: 'CHANGE_FILTER_TEXT', text: text});
+    flagRefetch.current = true;
+  }
+  const handleFilterYearChange = async year => {
+    await dispatch({type: 'CHANGE_FILTER_YEAR', year: year});  
+    flagRefetch.current = true;
+  }
+  const handleDropDownItemChange = (filterAction, checkedItem) => {
+    dispatch({type: filterAction, filter: checkedItem});
+    flagRefetch.current = true;
+  }
+  const loadMoreSecurities = (securities, fetchMore) => {
+    flagRefetch.current = false;
+    fetchMore({
+      variables: {
+        offset: securities.length
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) {
+          return prev;
+        }
+        return Object.assign({}, prev, {
+          // Append the new posts results to the old one
+          securities: [...prev.securities, ...fetchMoreResult.securities]
+        });
+      }
+    });
+  }
   return (
     <div>
       <div className="columns is-mobile" style={{ justifyContent: 'center' }}>
@@ -91,8 +117,7 @@ const SecuritySearch = ({ allSectors }) => {
             All stocks show an average rating score based on Dividend, Balance, Growth and Value.
           </h3>
         </div>
-      </div>
-      {console.log(store, 'store')}
+      </div>      
       <div className="columns is-mobile" style={{ display: 'flex', flexFlow: 'wrap', justifyContent: 'space-around' }}>
           <div className="column" style={{ paddingTop: '25px' }}>
               <CustomDropdown key={0} title={titles[0]} items={securityFilterCheckboxs[0]} index={0} hasSlider={false} initial={store.securityFilterLargeCap} onDropDownChange={handleDropDownItemChange} />
@@ -110,7 +135,7 @@ const SecuritySearch = ({ allSectors }) => {
               <SingleSlider onChangeYear={handleFilterYearChange} initYear={store.securityFilterYear} width={270} height={70} years={years} />
           </div>
       </div>
-      {/* {console.log(store, 'query')} */}
+      {console.log(store, 'query')}
       <Query query={SECURITIES_QUERY}
           variables={{
             filter: {
@@ -121,10 +146,13 @@ const SecuritySearch = ({ allSectors }) => {
             offset: 0,
             limit: SECURITIES_PER_PAGE
           }}>
-          {({ loading, error, data: { securities }, fetchMore }) => {
+          {({ loading, error, data: { securities }, refetch, fetchMore}) => {
             if (error) return <ErrorMessage message="Error loading posts." />;
             if (loading) return <Loading />;
-            {/* console.log(securities, 'securities query') */}
+            console.log(flagRefetch.current, ' refetch flag')
+            if(flagRefetch.current){
+              refetch();
+            }
             const areMoreSecurities = securities ? securities.length < 3600 : 0;
             if(securities){
               return ( 
@@ -132,7 +160,7 @@ const SecuritySearch = ({ allSectors }) => {
                       <div className="columns is-mobile" style={{ display: 'flex', flexFlow: 'wrap', justifyContent: 'space-around' }} data-testid="filtered-securities">
                         {securities.map(s => 
                           store.securityFilterSector && store.securityFilterSector.indexOf(s.sector) != -1 ? 
-                            <LocalPortfolioContainer key={s.id} index={s.id} security={s}/> 
+                            <LocalPortfolioContainer key={s.id} index={s.id} security={s}/>
                             : <></>)
                         }
                       </div>
@@ -141,32 +169,17 @@ const SecuritySearch = ({ allSectors }) => {
                           {loading ? 'Loading...' : 'Show More '}
                         </button>
                         ) : ''
-                      }              
+                      }
                   </section>
               );
             }else{
-              return (<>No fetch data...</>);
+              return (<></>);
             }
           }}
       </Query>
     </div>
   );
 };
-function loadMoreSecurities(securities, fetchMore) {
-  fetchMore({
-    variables: {
-      offset: securities.length
-    },
-    updateQuery: (prev, { fetchMoreResult }) => {
-      if (!fetchMoreResult) {
-        return prev;
-      }
-      return Object.assign({}, prev, {
-        // Append the new posts results to the old one
-        securities: [...prev.securities, ...fetchMoreResult.securities]
-      });
-    }
-  });
-}
+
 
 export default withBaseData(SecuritySearch);

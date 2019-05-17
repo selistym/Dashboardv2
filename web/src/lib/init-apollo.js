@@ -1,22 +1,57 @@
+import gql from 'graphql-tag';
+
 import { ApolloClient } from 'apollo-client';
+import { ApolloLink, split } from 'apollo-link'
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
+import { WebSocketLink } from 'apollo-link-ws';
+import { getMainDefinition } from 'apollo-utilities';
+
 import fetch from 'isomorphic-unfetch';
-import gql from 'graphql-tag';
+
+if (!process.browser) {
+  global.fetch = fetch
+}
 
 let apolloClient = null;
 
 function create(initialState) {
-  // Check out https://github.com/zeit/next.js/pull/4611 if you want to use the AWSAppSyncClient
+  const httpLink = new HttpLink({
+    uri: 'https://vde-app4.app.veb.net/graphql',
+    //uri: 'http://localhost:4070/graphql',
+    opts: {
+      credentials: 'same-origin'
+    },
+    // Use fetch() polyfill on the server
+    fetch: !process.browser && fetch
+  });
+
+  const wsLink =
+    process.browser &&
+    new WebSocketLink({
+      uri: 'wss://vde-app4.app.veb.net/graphql',
+      //uri: 'ws://localhost:4070/graphql',
+      options: {
+        reconnect: true
+      }
+    });
+
+  const link = process.browser
+    ? split(
+        // split based on operation type
+        ({ query }) => {
+          const { kind, operation } = getMainDefinition(query);
+          return kind === 'OperationDefinition' && operation === 'subscription';
+        },
+        wsLink,
+        httpLink
+      )
+    : httpLink;
+
   return new ApolloClient({
     connectToDevTools: process.browser,
     ssrMode: !process.browser, // Disables forceFetch on the server (so queries are only run once)
-    link: new HttpLink({
-      uri: 'https://vde-app4.app.veb.net/graphql', // Server URL (must be absolute)
-      credentials: 'same-origin', // Additional fetch() options like `credentials` or `headers`
-      // Use fetch() polyfill on the server
-      fetch: !process.browser && fetch
-    }),
+    link:  ApolloLink.from([link]),
     cache: new InMemoryCache().restore(initialState || {}),
     typeDefs: gql`
       extend type Security {
@@ -26,8 +61,7 @@ function create(initialState) {
     resolvers: {
       Security: {
         isInLocalPortfolio: (security, _args, { cache }) => {
-          // todo: implement this
-          //console.log('the id is: ', security.id);
+          // console.log('the id is: ', security.id);
           // const { cartItems } = cache.readQuery({
           //   query: GET_CART_ITEMS
           // });

@@ -1,0 +1,7 @@
+{
+  "title": "React Intl Next.js Voorbeeld",
+  "nav.home": "Home",
+  "nav.about": "About",
+  "description": "Een voorbeeld applicatie met React Intl en Next.js",
+  "greeting": "Hallo allemaal!"
+}

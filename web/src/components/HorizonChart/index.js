@@ -77,8 +77,6 @@ function HorizonChart({ data }) {
               Object.assign({ index: i < overlap ? -i - 1 : i - overlap }, d)
             );
 
-
-
             return (
               <g key={i} transform={`translate(0,${i * (step + 1) + margin.top})`}>
                 <clipPath id={`clip${i}`}>
@@ -112,9 +110,11 @@ function HorizonChart({ data }) {
           })}
           <g ref={xAxisRef} transform={`translate(0,${margin.top})`} />
         </g>
-        {selected&&<g>
-          <line x1={selected} y1="0" x2={selected} y2={height} style={{ stroke: 'rgb(0,0,0)', strokeWidth: 1 }} />
-        </g>}
+        {selected && (
+          <g>
+            <line x1={selected} y1="0" x2={selected} y2={height} style={{ stroke: 'rgb(0,0,0)', strokeWidth: 1 }} />
+          </g>
+        )}
       </svg>
     </>
   );

@@ -1,9 +1,15 @@
 import React, { useContext } from 'react';
 import Link from 'next/link';
+
 import RoundGraph from '../RoundGraph';
 import { AppContext } from '../AppContext';
 import { Mutation } from 'react-apollo';
+
 import gql from 'graphql-tag';
+
+import { useHighlight } from '../../util/custom-hooks';
+
+import { formatIntl, formatPercentage } from '../../util/format-intl';
 
 export const TOGGLE_LOCAL_PORTFOLIO_MUTATION = gql`
   mutation ToggleLocalPortfolio($id: String!) {
@@ -24,10 +30,15 @@ const LocalPortfolioContainer = props => {
 };
 
 const LocalPortfolio = ({ security, index, toggleLocalPortfolio }) => {
+  let { store } = useContext(AppContext);
 
-  let {store} = useContext(AppContext);
-  let curData = security.calculatedCircular ? security.calculatedCircular.filter(e => e.Year === store.securityFilterYear)[0] : null;
-  
+  const last = +(security && security.liveData && security.liveData.last);
+  const highlightClass = useHighlight(last);
+
+  let curData = security.calculatedCircular
+    ? security.calculatedCircular.filter(e => e.Year === store.securityFilterYear)[0]
+    : null;
+
   return (
     <div
       className="box has-text-grey"
@@ -53,10 +64,13 @@ const LocalPortfolio = ({ security, index, toggleLocalPortfolio }) => {
         </div>
         <div className="column is-2">
           <a
-            className={"button is-dark is-small has-text-weight-bold " + index}
+            className={'button is-dark is-small has-text-weight-bold ' + index}
             id={'addbutton' + index}
             style={{ backgroundColor: '#7d7d7d' }}
-            onClick={() => {console.log(index, 'add button'); toggleLocalPortfolio();}}
+            onClick={() => {
+              console.log(index, 'add button');
+              toggleLocalPortfolio();
+            }}
           >
             {security.isInLocalPortfolio ? '-' : '+'}
           </a>
@@ -69,12 +83,25 @@ const LocalPortfolio = ({ security, index, toggleLocalPortfolio }) => {
           </Link>
         </div>
       </div>
-      <div style={{ height: '18px', fontSize: '11pt' }}>€100 +2.76%</div>
+      <div style={{ height: '18px', fontSize: '11pt' }}>
+        <span className={highlightClass}>
+          {formatIntl(last, security.currency)}
+        </span>
+
+        <span className="is-pulled-right">
+          {security.liveData && security.liveData.changePercent && formatPercentage(+security.liveData.changePercent)}
+        </span>
+      </div>
       <div style={{ height: '2px', fontSize: '11pt' }}>{security.sector}</div>
       <hr />
       <div className={'RoundGraph' + security.id} style={{ width: '230px', height: '200px' }}>
         {curData != null ? (
-          <RoundGraph key={security.id} idx={security.id + index} params={curData} filterCondition={store.securityFilterArea} />
+          <RoundGraph
+            key={security.id}
+            idx={security.id + index}
+            params={curData}
+            filterCondition={store.securityFilterArea}
+          />
         ) : (
           <p>No data</p>
         )}

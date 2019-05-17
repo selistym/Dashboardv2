@@ -6,11 +6,11 @@ class BalanceGraph extends Component {
   constructor(props) {
     super(props);
     const { parentWidth, parentHeight, data } = this.props;
-    if(this.isEmpty(data)){
+    if (this.isEmpty(data)) {
       this.state = {
-        is_empty : true
+        is_empty: true
       };
-    }else{
+    } else {
       this.state = {
         data: this.preCorrection(data),
         width: parentWidth > 650 ? 650 : Math.max(parentWidth, 500),
@@ -22,11 +22,11 @@ class BalanceGraph extends Component {
   componentDidMount() {}
   componentWillReceiveProps(nextProps) {
     const { parentWidth, parentHeight, data } = nextProps;
-    if(this.isEmpty(data)){
+    if (this.isEmpty(data)) {
       this.setState({
-        is_empty : true
+        is_empty: true
       });
-    }else{
+    } else {
       this.setState({
         data: this.preCorrection(data),
         width: parentWidth > 650 ? 650 : Math.max(parentWidth, 500),
@@ -35,10 +35,10 @@ class BalanceGraph extends Component {
       });
     }
   }
-  isEmpty(data){
+  isEmpty(data) {
     return !data || data.length == 0 ? true : false;
   }
-  preCorrection(data){
+  preCorrection(data) {
     return data.map(d => {
       d.CurrentAssetsNoCash = d.CurrentAssetsNoCash ? d.CurrentAssetsNoCash : 0;
       d.Goodwill = d.Goodwill ? d.Goodwill : 0;
@@ -47,7 +47,9 @@ class BalanceGraph extends Component {
       d.TotalCash = d.TotalCash ? d.TotalCash : 0;
       d.TotalEquity = d.TotalEquity ? d.TotalEquity : 0;
       d.TotalLiabilities = d.TotalLiabilities ? d.TotalLiabilities : 0;
-      d.TotalLiabilitiesStockholdersEquity = d.TotalLiabilitiesStockholdersEquity ? d.TotalLiabilitiesStockholdersEquity : 0;
+      d.TotalLiabilitiesStockholdersEquity = d.TotalLiabilitiesStockholdersEquity
+        ? d.TotalLiabilitiesStockholdersEquity
+        : 0;
       return d;
     });
   }

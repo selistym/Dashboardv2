@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useMemo} from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import ResponsiveWrapper from './ResponsiveWrapper';
 import * as d3 from 'd3';
 
@@ -10,22 +10,22 @@ const RoundGraph = props => {
     {
       index: 0.7,
       text: 'Dividend',
-      value: params.Dividend ? (params.Dividend / 100) : 0
+      value: params.Dividend ? params.Dividend / 100 : 0
     },
     {
       index: 0.6,
       text: 'Balance',
-      value: params.Balance ? (params.Balance) / 100 : 0
+      value: params.Balance ? params.Balance / 100 : 0
     },
     {
       index: 0.5,
       text: 'Growth',
-      value: params.Growth ? (params.Growth / 100) : 0
+      value: params.Growth ? params.Growth / 100 : 0
     },
     {
       index: 0.4,
       text: 'Value',
-      value: params.Value ? (params.Value / 100) : 0
+      value: params.Value ? params.Value / 100 : 0
     }
   ];
   let width = props.parentWidth,
@@ -33,7 +33,7 @@ const RoundGraph = props => {
 
   const roundRef = useRef();
   const lineRef = useRef();
-  
+
   const drawLine = () => {
     const { params } = props;
     let w = (Math.min(width, height) / 1.9) * 0.8 * Math.cos((Math.PI / 180) * 45); // 0.4 from small radius
@@ -106,7 +106,7 @@ const RoundGraph = props => {
       .attr('fill', 'none')
       .attr('stroke', 'green')
       .attr('stroke-width', 3)
-      .attr('d', line);    
+      .attr('d', line);
 
     field
       .on('mousemove', function() {
@@ -155,10 +155,10 @@ const RoundGraph = props => {
       text.attr('transform', 'translate(0,' + -th + ')');
     }
   };
-  const drawRound = () => {    
+  const drawRound = () => {
     let colors = { red: '#f45b63', orange: '#f49d73', green: '#72c14a' };
-    const setColor = total => total <= 50 ? colors.red : total >= 70 ? colors.green : colors.orange;
-    const setFontSize = radius => radius <= 120 ? 11 : radius >= 180 ? 14 : 12;
+    const setColor = total => (total <= 50 ? colors.red : total >= 70 ? colors.green : colors.orange);
+    const setFontSize = radius => (radius <= 120 ? 11 : radius >= 180 ? 14 : 12);
 
     let radius = Math.min(width, height) / 1.6,
       spacing = 0.09;
@@ -181,7 +181,7 @@ const RoundGraph = props => {
       .data(dataUpdated, d => d.value)
       .enter()
       .append('g');
-    
+
     let total = params.Total ? params.Total : 0;
     //add score
     let txt_score = field
@@ -198,18 +198,18 @@ const RoundGraph = props => {
       .style('fill', () => setColor(total));
 
     arcs
-      .attr('opacity', d => filterCondition ? (filterCondition.indexOf(d.text) != -1 ? 1 : 0) : 1)
+      .attr('opacity', d => (filterCondition ? (filterCondition.indexOf(d.text) != -1 ? 1 : 0) : 1))
       .style('stroke', '#fff')
       .style('stroke-width', 2)
-      .style('cursor','pointer')
+      .style('cursor', 'pointer')
       .on('click', function(d) {
         arcs.style('fill', 'grey');
         d3.select(this).style('fill', setColor(total));
         d3.select('.text-all' + idx).attr('opacity', 1);
       })
-      .on('mouseover', function(d) {        
-        if(d3.select(this).attr('opacity') == 0) return;
-        if(d.value == 0) return;
+      .on('mouseover', function(d) {
+        if (d3.select(this).attr('opacity') == 0) return;
+        if (d.value == 0) return;
         d3.select(this).style('stroke-width', 0);
         txt_score
           .attr('dy', '0.3em')
@@ -217,8 +217,8 @@ const RoundGraph = props => {
           .text(Math.floor(d.value * 100));
       })
       .on('mouseout', function(d) {
-        if(d3.select(this).attr('opacity') == 0) return;
-        if(d.value == 0) return;
+        if (d3.select(this).attr('opacity') == 0) return;
+        if (d.value == 0) return;
         d3.select(this).style('stroke-width', 2);
         txt_score
           .attr('dy', '0.3em')
@@ -258,8 +258,8 @@ const RoundGraph = props => {
       .style('font-size', setFontSize(radius))
       .style('font-weight', 'bold')
       .style('fill', setColor(total))
-      .text(d => d.text.split('')[0])
-      
+      .text(d => d.text.split('')[0]);
+
     function arcTween(arc) {
       return function(d) {
         var i = d3.interpolateNumber(0, d.value);
@@ -271,14 +271,14 @@ const RoundGraph = props => {
     }
   };
 
-  useEffect(() => drawRound(),[params.Dividend, params.Balance, params.Growth, params.Value, strFilter]);
+  useEffect(() => drawRound(), [params.Dividend, params.Balance, params.Growth, params.Value, strFilter]);
 
   return (
     <>
-        <svg className={'roundChart' + idx} width={width} height={height}>
-          <g className={'round' + idx} ref={roundRef} transform={`translate(${width / 2}, ${height / 2})`} />
-          <g className={'line' + idx} ref={lineRef} transform={`translate(${width / 2}, ${height / 2})`} />      
-        </svg>
+      <svg className={'roundChart' + idx} width={width} height={height}>
+        <g className={'round' + idx} ref={roundRef} transform={`translate(${width / 2}, ${height / 2})`} />
+        <g className={'line' + idx} ref={lineRef} transform={`translate(${width / 2}, ${height / 2})`} />
+      </svg>
     </>
   );
 };

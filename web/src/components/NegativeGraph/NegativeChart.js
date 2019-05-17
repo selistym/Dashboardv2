@@ -4,7 +4,7 @@ import * as d3 from 'd3';
 class BarGroup extends React.Component {
   constructor(props) {
     super(props);
-    const { data, bandwidth, xScale, step_data, identy} = this.props;
+    const { data, bandwidth, xScale, step_data, identy } = this.props;
 
     this.state = {
       data: data,
@@ -21,7 +21,7 @@ class BarGroup extends React.Component {
     this.drawBars();
   }
   componentWillReceiveProps(nextProps) {
-    const { data, xScale, bandwidth, step_data, identy} = nextProps;
+    const { data, xScale, bandwidth, step_data, identy } = nextProps;
     this.setState({
       data: data,
       bandwidth: bandwidth,
@@ -32,8 +32,9 @@ class BarGroup extends React.Component {
   }
 
   drawBars() {
-    const { data, xScale, bandwidth, step_data, identy} = this.state;
-    let rsz = 10, durate = 1000;
+    const { data, xScale, bandwidth, step_data, identy } = this.state;
+    let rsz = 10,
+      durate = 1000;
     let yScale = d3
       .scaleBand()
       .domain(data.values.slice(0, 4).map(d => d.label))
@@ -57,57 +58,123 @@ class BarGroup extends React.Component {
       .remove();
 
     d3.select(this.el)
-      .selectAll('path')      
+      .selectAll('path')
       .data(bar_data)
       .enter()
       .append('path')
-      .attr('class', (d) =>'negative' + identy)
+      .attr('class', d => 'negative' + identy)
       .attr('fill', d => color(d.label))
-      .attr('opacity', d => (d.label.includes('Ebitda')  ? 0 : 1))
+      .attr('opacity', d => (d.label.includes('Ebitda') ? 0 : 1))
       .attr('d', d => {
-        if(d.value > 0){
-          return  'M' + xScale(0) + ','+ yScale(d.label) +
-                  'l1,0' +
-                  'q' + yScale.bandwidth()/2 + ',0,' + yScale.bandwidth()/2 + ',' + yScale.bandwidth()/2 +
-                  'q0,' + yScale.bandwidth()/2 + ',' + (-yScale.bandwidth()/2) + ',' + yScale.bandwidth()/2 +
-                  'l-1,0z';
-        }else{
-          return  'M' + xScale(0) + ',' + yScale(d.label) +
-                  'l1,0' +
-                  'q' + (-yScale.bandwidth()/2) + ',0,' + (-yScale.bandwidth()/2) + ',' + (yScale.bandwidth()/2) +                  
-                  'q0,' + yScale.bandwidth()/2 + ',' + yScale.bandwidth()/2 + ',' + yScale.bandwidth()/2 + 
-                  'l-1,0z';
+        if (d.value > 0) {
+          return (
+            'M' +
+            xScale(0) +
+            ',' +
+            yScale(d.label) +
+            'l1,0' +
+            'q' +
+            yScale.bandwidth() / 2 +
+            ',0,' +
+            yScale.bandwidth() / 2 +
+            ',' +
+            yScale.bandwidth() / 2 +
+            'q0,' +
+            yScale.bandwidth() / 2 +
+            ',' +
+            -yScale.bandwidth() / 2 +
+            ',' +
+            yScale.bandwidth() / 2 +
+            'l-1,0z'
+          );
+        } else {
+          return (
+            'M' +
+            xScale(0) +
+            ',' +
+            yScale(d.label) +
+            'l1,0' +
+            'q' +
+            -yScale.bandwidth() / 2 +
+            ',0,' +
+            -yScale.bandwidth() / 2 +
+            ',' +
+            yScale.bandwidth() / 2 +
+            'q0,' +
+            yScale.bandwidth() / 2 +
+            ',' +
+            yScale.bandwidth() / 2 +
+            ',' +
+            yScale.bandwidth() / 2 +
+            'l-1,0z'
+          );
         }
-      });    
-    
+      });
+
     d3.selectAll('.negative' + identy)
-      .transition().duration(durate)
-      .attr('opacity', d => Math.abs(d.value * step) < 1 ? 0 : 1)
+      .transition()
+      .duration(durate)
+      .attr('opacity', d => (Math.abs(d.value * step) < 1 ? 0 : 1))
       .attr('d', d => {
-        if(d.value > 0){
-          return  'M' + xScale(0) + ','+ yScale(d.label) +
-                  'l' + (xScale(d.value - step_data.max) - yScale.bandwidth()/2)  + ',0' +
-                  'q' + yScale.bandwidth()/2 + ',0,' + yScale.bandwidth()/2 + ',' + yScale.bandwidth()/2 +                  
-                  'q0,' + yScale.bandwidth()/2 + ',' + (-yScale.bandwidth()/2) + ',' + yScale.bandwidth()/2 +
-                  'l' + (-(xScale(d.value - step_data.max) - yScale.bandwidth()/2)) + ',0z';                  
-        }else{
-          return  'M' + xScale(0) + ',' + yScale(d.label) +
-                  'l' + (-(xScale(0) - xScale(d.value ) - yScale.bandwidth()/2)) + ',0' +
-                  'q' + (-yScale.bandwidth()/2) + ',0,' + (-yScale.bandwidth()/2) + ',' + (yScale.bandwidth()/2) +                  
-                  'q0,' + yScale.bandwidth()/2 + ',' + yScale.bandwidth()/2 + ',' + yScale.bandwidth()/2 +
-                  'l' + (xScale(0) - xScale(d.value ) - yScale.bandwidth()/2) + ',0z';
+        if (d.value > 0) {
+          return (
+            'M' +
+            xScale(0) +
+            ',' +
+            yScale(d.label) +
+            'l' +
+            (xScale(d.value - step_data.max) - yScale.bandwidth() / 2) +
+            ',0' +
+            'q' +
+            yScale.bandwidth() / 2 +
+            ',0,' +
+            yScale.bandwidth() / 2 +
+            ',' +
+            yScale.bandwidth() / 2 +
+            'q0,' +
+            yScale.bandwidth() / 2 +
+            ',' +
+            -yScale.bandwidth() / 2 +
+            ',' +
+            yScale.bandwidth() / 2 +
+            'l' +
+            -(xScale(d.value - step_data.max) - yScale.bandwidth() / 2) +
+            ',0z'
+          );
+        } else {
+          return (
+            'M' +
+            xScale(0) +
+            ',' +
+            yScale(d.label) +
+            'l' +
+            -(xScale(0) - xScale(d.value) - yScale.bandwidth() / 2) +
+            ',0' +
+            'q' +
+            -yScale.bandwidth() / 2 +
+            ',0,' +
+            -yScale.bandwidth() / 2 +
+            ',' +
+            yScale.bandwidth() / 2 +
+            'q0,' +
+            yScale.bandwidth() / 2 +
+            ',' +
+            yScale.bandwidth() / 2 +
+            ',' +
+            yScale.bandwidth() / 2 +
+            'l' +
+            (xScale(0) - xScale(d.value) - yScale.bandwidth() / 2) +
+            ',0z'
+          );
         }
-      });  
+      });
     // // //add EBITDA
     d3.select(this.el)
       .selectAll('path_ebita')
       .data(ebitdas)
       .enter()
       .append('path')
-      .attr(
-        'd',
-        d => 'M' + xScale(d.value) + ' -1 L' + xScale(d.value) + ' ' + (yScale.bandwidth() + 2) + ' Z'
-      )
+      .attr('d', d => 'M' + xScale(d.value) + ' -1 L' + xScale(d.value) + ' ' + (yScale.bandwidth() + 2) + ' Z')
       .style('stroke', '#de0730')
       .style('stroke-width', 3);
     //.style("opacity", d =>  d.label.includes("bitda")==true ? 0 : 1);
@@ -119,7 +186,7 @@ class BarGroup extends React.Component {
       .enter()
       .append('text')
       .attr('x', d => (d.value > 0 ? xScale(d.value) : xScale(d.value)))
-      .attr('y', d => (d.label.includes('Ebitda') == false ? (yScale(d.label) + yScale.bandwidth() / 2)  : 0))
+      .attr('y', d => (d.label.includes('Ebitda') == false ? yScale(d.label) + yScale.bandwidth() / 2 : 0))
       .attr('dx', d => (d.value > 0 ? 5 : -5))
       .text(d => (d.value == 0 ? '' : d.value.toFixed(0) + ''))
       .attr('text-anchor', d => (d.value > 0 ? 'start' : 'end'))
@@ -167,7 +234,6 @@ class Axis extends React.Component {
       .scaleLinear()
       .range([0, svgDimen.width - margins.left - margins.right - 50])
       .domain([-step_data.max, step_data.max]);
-
 
     let y0Scale = d3
       .scaleBand()
@@ -217,15 +283,14 @@ class Axis extends React.Component {
     d3.select(this.yAxisElement)
       .attr('class', 'y axis')
       .call(yAxis)
-      .select('.domain')      
+      .select('.domain')
       .remove();
 
     d3.select(this.yAxisElement)
-      .selectAll('text')      
+      .selectAll('text')
       .style('text-anchor', 'middle')
       .attr('fill', 'grey')
       .style('font-size', '10pt');
-      
   }
   getRange(data) {
     let arr = [];
@@ -293,7 +358,12 @@ class NegativeChart extends Component {
   render() {
     const { svgDimen, margins, data } = this.state;
     return (
-      <svg className="graphSvg" width={svgDimen.width} height={svgDimen.height} transform={`translate(${(this.props.width - svgDimen.width )/ 2}, 0)`}>
+      <svg
+        className="graphSvg"
+        width={svgDimen.width}
+        height={svgDimen.height}
+        transform={`translate(${(this.props.width - svgDimen.width) / 2}, 0)`}
+      >
         <Axis svgDimen={svgDimen} margins={margins} data={data} />
       </svg>
     );

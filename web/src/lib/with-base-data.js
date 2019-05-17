@@ -21,7 +21,6 @@ export default function withBaseData(Component) {
           {({ loading, error, data: { allSectors } }) => {
             if (error) return <ErrorMessage message="Error loading base data." />;
             if (loading) return <Loading />;
-            console.log()
             return <Component {...this.props} allSectors={allSectors} />;
           }}
         </Query>

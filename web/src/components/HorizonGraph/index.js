@@ -85,8 +85,7 @@ const HorizonGraph = props => {
         // console.log(d.close, 'value');
         // console.log(d0.close, 'zvalue');
         tmp_ptText = (((d.close - d0.close) / d0.close) * 100).toFixed(1);
-        if (tmp_ptText == 0) 
-          tmp_ptText = Math.floor(tmp_ptText);
+        if (tmp_ptText == 0) tmp_ptText = Math.floor(tmp_ptText);
 
         ptText = tmp_ptText > 0 ? '+' + tmp_ptText : tmp_ptText;
         d3.selectAll('.point-text')

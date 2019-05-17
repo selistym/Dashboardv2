@@ -28,4 +28,11 @@ function formatDate(value) {
   return <FormattedDate value={new Date(value)} />;
 }
 
-export { formatIntl, formatTime, formatDate, formatVolume };
+function formatPercentage(str){
+  return str.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }) + '%'
+}
+
+export { formatIntl, formatTime, formatDate, formatVolume, formatPercentage };

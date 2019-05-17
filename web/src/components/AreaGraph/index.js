@@ -7,36 +7,35 @@ class AreaGraph extends Component {
   constructor(props) {
     super(props);
     const { parentWidth, parentHeight, data, companyName } = this.props;
-    if(this.isEmpty(data)){
+    if (this.isEmpty(data)) {
       this.state = {
-        is_empty : true
+        is_empty: true
       };
-    }else{
+    } else {
       this.state = {
         width: parentWidth > 1100 ? 1100 : Math.max(parentWidth, 300),
         height: 400,
         data: this.preCorrection(data),
         companyName: companyName,
         column: this.getColumn(data),
-        is_empty : false
-      };      
+        is_empty: false
+      };
     }
-    
   }
   componentWillReceiveProps(nextProps) {
     const { parentWidth, parentHeight, data, companyName } = nextProps;
-    if(this.isEmpty(data)){
+    if (this.isEmpty(data)) {
       this.setState({
-        is_empty : true
+        is_empty: true
       });
-    }else{      
+    } else {
       this.setState({
         width: parentWidth > 1100 ? 1100 : Math.max(parentWidth, 300),
         height: 400,
         data: this.preCorrection(data),
         companyName: companyName,
         column: this.getColumn(data),
-        is_empty : false
+        is_empty: false
       });
     }
   }
@@ -47,10 +46,10 @@ class AreaGraph extends Component {
     }
     return column;
   }
-  isEmpty(data){
+  isEmpty(data) {
     return !data || data.length == 0 ? true : false;
   }
-  preCorrection(data){
+  preCorrection(data) {
     return data.map(d => {
       d.Date = d.Date ? d.Date : '';
       d.Volume = d.Volume ? d.Volume : 0;
@@ -64,7 +63,13 @@ class AreaGraph extends Component {
     } else {
       return (
         <Fragment>
-          <AreaChart companyName={this.state.companyName} data={this.state.data} column={this.state.column} width={this.state.width} height={this.state.height} />
+          <AreaChart
+            companyName={this.state.companyName}
+            data={this.state.data}
+            column={this.state.column}
+            width={this.state.width}
+            height={this.state.height}
+          />
         </Fragment>
       );
     }

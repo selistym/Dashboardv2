@@ -902,7 +902,7 @@ var apiHorizon = function apiHorizon(context) {
     horizon: function horizon() {
       var buffer = document.createElement('canvas');
       buffer.width = context.size();
-      buffer.height = 40;
+      buffer.height = 30;
 
       var state = {
         _mode: 'offset',

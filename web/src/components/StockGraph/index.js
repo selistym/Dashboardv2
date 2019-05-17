@@ -6,42 +6,42 @@ class StockGraph extends Component {
   constructor(props) {
     super(props);
     const { parentWidth, parentHeight, data } = this.props;
-    
-    if(this.isEmpty(data)){
+
+    if (this.isEmpty(data)) {
       this.state = {
-        is_empty : true
+        is_empty: true
       };
-    }else{
+    } else {
       this.state = {
         data: this.preCorrection(data).reverse(),
         width: parentWidth > 400 ? 400 : Math.max(parentWidth, 250),
         height: Math.max(parentHeight, 400),
         ptwidth: parentWidth,
-        is_empty : false
+        is_empty: false
       };
     }
   }
-  
+
   componentWillReceiveProps(nextProps) {
     const { parentWidth, parentHeight, data } = nextProps;
-    if(this.isEmpty(data)){
+    if (this.isEmpty(data)) {
       this.setState({
-        is_empty : true
+        is_empty: true
       });
-    }else{
+    } else {
       this.setState({
         data: this.preCorrection(data).reverse(),
         width: parentWidth > 400 ? 400 : Math.max(parentWidth, 250),
         height: Math.max(parentHeight, 400),
         ptwidth: parentWidth,
-        is_empty : false
+        is_empty: false
       });
     }
   }
-  isEmpty(data){
+  isEmpty(data) {
     return !data || data.length == 0 ? true : false;
   }
-  preCorrection(data){
+  preCorrection(data) {
     return data.map(d => {
       d.ConsolidatedNetIncome = d.ConsolidatedNetIncome ? d.ConsolidatedNetIncome : 0;
       d.ConsolidatedNetIncomeEUR = d.ConsolidatedNetIncomeEUR ? d.ConsolidatedNetIncomeEUR : 0;
@@ -59,7 +59,12 @@ class StockGraph extends Component {
     } else {
       return (
         <Fragment>
-          <StockChart data={this.state.data} width={this.state.width} height={this.state.height} ptwidth={this.state.ptwidth} />
+          <StockChart
+            data={this.state.data}
+            width={this.state.width}
+            height={this.state.height}
+            ptwidth={this.state.ptwidth}
+          />
         </Fragment>
       );
     }

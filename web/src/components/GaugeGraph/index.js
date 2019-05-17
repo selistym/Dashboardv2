@@ -15,20 +15,16 @@ const dataRange = [
 class GaugeGraph extends Component {
   constructor(props) {
     super(props);
-    const { parentWidth, parentHeight, data , kind} = this.props;
-    
-    var tempwidth;
-    
-    if(parentWidth>210)
-        tempwidth=210;
-    if(parentWidth>250)
-        tempwidth=250;
-    if(parentWidth>350)
-        tempwidth=300;
+    const { parentWidth, parentHeight, data, kind } = this.props;
 
-    
+    var tempwidth;
+
+    if (parentWidth > 210) tempwidth = 210;
+    if (parentWidth > 250) tempwidth = 250;
+    if (parentWidth > 350) tempwidth = 300;
+
     this.state = {
-      data: data,      
+      data: data,
       kind: kind,
       ptwidth: parentWidth,
       width: tempwidth,
@@ -38,17 +34,14 @@ class GaugeGraph extends Component {
   componentDidMount() {}
   componentWillReceiveProps(nextProps) {
     const { parentWidth, parentHeight, data, kind } = nextProps;
-    
+
     var tempwidth;
-    if(parentWidth>210)
-        tempwidth=210;
-    if(parentWidth>250)
-        tempwidth=250;
-    if(parentWidth>350)
-        tempwidth=300;
-   
+    if (parentWidth > 210) tempwidth = 210;
+    if (parentWidth > 250) tempwidth = 250;
+    if (parentWidth > 350) tempwidth = 300;
+
     this.setState({
-      data: data,      
+      data: data,
       kind: kind,
       ptwidth: parentWidth,
       width: tempwidth,
@@ -61,17 +54,17 @@ class GaugeGraph extends Component {
       return <Fragment>No Data</Fragment>;
     } else {
       const { data, kind, ptwidth, width, height } = this.state;
-      
+
       return (
         <Fragment>
-          <GaugeChart            
+          <GaugeChart
             data={data}
             dataRange={dataRange[kind]}
             kind={kind}
             ptwidth={ptwidth}
             width={width}
             height={height}
-          />            
+          />
         </Fragment>
       );
     }

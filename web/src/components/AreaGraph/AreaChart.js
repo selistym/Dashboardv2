@@ -244,12 +244,12 @@ class RangeHandle extends React.Component {
       />
     );
     return (
-      <g className="sliderBar" onMouseOver={this.onMouseOver.bind(this)} style={{cursor: 'pointer'}}>
+      <g className="sliderBar" onMouseOver={this.onMouseOver.bind(this)} style={{ cursor: 'pointer' }}>
         {rectFillBar}
-        <g className="handleLeft" transform={`translate(${xScale(rangeStart)}, 0)`} style={{cursor: 'pointer'}}>
+        <g className="handleLeft" transform={`translate(${xScale(rangeStart)}, 0)`} style={{ cursor: 'pointer' }}>
           {rectHandler}
         </g>
-        <g className="handleRight" transform={`translate(${xScale(rangeEnd)}, 0)`} style={{cursor: 'pointer'}}>
+        <g className="handleRight" transform={`translate(${xScale(rangeEnd)}, 0)`} style={{ cursor: 'pointer' }}>
           {rectHandler}
         </g>
       </g>
@@ -502,7 +502,7 @@ class AreaChart extends Component {
       .clamp(true);
     let legend_text1_len = this.getTextWidth(companyName, 16, 'Arial');
     let legend_text2_len = this.getTextWidth('Industry', 16, 'Arial');
-    
+
     return (
       <svg className="areaChartSvg" width={svgDimen.width} height={svgDimen.height}>
         <g className="TopPane" transform={`translate(${margins.left}, ${height / 12})`}>

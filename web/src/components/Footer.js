@@ -1,7 +1,7 @@
 import React from 'react'
 
 export default () => (
-  <footer className="page-footer fz-14" style={{ marginTop: '20px' }}>
+  <footer className="page-footer fz-14" style={{ marginTop: '0px' }}>
     <div className="footer-top bg-gray">
       <div className="container">
         <div className="columns is-vcentered">

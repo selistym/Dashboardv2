@@ -43,6 +43,11 @@ const Security = props => {
 
   return (
     <div>
+      <div style={{textAlign:'center', paddingBottom:'40px'}}>
+        <h3 className="subtitle is-4 has-text-weight-bold has-text-grey" style={{ height: '10px' }}>{`The ${
+          security.name
+        } Company`}</h3>
+      </div>
       <div className="has-background-white-ter">
         <div className="box has-text-grey">
           <div className="columns is-mobile">
@@ -251,7 +256,7 @@ const Security = props => {
           </div>
         </div>
       </div>
-      <div className="box  has-text-grey" style={{height: '430px'}}>
+      <div className="box  has-text-grey" style={{ height: '430px' }}>
         <h3 className="subtitle is-5 has-text-weight-bold has-text-grey" style={{ height: '10px' }}>
           Historic performance
         </h3>
@@ -266,7 +271,7 @@ const Security = props => {
           <p>No Data</p>
         )}
       </div>
-      
+
       <div className="box  has-text-grey is-mobile">
         <h3 className="subtitle is-5 has-text-weight-bold has-text-grey" style={{ height: '10px' }}>
           Price basics {security.name}
@@ -439,7 +444,11 @@ const Security = props => {
               <div className="columns is-mobile" style={{ height: '40px' }}>
                 <div className="column is-one-two-mobile is-one-two-tablet has-text-centered">
                   <h4 className="subtitle is-3 has-text-weight-bold has-text-grey">
-                    {security.factsetData.Daily_DividendYieldDaily ? (security.factsetData.Daily_DividendYieldDaily * 100).toFixed(0) + '%' : <p>No Data</p>}
+                    {security.factsetData.Daily_DividendYieldDaily ? (
+                      (security.factsetData.Daily_DividendYieldDaily * 100).toFixed(0) + '%'
+                    ) : (
+                      <p>No Data</p>
+                    )}
                   </h4>
                 </div>
               </div>

@@ -3,9 +3,7 @@ import LayoutBasic from '../components/LayoutBasic';
 import SecuritySearch from '../components/SecuritySearch';
 
 class SecuritySearchPage extends Component {
-
   render() {
-
     const { session, navMenu } = this.props;
 
     return (

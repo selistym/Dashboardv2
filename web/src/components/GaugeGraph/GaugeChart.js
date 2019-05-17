@@ -73,11 +73,10 @@ class GaugeChart extends Component {
       preStep1 = data[0].value > 100 ? 100 : data[0].value,
       preStep = preStep1 < 0 ? 0 : preStep1,
       step1 = (range / 100) * preStep,
-
-    linearColor = d3
-      .scaleLinear()
-      .range(['#e2062a', '#ee7e00', '#66ad2b'])
-      .domain([0, range / 2, range]);
+      linearColor = d3
+        .scaleLinear()
+        .range(['#e2062a', '#ee7e00', '#66ad2b'])
+        .domain([0, range / 2, range]);
 
     if (dataRange.direction == 1)
       linearColor = d3

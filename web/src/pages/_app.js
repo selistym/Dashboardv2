@@ -38,7 +38,7 @@ class MyApp extends App {
     const { Component, pageProps, locale, messages, initialNow, apolloClient } = this.props;
     return (
       <Container>
-        <IntlProvider locale="en">
+        <IntlProvider locale={locale}>
           <ApolloProvider client={apolloClient}>
             <AppProvider>
               <Component {...pageProps} />

@@ -50,53 +50,53 @@ class Chart extends Component {
               className="leftLegend"
               transform={`translate(${-svgDimen.width / 2} , ${top_legend_height + legend_label_height})`}
             >
-            <g>
-              <circle r="5" cx="35" cy="0" fill="#63ae2d" />
-              <text
-                x="45"
-                y="2"
-                textAnchor="start"
-                dominantBaseline="middle"
-                style={{ fontSize: 14, fill: '#bdbbbc' }}
-              >
-                Cash
-              </text>
+              <g>
+                <circle r="5" cx="35" cy="0" fill="#63ae2d" />
+                <text
+                  x="45"
+                  y="2"
+                  textAnchor="start"
+                  dominantBaseline="middle"
+                  style={{ fontSize: 14, fill: '#bdbbbc' }}
+                >
+                  Cash
+                </text>
               </g>
               <g>
-              <circle r="5" cx="35" cy={legend_label_height} fill="#a6ae2d" />
-              <text
-                x="45"
-                y={legend_label_height + 2}
-                textAnchor="start"
-                dominantBaseline="middle"
-                style={{ fontSize: 14, fill: '#bdbbbc' }}
-              >
-                Current
-              </text>
+                <circle r="5" cx="35" cy={legend_label_height} fill="#a6ae2d" />
+                <text
+                  x="45"
+                  y={legend_label_height + 2}
+                  textAnchor="start"
+                  dominantBaseline="middle"
+                  style={{ fontSize: 14, fill: '#bdbbbc' }}
+                >
+                  Current
+                </text>
               </g>
               <g>
-              <circle r="5" cx="35" cy={legend_label_height * 2} fill="#ef7d00" />
-              <text
-                x="45"
-                y={legend_label_height * 2 + 2}
-                textAnchor="start"
-                dominantBaseline="middle"
-                style={{ fontSize: 14, fill: '#bdbbbc' }}
-              >
-                Fixed
-              </text>
+                <circle r="5" cx="35" cy={legend_label_height * 2} fill="#ef7d00" />
+                <text
+                  x="45"
+                  y={legend_label_height * 2 + 2}
+                  textAnchor="start"
+                  dominantBaseline="middle"
+                  style={{ fontSize: 14, fill: '#bdbbbc' }}
+                >
+                  Fixed
+                </text>
               </g>
               <g>
-              <circle r="5" cx="35" cy={legend_label_height * 3} fill="#de0730" />
-              <text
-                x="45"
-                y={legend_label_height * 3 + 2}
-                textAnchor="start"
-                dominantBaseline="middle"
-                style={{ fontSize: 14, fill: '#bdbbbc' }}
-              >
-                Goodwill
-              </text>
+                <circle r="5" cx="35" cy={legend_label_height * 3} fill="#de0730" />
+                <text
+                  x="45"
+                  y={legend_label_height * 3 + 2}
+                  textAnchor="start"
+                  dominantBaseline="middle"
+                  style={{ fontSize: 14, fill: '#bdbbbc' }}
+                >
+                  Goodwill
+                </text>
               </g>
             </g>
             <g
@@ -104,13 +104,7 @@ class Chart extends Component {
               transform={`translate(${svgDimen.width * 0.3} , ${top_legend_height + legend_label_height})`}
             >
               <circle r="5" cx="10" cy="0" fill="#63ae2d" />
-              <text
-                x="20"
-                y="2"
-                textAnchor="start"
-                dominantBaseline="middle"
-                style={{ fontSize: 14, fill: '#bdbbbc' }}
-              >
+              <text x="20" y="2" textAnchor="start" dominantBaseline="middle" style={{ fontSize: 14, fill: '#bdbbbc' }}>
                 Equity
               </text>
               <circle r="5" cx="10" cy={legend_label_height} fill="#de0730" />

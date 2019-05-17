@@ -207,14 +207,13 @@ class Second extends Component {
       data: { security }
     } = this.props;
 
-
     let gauges = this.getGaugeArray(security.calculated);
 
     return (
       <LayoutBasic
         {...this.props}
         title={`VEB - ${security.name}`}
-        description={"Stocks"}
+        description={'Stocks'}
         session={session}
         navMenu={true}
         signinBtn={true}
@@ -283,7 +282,7 @@ class Second extends Component {
                     </div>
                     <div className="columns" style={{ height: '50px', fontSize: 'small' }}>
                       <div className="column is-3" style={{ padding: 'inherit' }}>
-                        <img src="../static/svg/ConsumerNonDurables.svg" style={{ height: '34'}}/>
+                        <img src="../static/svg/ConsumerNonDurables.svg" style={{ height: '34' }} />
                       </div>
                       <div className="column is-9" style={{ padding: 'inherit' }}>
                         consumer <br />
@@ -398,7 +397,6 @@ class Second extends Component {
           <h3 class="subtitle is-5 has-text-weight-bold has-text-grey" style={{ height: '10px' }}>
             Historic performance
           </h3>
-          
         </div>
         <div class="box  has-text-grey is-mobile">
           <h3 class="subtitle is-5 has-text-weight-bold has-text-grey" style={{ height: '10px' }}>

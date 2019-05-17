@@ -98,10 +98,13 @@ function CubismChart({ data, parentWidth }) {
 
     var bodyRect = document.body.getBoundingClientRect(),
       elemRect = demoRef.current.getBoundingClientRect(),
-      offset = elemRect.top - bodyRect.top;
+      offset_top = elemRect.top - bodyRect.top,
+      offset_left = elemRect.left - bodyRect.left;    
+
     d.selectAll('.line')
-      .style('top', offset - 250 + 'px')
-      .style('height', 310 + 'px')
+      .style('margin-left', (offset_left - 20) + 'px')
+      .style('top', offset_top + 'px')
+      .style('height', 300 + 'px')
       .style('width', '1px')
       .style('background', '#000')
       .style('zIndex', 2);
@@ -123,10 +126,10 @@ function CubismChart({ data, parentWidth }) {
         .style('color', 'black')
         .style('right', function() {
           d.selectAll('.line')
-            .style('top', offset - 250 + 'px')
-            .style('height', 310 + 'px');
+            .style('top', offset_top + 'px')
+            .style('height', 300 + 'px');
           if (i == null) {
-            return null;
+           return null;
           } else {
             if (i > 60) return c.size() - i + 'px';
             else return c.size() - 60 - i + 'px';

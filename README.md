@@ -1,4 +1,5 @@
 # Developer Guidelines
+In web folder, yarn run dev
 
 ## Compilation
 To start the next.js based environment, change folder to web and:

@@ -18,9 +18,8 @@ function CubismChart({ data, parentWidth }) {
   };
   const getConvertData = input_data => {
     let toDate = input_data[0].globalQuotes[input_data[0].globalQuotes.length - 1].date;
-    let fromDate = new Date(new Date(toDate).getTime() - parentWidth * 24 * 3600 * 1000).toISOString().slice(0, 10);
-    console.log('fromdate', fromDate);
-    // let fromDate = (toDate.split('-')[0] - 2) + '-' + toDate.split('-')[1] + '-' + toDate.split('-')[2];
+    let fromDate = new Date(new Date(toDate).getTime() - parentWidth * 24 * 3600 * 1000).toISOString().slice(0, 10);    
+    
     let c_data = [],
       prv_data = { date: fromDate, close: 0, is_null: true };
     let dateRange = getDateArray(new Date(fromDate), new Date(toDate));
@@ -145,15 +144,13 @@ function CubismChart({ data, parentWidth }) {
       }
       return;
     }
-    function stock(datum) {
-      console.log(datum, ' dataum');
+    function stock(datum) {      
       var value = 0,
         values = [],
         i = 0,
         last;
 
-      return c.metric(function(start, stop, step, callback) {
-        console.log(start, stop, step, 'where?');
+      return c.metric(function(start, stop, step, callback) {        
         (start = +start), (stop = +stop);
         let initValue = datum.globalQuotes[0].close == 0 ? getNearest(datum.globalQuotes) : datum.globalQuotes[0].close,
           showValue;
@@ -173,8 +170,7 @@ function CubismChart({ data, parentWidth }) {
           showValue = ((value - initValue) / initValue).toFixed(2);
           values.push(showValue);
           i++;
-        }
-        // console.log(values, ' values')
+        }        
 
         callback(null, (values = values.slice((start - stop) / step)));
       }, datum.ticker);

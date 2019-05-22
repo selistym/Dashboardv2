@@ -288,7 +288,7 @@ const Security = props => {
           <div className="column">
             <div className="columns">
               <div className="column is-6">{gauges ? <GaugeGraph data={gauges[2]} kind="2" /> : <p>No Data</p>}</div>
-              <div className="column is-6">{gauges ? <GaugeExtendGraph data={gauges[3]} kind="3" /> : <p>No Data</p>}</div>
+              <div className="column is-6">{gauges ? <GaugeGraph data={gauges[3]} kind="3" /> : <p>No Data</p>}</div>
             </div>
           </div>
         </div>

@@ -26,11 +26,10 @@ class Chart extends Component {
     this.drawGraph();
   }
   drawGraph() {
-    const { svgDimen, margins, partial, column } = this.state;
-
+    const { svgDimen, margins, partial, column } = this.state;    
     let parseTime = d3.timeParse('%Y-%m-%d');
 
-    let data = column.slice(2).map(function(id) {
+    let data = column.slice(2, 3).map(function(id) {
       return {
         id: id,
         values: partial.map(function(d) {
@@ -71,7 +70,7 @@ class Chart extends Component {
       .curve(d3.curveMonotoneX)
       .x(d => x(d.date))
       .y0(y(rmin))
-      .y1(d => y(d.value));
+      .y1(d =>y(d.value));
 
     let svg = d3.select(this.el);
     svg.selectAll('*').remove();

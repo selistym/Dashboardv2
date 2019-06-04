@@ -1,11 +1,9 @@
 import App, { Container } from 'next/app';
 import React from 'react';
 
-import { withRouter } from 'next/router';
-
 import { IntlProvider, addLocaleData } from 'react-intl';
 
-import withApolloClient from '../lib/with-apollo-client';
+import withApolloClient from '../lib/with-apollo';
 import { ApolloProvider } from 'react-apollo';
 import { AppProvider } from '../components/AppContext';
 
@@ -19,7 +17,9 @@ if (typeof window !== 'undefined' && window.ReactIntlLocaleData) {
 }
 
 class MyApp extends App {
-  static async getInitialProps({ Component, router, ctx }) {
+  static displayName = 'MyApp';
+
+  static async getInitialProps({ Component, ctx }) {
     let pageProps = {};
 
     if (Component.getInitialProps) {
@@ -35,6 +35,7 @@ class MyApp extends App {
     return { pageProps, locale, messages, initialNow };
   }
   render() {
+    // eslint-disable-next-line no-unused-vars
     const { Component, pageProps, locale, messages, initialNow, apolloClient } = this.props;
     return (
       <Container>
@@ -50,4 +51,4 @@ class MyApp extends App {
   }
 }
 
-export default withRouter(withApolloClient(MyApp));
+export default withApolloClient(MyApp);

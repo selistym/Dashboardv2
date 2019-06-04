@@ -1,49 +1,57 @@
 import React from 'react';
-import RoundGraph from '../RoundGraph';
+import PropTypes from 'prop-types';
 
-const LeftNavbar = ({security}) => {
-    return (
-        <div
-            className="column is-full-mobile is-full-tablet is-one-fifth-desktop is-2-widescreen is-2-fullhd"
-            style={{ backgroundColor: '#888' }}
-        >
-            <div style={{ textAlign: 'center', margin: '20px' }}>
-                <img src="../../static/logo.png" />
-            </div>
-            <div style={{ textAlign: 'center', margin: '20px' }}>
-                <img style={{ borderRadius: '50%', width: '110px', height: '100px' }} src="../../static/man.png" />
-            </div>
-            <div className="has-text-white" style={{ textAlign: 'center' }}>
-                John Doe
-            </div>
-            <div
-                style={{
-                    height: '200px',
-                    margin: '10px',
-                    borderWidth: '1px',
-                    borderTopStyle: 'inset',
-                    borderBottomStyle: 'outset',
-                    color: 'gainsboro'
-                }}
-            >
-                <div  style={{ padding: '3px', paddingTop:'10px' }}>My Porfolio</div>
-                <div  style={{ padding: '3px' }}>Stocks</div>
-                <div  style={{ padding: '3px' }}>Scenarios</div>
-            </div>
-            <div style={{ textAlign: 'center', color: 'gainsboro'}}>My Current Portfolio Performance</div>
-            <div className={'RoundGraph' + security.id} style={{ width: '180px', height: '180px', display:'content', paddingTop:'20px' }}>
-                {security.calculatedCircular[0] != null ? (
-                    <RoundGraph
-                        key={security.id}
-                        index={security.id}
-                        params={security.calculatedCircular[security.calculatedCircular.length - 1]}
-                    />
-                ) : (
-                    <p>No data</p>
-                )}
-            </div>
-        </div>
-    );
-}
+import Link from 'next/link';
+
+import UserMenu from '../Layout/UserMenu';
+
+const LeftNavbar = ({ session }) => (
+  <div className="column is-full-mobile is-full-tablet" style={{ backgroundColor: '#888', width: '180px' }}>
+    <div style={{ textAlign: 'center', margin: '20px' }}>
+      <img src="../../static/logo.png" />
+    </div>
+    {session && session.user && (
+      <div style={{ textAlign: 'center', margin: '20px' }}>
+        <img style={{ borderRadius: '50%', width: '110px', height: '100px' }} src="../../static/man.png" />
+      </div>
+    )}
+    <div className="has-text-white" style={{ textAlign: 'center' }}>
+      {session && session.user && (
+        <Link href={'/account'}>
+          <a>{session.user.name}</a>
+        </Link>
+      )}
+      <ul>
+        <UserMenu session={session} simple={true} />
+      </ul>
+    </div>
+    <div
+      style={{
+        height: '110px',
+        margin: '10px',
+        borderWidth: '1px',
+        borderTopStyle: 'inset',
+        borderBottomStyle: 'outset',
+        color: 'gainsboro'
+      }}
+    >
+      <div style={{ padding: '3px', paddingTop: '10px' }}>
+        <Link href={'/portfolio'}>
+          <a>My Portfolio</a>
+        </Link>
+      </div>
+      <div style={{ padding: '3px' }}>
+        <Link href="/security-search">
+          <a>Securities</a>
+        </Link>
+      </div>
+      <div style={{ padding: '3px' }}>Scenarios</div>
+    </div>
+  </div>
+);
+
+LeftNavbar.propTypes = {
+  session: PropTypes.object.isRequired
+};
 
 export default LeftNavbar;

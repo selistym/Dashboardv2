@@ -1,25 +1,27 @@
-import React, { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
+import classNames from 'classnames';
+
 import * as d3 from 'd3';
-import CircularGraph from '../CircularGraph';
 import AreaGraph from '../AreaGraph';
 import CubismChart from '../CubismChart';
 import GaugeGraph from '../GaugeGraph';
-import GaugeExtendGraph from '../GaugeExtendGraph';
 import StockGraph from '../StockGraph';
 import NegativeGraph from '../NegativeGraph';
 import BalanceGraph from '../BalanceGraph';
 import RoundGraph from '../RoundGraph';
-import HorizonGraph from '../HorizonGraph';
 
-import { formatIntl, formatTime, formatDate, formatVolume } from '../../util/format-intl';
-
-import { IntlProvider } from 'react-intl';
+import { formatIntl, formatTime, formatDate, formatVolume } from '../../lib/format-intl';
+import { useHighlight } from '../../lib/custom-hooks';
 
 const Security = props => {
-  const { toggleLocalPortfolio, security } = props;
-  {
-    console.log(security);
-  }
+  const { togglePortfolio, isInPortfolio, security } = props;
+  const last = +(security && security.liveData && security.liveData.last);
+  const highlightClass = useHighlight(last);
+  let changeClass = '';
+  if (security && security.liveData && security.liveData.netChange < 0) changeClass = 'has-text-danger';
+  if (security && security.liveData && security.liveData.netChange > 0) changeClass = 'has-text-success';
+
   const getGaugeArray = data => {
     if (data) {
       const gaugedata = d3.entries(data);
@@ -30,6 +32,7 @@ const Security = props => {
         gaugedata[i] = gaugedata[i] ? gaugedata[i] : 0;
         gaugedata[i + 1] = gaugedata[i + 1] ? gaugedata[i + 1] : 0;
         gaugedata[i + 2] = gaugedata[i + 2] ? gaugedata[i + 2] : 0;
+        if (gaugedata[i].value == null) gaugedata[i].value = 0;
         arr.push(gaugedata[i]);
         arr.push(gaugedata[i + 1]);
         arr.push(gaugedata[i + 2]);
@@ -41,14 +44,9 @@ const Security = props => {
     }
   };
   let gauges = getGaugeArray(security.calculated);
-
+  console.log(security);
   return (
     <div>
-      <div style={{textAlign:'center', paddingBottom:'40px'}}>
-        <h3 className="subtitle is-4 has-text-weight-bold has-text-grey" style={{ height: '10px' }}>{`The ${
-          security.name
-        } Company`}</h3>
-      </div>
       <div className="has-background-white-ter">
         <div className="box has-text-grey">
           <div className="columns is-mobile">
@@ -73,30 +71,17 @@ const Security = props => {
               <div className="columns is-desktop">
                 <div className="column is-full-mobile is-full-tablet is-two-thirds-desktop is-two-thirds-widescreen is-two-thirds-fullhd">
                   <div className="content" style={{ height: '360px', overflowY: 'scroll' }}>
-                    {security.isInLocalPortfolio ? (
-                      <button className="button is-small is-danger" onClick={() => toggleLocalPortfolio()}>
-                        - Add to portfolio
+                    {isInPortfolio ? (
+                      <button className="button is-small" onClick={() => togglePortfolio()}>
+                        - Remove from portfolio
                       </button>
                     ) : (
-                      <button className="button is-small" onClick={() => toggleLocalPortfolio()}>
-                        + Remove from portfolio
+                      <button className="button is-small" onClick={() => togglePortfolio()}>
+                        + Add to portfolio
                       </button>
                     )}
-
                     <p style={{ paddingTop: '10px' }}>{security.longBusinessDescription}</p>
-                    <h3 className="has-text-danger">Important notes</h3>
-                    <ul>
-                      <li>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad assumenda delectus, doloremque
-                        eligendi hic suscipit!
-                      </li>
-                      <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</li>
-                      <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eaque, provident?</li>
-                      <li>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consectetur dolorum id ipsam provident
-                        soluta tenetur veniam vitae. Eos esse harum labore quisquam soluta tenetur velit?
-                      </li>
-                    </ul>
+                    
                   </div>
                 </div>
                 <div
@@ -107,7 +92,7 @@ const Security = props => {
                     {security.calculatedCircular[0] != null ? (
                       <RoundGraph
                         key={security.id}
-                        index={security.id}
+                        idx={security.id}
                         params={security.calculatedCircular[security.calculatedCircular.length - 1]}
                       />
                     ) : (
@@ -124,9 +109,9 @@ const Security = props => {
                     </h3>
                   </div>
                   <div className="columns" style={{ height: '50px' }}>
-                    <h3 className="subtitle is-4 has-text-weight-bold has-text-grey">{`${
-                      security.currency == 'EUR' ? '€' : security.currency
-                    } ${security.liveData.last}`}</h3>
+                    <h3 className={classNames('subtitle', 'is-4', 'has-text-weight-bold', 'has-text-grey')}>
+                      {last ? formatIntl(last, security.currency) : 'N/A'}
+                    </h3>
                   </div>
                 </div>
                 <div className="column is-3">
@@ -153,7 +138,7 @@ const Security = props => {
                   </div>
                   <div className="columns" style={{ height: '50px' }}>
                     <h3 className="subtitle is-4 has-text-weight-bold has-text-grey">
-                      {security.calculated3Y.SalesOrRevenueLY}
+                      {security.calculated3Y ? security.calculated3Y.SalesOrRevenueLY : 'undefined'}
                     </h3>
                   </div>
                 </div>
@@ -166,7 +151,9 @@ const Security = props => {
                   </div>
                   <div className="columns" style={{ height: '50px' }}>
                     <h3 className="subtitle is-4 has-text-weight-bold has-text-grey">
-                      {`${security.factsetData.MarketCapitalization.toFixed(1)}`}B
+                      {security && security.factsetData && security.factsetData.MarketCapitalizatino
+                        ? `${security.factsetData.MarketCapitalization.toFixed(1)}B`
+                        : 'N/A'}
                     </h3>
                   </div>
                 </div>
@@ -198,84 +185,100 @@ const Security = props => {
                 <tr>
                   <td>Date</td>
                   <td>
-                    <IntlProvider>{formatDate(security.liveData.dateTime)}</IntlProvider>
+                    {security && security.liveData && security.liveData.dateTime
+                      ? formatDate(security.liveData.dateTime)
+                      : 'N/A'}
                   </td>
                 </tr>
                 <tr style={{ backgroundColor: 'gainsboro' }}>
                   <td>Time</td>
                   <td>
-                    <IntlProvider>{formatTime(security.liveData.dateTime)}</IntlProvider>
+                    {security && security.liveData && security.liveData.dateTime
+                      ? formatTime(security.liveData.dateTime)
+                      : 'N/A'}
                   </td>
                 </tr>
                 <tr>
                   <td>Price</td>
-                  <td>{security.liveData.last}</td>
+                  <td className={highlightClass}>{last && security ? formatIntl(last, security.currency) : 'N/A'}</td>
                 </tr>
                 <tr style={{ backgroundColor: 'gainsboro' }}>
                   <td>Difference</td>
-                  <td>{security.liveData.netChange}</td>
+                  <td>
+                    {security && security.liveData && security.liveData.netChange
+                      ? formatIntl(security.liveData.netChange)
+                      : 'N/A'}
+                  </td>
                 </tr>
                 <tr>
                   <td>Difference (%)</td>
-                  <td>${security.liveData.changePercent}</td>
+                  <td className={changeClass}>
+                    {security && security.liveData && security.liveData.changePercent
+                      ? formatIntl(security.liveData.changePercent)
+                      : 'N/A'}
+                    %
+                  </td>
                 </tr>
                 <tr style={{ backgroundColor: 'gainsboro' }}>
                   <td>Previous opening price</td>
-                  <td style={{ verticalAlign: 'middle' }}>{security.liveData.previousOpen}</td>
+                  <td style={{ verticalAlign: 'middle' }}>
+                    {security && security.liveData && security.liveData.previousOpen
+                      ? formatIntl(security.liveData.previousOpen)
+                      : 'N/A'}
+                  </td>
                 </tr>
                 <tr>
                   <td>Previous closing price</td>
-                  <td style={{ verticalAlign: 'middle' }}>27,58</td>
+                  <td style={{ verticalAlign: 'middle' }}>
+                    {security && security.liveData && security.liveData.previousClose
+                      ? formatIntl(security.liveData.previousClose)
+                      : 'N/A'}
+                  </td>
                 </tr>
                 <tr style={{ backgroundColor: 'gainsboro' }}>
                   <td>Lowest price</td>
-                  <td>{security.liveData.previousOpen}</td>
+                  <td>
+                    {security && security.liveData && security.liveData.dayLow
+                      ? formatIntl(security.liveData.dayLow)
+                      : 'N/A'}
+                  </td>
                 </tr>
                 <tr>
                   <td>Highest price</td>
-                  <td style={{ verticalAlign: 'middle' }}>{security.liveData.previousDayLow}</td>
+                  <td style={{ verticalAlign: 'middle' }}>
+                    {security && security.liveData && security.liveData.dayHigh
+                      ? formatIntl(security.liveData.dayHigh)
+                      : 'N/A'}
+                  </td>
                 </tr>
                 <tr style={{ backgroundColor: 'gainsboro' }}>
                   <td>Volume</td>
                   <td>
-                    <IntlProvider>{formatVolume(security.liveData.previousDayHigh)}</IntlProvider>
+                    {security && security.liveData && security.liveData.cumulativeVolume
+                      ? formatVolume(security.liveData.cumulativeVolume)
+                      : 'N/A'}
                   </td>
                 </tr>
                 <tr>
                   <td>Currency</td>
-                  <td>{`${security.currency == 'EUR' ? '€' : security.currency}`}</td>
+                  <td>{security && security.currency}</td>
                 </tr>
                 <tr style={{ backgroundColor: 'gainsboro' }}>
                   <td>Market</td>
-                  <td>{security.mic}</td>
+                  <td>{security && security.mic}</td>
                 </tr>
               </tbody>
             </table>
           </div>
           <div className="column is-8">
-            <AreaGraph data={security.historyPrice100} companyName={security.name} />
+            <AreaGraph data={security && security.historyPrice100} companyName={security && security.name} />
           </div>
         </div>
-      </div>
-      <div className="box  has-text-grey" style={{ height: '430px' }}>
-        <h3 className="subtitle is-5 has-text-weight-bold has-text-grey" style={{ height: '10px' }}>
-          Historic performance
-        </h3>
-        <hr />
-        {security.globalQuotes ? (
-          security.top5IndustryHistory ? (
-            <CubismChart data={[security, ...security.top5IndustryHistory.map(t => t.security)]} />
-          ) : (
-            <p>No Data</p>
-          )
-        ) : (
-          <p>No Data</p>
-        )}
       </div>
 
       <div className="box  has-text-grey is-mobile">
         <h3 className="subtitle is-5 has-text-weight-bold has-text-grey" style={{ height: '10px' }}>
-          Price basics {security.name}
+          Price basics {security && security.name}
         </h3>
         <hr />
         <div className="columns is-desktop">
@@ -318,6 +321,21 @@ const Security = props => {
             </div>
           </div>
         </div>
+      </div>
+      <div className="box  has-text-grey" style={{ height: '430px' }}>
+        <h3 className="subtitle is-5 has-text-weight-bold has-text-grey" style={{ height: '10px' }}>
+          Historic performance
+        </h3>
+        <hr />
+        {security.globalQuotes ? (
+          security.top5IndustryHistory ? (
+            <CubismChart data={[security, ...security.top5IndustryHistory.map(t => t.security)]} />
+          ) : (
+            <p>No Data</p>
+          )
+        ) : (
+          <p>No Data</p>
+        )}
       </div>
       <div className="columns is-desktop">
         <div className="column is-mobile is-tablet is-two-thirds-desktop is-two-thirds-widescreen is-two-thirds-fullhd">
@@ -446,7 +464,7 @@ const Security = props => {
                 <div className="column is-one-two-mobile is-one-two-tablet has-text-centered">
                   <h4 className="subtitle is-3 has-text-weight-bold has-text-grey">
                     {security.factsetData.Daily_DividendYieldDaily ? (
-                      (security.factsetData.Daily_DividendYieldDaily * 100).toFixed(0) + '%'
+                      (security.factsetData.Daily_DividendYieldDaily * 100).toFixed(1) + '%'
                     ) : (
                       <p>No Data</p>
                     )}
@@ -613,6 +631,12 @@ const Security = props => {
       </div>
     </div>
   );
+};
+
+Security.propTypes = {
+  togglePortfolio: PropTypes.func.isRequired,
+  isInPortfolio: PropTypes.bool.isRequired,
+  security: PropTypes.object.isRequired
 };
 
 export default Security;

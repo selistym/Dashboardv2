@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React from 'react';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
@@ -22,7 +22,6 @@ const SecuritySearchLayout = () => {
           </h3>
         </div>
       </div>
-
       <SecuritiesContainer />
     </div>
   );

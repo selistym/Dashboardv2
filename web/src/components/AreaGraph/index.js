@@ -1,79 +1,75 @@
-import React, { Component, Fragment } from 'react';
-import * as d3 from 'd3';
-import ResponsiveWrapper from './ResponsiveWrapper';
+import React, { Fragment } from 'react';
+import useDimensions from '../Dimensions';
+import PropTypes from 'prop-types';
 import AreaChart from './AreaChart';
 
-class AreaGraph extends Component {
-  constructor(props) {
-    super(props);
-    const { parentWidth, parentHeight, data, companyName } = this.props;
-    if (this.isEmpty(data)) {
-      this.state = {
-        is_empty: true
-      };
-    } else {
-      this.state = {
-        width: parentWidth > 1100 ? 1100 : Math.max(parentWidth, 300),
-        height: 400,
-        data: this.preCorrection(data),
-        companyName: companyName,
-        column: this.getColumn(data),
-        is_empty: false
-      };
-    }
-  }
-  componentWillReceiveProps(nextProps) {
-    const { parentWidth, parentHeight, data, companyName } = nextProps;
-    if (this.isEmpty(data)) {
-      this.setState({
-        is_empty: true
-      });
-    } else {
-      this.setState({
-        width: parentWidth > 1100 ? 1100 : Math.max(parentWidth, 300),
-        height: 400,
-        data: this.preCorrection(data),
-        companyName: companyName,
-        column: this.getColumn(data),
-        is_empty: false
-      });
-    }
-  }
-  getColumn(data) {
+const AreaGraph = props => {
+  const {data, companyName} = props;
+  const [svgContainerRef, svgSize] = useDimensions();
+  const getColumn = origin => {
     let column = [];
-    for (var key in data[0]) {
+    for (var key in origin[0]) {
       column.push(key);
     }
     return column;
   }
-  isEmpty(data) {
-    return !data || data.length == 0 ? true : false;
-  }
-  preCorrection(data) {
-    return data.map(d => {
-      d.Date = d.Date ? d.Date : '';
-      d.Volume = d.Volume ? d.Volume : 0;
-      d.Close = d.Close ? d.Close : 0;
-      return d;
-    });
-  }
-  render() {
-    if (this.state.is_empty) {
-      return <Fragment>No data</Fragment>;
-    } else {
-      return (
-        <Fragment>
-          <AreaChart
-            companyName={this.state.companyName}
-            data={this.state.data}
-            column={this.state.column}
-            width={this.state.width}
-            height={this.state.height}
-          />
-        </Fragment>
-      );
-    }
-  }
+  const isEmpty = origin => !origin || origin.length == 0 ? true : false;
+
+  const preCorrection = origin =>  origin.map(d => {
+    d.Date = d.Date ? d.Date : '';
+    d.Volume = d.Volume ? d.Volume : 0;
+    d.Close = d.Close ? d.Close : 0;
+    return d;
+  });
+  
+  return (
+    <Fragment>
+      {isEmpty(data)? <> No data </> :
+          <>
+            <div className="columns" style={{width:'100%', marginTop: '10px', justifyContent: 'space-around'}}>
+              <div className="columns is-2">
+                <span className="button" style={{width: '40px', marginRight: '5px', fontSize:'10pt', backgroundColor:'#de0730', color:'white'}}>1 M</span>
+                <span className="button" style={{width: '40px', marginRight: '5px', fontSize:'10pt',  backgroundColor:'#de0730', color:'white'}}>6 M</span>
+                <span className="button" style={{width: '40px', marginRight: '5px', fontSize:'10pt',  backgroundColor:'#de0730', color:'white'}}>1 Y</span>
+                <span className="button" style={{width: '40px', marginRight: '5px', fontSize:'10pt',  backgroundColor:'#de0730', color:'white'}}>3 Y</span>
+                <span className="button" style={{width: '40px', marginRight: '5px', fontSize:'10pt',  backgroundColor:'#de0730', color:'white'}}>5 Y</span>
+                <span className="button" style={{width: '40px', marginRight: '5px', fontSize:'10pt',  backgroundColor:'#de0730', color:'white'}}>All</span>
+              </div>
+              <div className="columns is-2">
+                <span style={{ color: '#de0730', fontWeight: '600', fontSize: '15pt' }}>●&nbsp;</span>
+                <span style={{marginRight:'15px'}}>{companyName}</span>
+                <span style={{ color: 'grey', fontWeight: '600', fontSize: '15pt' }}>●&nbsp;</span>
+                <span>Industry</span>
+              </div>
+            </div>
+            <div className="columns" style={{width:'100%', justifyContent: 'center'}} ref={svgContainerRef}>
+              {svgSize.width && 
+                <AreaChart
+                  companyName={companyName}
+                  data={preCorrection(data)}
+                  column={getColumn(data)}
+                  width={svgSize.width}
+                  height={400}
+                />
+              }
+            </div>
+          </>
+        
+      }
+    </Fragment>
+  );
 }
 
-export default ResponsiveWrapper(AreaGraph);
+AreaGraph.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      Close: PropTypes.number.isRequired,
+      Date: PropTypes.string.isRequired,
+      Volume: PropTypes.number.isRequired,
+      __typename: PropTypes.string.isRequired
+    }).isRequired
+  ).isRequired,
+  companyName: PropTypes.string.isRequired
+};
+
+export default AreaGraph;

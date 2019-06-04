@@ -1,6 +1,238 @@
 import React, { useReducer, createContext } from 'react';
+import PropTypes from 'prop-types';
 
 let AppContext = createContext(null);
+
+const allMarketSizes = [
+  { code: 'LARGE', name: 'Large Caps' },
+  { code: 'MEDIUM', name: 'Medium Caps' },
+  { code: 'SMALL', name: 'Small Caps' }
+];
+
+const allCountries = [
+  {
+    code: 'AU',
+    name: 'Australië'
+  },
+  {
+    code: 'BE',
+    name: 'België'
+  },
+  {
+    code: 'BM',
+    name: 'Bermuda'
+  },
+  {
+    code: 'CA',
+    name: 'Canada'
+  },
+  {
+    code: 'CL',
+    name: 'Chili'
+  },
+  {
+    code: 'CN',
+    name: 'China'
+  },
+  {
+    code: 'CW',
+    name: 'Curaçao'
+  },
+  {
+    code: 'CY',
+    name: 'Cyprus'
+  },
+  {
+    code: 'DK',
+    name: 'Denemarken'
+  },
+  {
+    code: 'DE',
+    name: 'Duitsland'
+  },
+  {
+    code: 'EG',
+    name: 'Egypte'
+  },
+  {
+    code: 'FO',
+    name: 'Faeröer'
+  },
+  {
+    code: 'FI',
+    name: 'Finland'
+  },
+  {
+    code: 'FR',
+    name: 'Frankrijk'
+  },
+  {
+    code: 'GA',
+    name: 'Gabon'
+  },
+  {
+    code: 'GE',
+    name: 'Georgië'
+  },
+  {
+    code: 'GI',
+    name: 'Gibraltar'
+  },
+  {
+    code: 'GL',
+    name: 'Groenland'
+  },
+  {
+    code: 'GG',
+    name: 'Guernsey'
+  },
+  {
+    code: 'HK',
+    name: 'Hong Kong'
+  },
+  {
+    code: 'IE',
+    name: 'Ierland'
+  },
+  {
+    code: 'IN',
+    name: 'India'
+  },
+  {
+    code: 'IL',
+    name: 'Israël'
+  },
+  {
+    code: 'IT',
+    name: 'Italië'
+  },
+  {
+    code: 'JE',
+    name: 'Jersey'
+  },
+  {
+    code: 'JO',
+    name: 'Jordanië'
+  },
+  {
+    code: 'KY',
+    name: 'Kaaimaneilanden'
+  },
+  {
+    code: 'CM',
+    name: 'Kameroen'
+  },
+  {
+    code: 'LI',
+    name: 'Liechtenstein'
+  },
+  {
+    code: 'LU',
+    name: 'Luxemburg'
+  },
+  {
+    code: 'VG',
+    name: 'Maagdeneilanden'
+  },
+  {
+    code: 'MY',
+    name: 'Maleisië'
+  },
+  {
+    code: 'MT',
+    name: 'Malta'
+  },
+  {
+    code: 'IM',
+    name: 'Man Eiland'
+  },
+  {
+    code: 'MX',
+    name: 'Mexico'
+  },
+  {
+    code: 'MC',
+    name: 'Monaco'
+  },
+  {
+    code: 'NL',
+    name: 'Nederland'
+  },
+  {
+    code: 'NG',
+    name: 'Nigeria'
+  },
+  {
+    code: 'NO',
+    name: 'Noorwegen'
+  },
+  {
+    code: 'UA',
+    name: 'Oekraïne'
+  },
+  {
+    code: 'AT',
+    name: 'Oostenrijk'
+  },
+  {
+    code: 'PE',
+    name: 'Peru'
+  },
+  {
+    code: 'PT',
+    name: 'Portugal'
+  },
+  {
+    code: 'RU',
+    name: 'Rusland'
+  },
+  {
+    code: 'SN',
+    name: 'Senegal'
+  },
+  {
+    code: 'SG',
+    name: 'Singapore'
+  },
+  {
+    code: 'ES',
+    name: 'Spanje'
+  },
+  {
+    code: 'TZ',
+    name: 'Tanzania'
+  },
+  {
+    code: 'TR',
+    name: 'Turkije'
+  },
+  {
+    code: 'GB',
+    name: 'Verenigd Koninkrijk'
+  },
+  {
+    code: 'AE',
+    name: 'Verenigde Arabische Emiraten'
+  },
+  {
+    code: 'US',
+    name: 'Verenigde Staten van Amerika'
+  },
+  {
+    code: 'ZA',
+    name: 'Zuid-Afrika'
+  },
+  {
+    code: 'SE',
+    name: 'Zweden'
+  },
+  {
+    code: 'CH',
+    name: 'Zwitserland'
+  }
+];
+
+
 
 const allSectors = [
   {
@@ -89,16 +321,17 @@ const allSectors = [
   }
 ];
 
-
 const initialSecurityState = {
+  allMarketSizes,
   allSectors,
+  allCountries,
   securityFilterText: '',
   securityFilterYear: 2018,
-  securityFilterMarketSize: ['LARGE', 'MEDIUM', 'SMALL'],
-  securityFilterValue: [],
+  securityFilterMarketSize: ['LARGE'],
+  securityFilterCountry: ['NL'],
   securityFilterArea: ['Dividend', 'Growth'],
-  securityFilterSector: allSectors.map(s=>s.code),
-  navMenu: true,
+  securityFilterSector: allSectors.map(s => s.code),
+  navMenu: true
 };
 
 const securityReducer = (state, action) => {
@@ -121,8 +354,8 @@ const securityReducer = (state, action) => {
       }
       replaces.sort();
       return { ...state, securityFilterMarketSize: replaces };
-    case 'CHANGE_FILTER_VALUE':
-      replaces = state.securityFilterValue;
+    case 'CHANGE_FILTER_COUNTRY':
+      replaces = state.securityFilterCountry;
       if (typeof action.filter === 'object') {
         replaces = action.filter;
       } else {
@@ -133,7 +366,7 @@ const securityReducer = (state, action) => {
         }
       }
       replaces.sort();
-      return { ...state, securityFilterValue: replaces };
+      return { ...state, securityFilterCountry: replaces };
     case 'CHANGE_FILTER_AREA':
       replaces = state.securityFilterArea;
       if (typeof action.filter === 'object') {
@@ -170,6 +403,10 @@ const securityReducer = (state, action) => {
 const AppProvider = props => {
   const [store, dispatch] = useReducer(securityReducer, initialSecurityState);
   return <AppContext.Provider value={{ store, dispatch }}>{props.children}</AppContext.Provider>;
+};
+
+AppProvider.propTypes = {
+  children: PropTypes.object.isRequired
 };
 
 let AppConsumer = AppContext.Consumer;

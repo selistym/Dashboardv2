@@ -1,3 +1,3 @@
-const Security = require('./Security');
+const SecurityContainer = require('./SecurityContainer');
 
-module.exports = Security;
+module.exports = SecurityContainer;

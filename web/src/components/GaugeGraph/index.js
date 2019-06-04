@@ -1,21 +1,22 @@
 import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
 import ResponsiveWrapper from './ResponsiveWrapper';
-import * as d3 from 'd3';
+
 import GaugeChart from './GaugeChart';
 
 const dataRange = [
   { title: 'PE-ratio', min: 0, max: 40, direction: 0 },
-  { title: 'ROIC', min: 0, max: 0.5, direction: 1 },
-  { title: 'Return on equity', min: 0, max: 0.5, direction: 1 },
+  { title: 'ROIC', min: 0, max: 0.2, direction: 1 },
+  { title: 'Return on equity', min: 0, max: 0.2, direction: 1 },
   { title: 'Revenue Growth', min: -30, max: 60, direction: 1 },
   { title: 'Debt-ratio', min: 0, max: 4, direction: 0 },
-  { title: 'N.t.b', min: -3, max: 3, direction: 1 }
+  { title: 'Nett-Debt / EBITDA', min: -3, max: 3, direction: 0 }
 ];
 
 class GaugeGraph extends Component {
   constructor(props) {
     super(props);
-    const { parentWidth, parentHeight, data, kind } = this.props;
+    const { parentWidth, data, kind } = this.props;
 
     var tempwidth;
 
@@ -33,7 +34,7 @@ class GaugeGraph extends Component {
   }
   componentDidMount() {}
   componentWillReceiveProps(nextProps) {
-    const { parentWidth, parentHeight, data, kind } = nextProps;
+    const { parentWidth, data, kind } = nextProps;
 
     var tempwidth;
     if (parentWidth > 210) tempwidth = 210;
@@ -70,5 +71,16 @@ class GaugeGraph extends Component {
     }
   }
 }
+
+GaugeGraph.propTypes = {
+  parentWidth: PropTypes.number.isRequired,
+  kind: PropTypes.string.isRequired,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      key: PropTypes.string.isRequired,
+      value: PropTypes.number
+    })
+  )
+};
 
 export default ResponsiveWrapper(GaugeGraph);

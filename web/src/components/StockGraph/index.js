@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
 import ResponsiveWrapper from './ResponsiveWrapper';
 import StockChart from './StockChart';
 
@@ -70,5 +71,21 @@ class StockGraph extends Component {
     }
   }
 }
+
+StockGraph.propTypes = {
+  parentWidth: PropTypes.number.isRequired,
+  parentHeight: PropTypes.number.isRequired,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      ConsolidatedNetIncome: PropTypes.number,
+      ConsolidatedNetIncomeEUR: PropTypes.number,
+      Currency: PropTypes.string,
+      Date: PropTypes.string,
+      DividendPayoutRatio: PropTypes.number,
+      RateEUR: PropTypes.number,
+      RetainedEarningsEUR: PropTypes.number
+    })
+  )
+};
 
 export default ResponsiveWrapper(StockGraph);

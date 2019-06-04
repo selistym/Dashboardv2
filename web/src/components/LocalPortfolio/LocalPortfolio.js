@@ -1,36 +1,17 @@
 import React, { useContext } from 'react';
+import PropTypes from 'prop-types';
 import Link from 'next/link';
 
 import RoundGraph from '../RoundGraph';
 import { AppContext } from '../AppContext';
-import { Mutation } from 'react-apollo';
 
-import gql from 'graphql-tag';
+import { useHighlight, usePortfolio } from '../../lib/custom-hooks';
 
-import { useHighlight } from '../../util/custom-hooks';
+import { formatIntl, formatPercentage } from '../../lib/format-intl';
 
-import { formatIntl, formatPercentage } from '../../util/format-intl';
-
-export const TOGGLE_LOCAL_PORTFOLIO_MUTATION = gql`
-  mutation ToggleLocalPortfolio($id: String!) {
-    toggleLocalPortfolio(id: $id) @client
-  }
-`;
-
-const LocalPortfolioContainer = props => {
-  const { security } = props;
-
-  return (
-    <Mutation mutation={TOGGLE_LOCAL_PORTFOLIO_MUTATION} variables={{ id: security.id }}>
-      {toggleLocalPortfolio => (
-        <LocalPortfolio {...props} toggleLocalPortfolio={() => toggleLocalPortfolio(security.id)} />
-      )}
-    </Mutation>
-  );
-};
-
-const LocalPortfolio = ({ security, index, toggleLocalPortfolio }) => {
+const LocalPortfolio = ({ security, index }) => {
   let { store } = useContext(AppContext);
+  const { togglePortfolio, isInPortfolio } = usePortfolio({});
 
   const last = +(security && security.liveData && security.liveData.last);
   const highlightClass = useHighlight(last);
@@ -67,12 +48,9 @@ const LocalPortfolio = ({ security, index, toggleLocalPortfolio }) => {
             className={'button is-dark is-small has-text-weight-bold ' + index}
             id={'addbutton' + index}
             style={{ backgroundColor: '#7d7d7d' }}
-            onClick={() => {
-              console.log(index, 'add button');
-              toggleLocalPortfolio();
-            }}
+            onClick={() => togglePortfolio(security.id)}
           >
-            {security.isInLocalPortfolio ? '-' : '+'}
+            {isInPortfolio(security.id) ? '-' : '+'}
           </a>
         </div>
         <div className="column is-1">
@@ -84,9 +62,7 @@ const LocalPortfolio = ({ security, index, toggleLocalPortfolio }) => {
         </div>
       </div>
       <div style={{ height: '18px', fontSize: '11pt' }}>
-        <span className={highlightClass}>
-          {formatIntl(last, security.currency)}
-        </span>
+        <span className={highlightClass}>{formatIntl(last, security.currency)}</span>
 
         <span className="is-pulled-right">
           {security.liveData && security.liveData.changePercent && formatPercentage(+security.liveData.changePercent)}
@@ -109,4 +85,29 @@ const LocalPortfolio = ({ security, index, toggleLocalPortfolio }) => {
     </div>
   );
 };
-export default LocalPortfolioContainer;
+
+LocalPortfolio.propTypes = {
+  index: PropTypes.string.isRequired,
+  security: PropTypes.shape({
+    calculatedCircular: PropTypes.arrayOf(
+      PropTypes.shape({
+        Balance: PropTypes.number.isRequired,
+        Dividend: PropTypes.number.isRequired,
+        Growth: PropTypes.number.isRequired,
+        Total: PropTypes.number.isRequired,
+        Value: PropTypes.number.isRequired,
+        Year: PropTypes.number.isRequired
+      })
+    ),
+    liveData: PropTypes.shape({
+      changePercent: PropTypes.number,
+      last: PropTypes.number
+    }),
+    currency: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    sector: PropTypes.string.isRequired
+  }).isRequired
+};
+
+export default LocalPortfolio;

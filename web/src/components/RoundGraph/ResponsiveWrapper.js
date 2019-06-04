@@ -55,7 +55,7 @@ export default ChartComponent =>
             this.chartContainer = el;
           }}
           className="Responsive-wrapper"
-        >          
+        >
           {shouldRenderChart && this.renderChart()}
         </div>
       );

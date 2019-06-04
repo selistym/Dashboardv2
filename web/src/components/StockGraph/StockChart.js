@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import * as d3 from 'd3';
 
 class Axis extends React.Component {
@@ -263,7 +264,6 @@ class Axis extends React.Component {
       .attr('fill', '#df072c')
       .attr('d', d => {
         let strPath = '',
-          rsz = 5,
           b_w = 30,
           x_pos = x(formatTime(new Date(d.Date))) + x.bandwidth() / 2;
 
@@ -320,8 +320,7 @@ class Axis extends React.Component {
       .attr('d', d => {
         let ratio = d.DividendPayoutRatio > 100 ? 100 : d.DividendPayoutRatio,
           h = Math.abs(y((d.ConsolidatedNetIncome * ratio) / 100) - y(0)),
-          x_pos = x(formatTime(new Date(d.Date))) + x.bandwidth() / 2,
-          b_w = 30;
+          x_pos = x(formatTime(new Date(d.Date))) + x.bandwidth() / 2;
         if (d.ConsolidatedNetIncome < 0) {
           return 'M' + x_pos + ',' + (h - 10) + 'l0,20';
         } else {
@@ -488,5 +487,42 @@ class StockChart extends Component {
     );
   }
 }
+
+Axis.propTypes = {
+  svgDimen: PropTypes.shape({
+    width: PropTypes.number.isRequired,
+    height: PropTypes.number.isRequired
+  }).isRequired,
+  top_margin: PropTypes.number.isRequired,
+  bottom_margin: PropTypes.number.isRequired,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      ConsolidatedNetIncome: PropTypes.number,
+      ConsolidatedNetIncomeEUR: PropTypes.number,
+      Currency: PropTypes.string,
+      Date: PropTypes.string,
+      DividendPayoutRatio: PropTypes.number,
+      RateEUR: PropTypes.number,
+      RetainedEarningsEUR: PropTypes.number
+    })
+  ).isRequired
+};
+
+StockChart.propTypes = {
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+  ptwidth: PropTypes.number.isRequired,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      ConsolidatedNetIncome: PropTypes.number,
+      ConsolidatedNetIncomeEUR: PropTypes.number,
+      Currency: PropTypes.string,
+      Date: PropTypes.string,
+      DividendPayoutRatio: PropTypes.number,
+      RateEUR: PropTypes.number,
+      RetainedEarningsEUR: PropTypes.number
+    })
+  ).isRequired
+};
 
 export default StockChart;

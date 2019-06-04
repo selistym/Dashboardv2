@@ -1,22 +1,17 @@
 import React, { useEffect } from 'react';
-import LocalPortfolioContainer from '../LocalPortfolio';
+import LocalPortfolio from '../LocalPortfolio';
 import PropTypes from 'prop-types';
 
 const SecuritiesSection = ({ securities, loadMoreSecurities, subscribeToSecurities }) => {
   // initialize subscriptions
-  let unsubscribe;
-
+  
   useEffect(() => {
-    if (process.browser && subscribeToSecurities) {
-      unsubscribe = subscribeToSecurities();
-    }
-
-    return () => {
-      if (process.browser && unsubscribe !== undefined) {
-        unsubscribe();
-      }
-    };
+    subscribeToSecurities();
   });
+
+  if (securities === undefined) {
+    return null;
+  }
 
   return (
     <section style={{ paddingTop: '20px' }}>
@@ -26,7 +21,7 @@ const SecuritiesSection = ({ securities, loadMoreSecurities, subscribeToSecuriti
         data-testid="filtered-securities"
       >
         {securities.map(s => (
-          <LocalPortfolioContainer key={s.id} index={s.id} security={s} />
+          <LocalPortfolio key={s.id} index={s.id} security={s} />
         ))}
       </div>
       <button

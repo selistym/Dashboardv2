@@ -1,11 +1,12 @@
 import React, { Component, Fragment } from 'react';
 import ResponsiveWrapper from './ResponsiveWrapper';
+import PropTypes from 'prop-types';
 import BalanceChart from './BalanceChart';
 
 class BalanceGraph extends Component {
   constructor(props) {
     super(props);
-    const { parentWidth, parentHeight, data } = this.props;
+    const { parentWidth, data } = this.props;
     if (this.isEmpty(data)) {
       this.state = {
         is_empty: true
@@ -21,7 +22,7 @@ class BalanceGraph extends Component {
   }
   componentDidMount() {}
   componentWillReceiveProps(nextProps) {
-    const { parentWidth, parentHeight, data } = nextProps;
+    const { parentWidth, data } = nextProps;
     if (this.isEmpty(data)) {
       this.setState({
         is_empty: true
@@ -64,6 +65,22 @@ class BalanceGraph extends Component {
       );
     }
   }
+}
+
+BalanceGraph.propTypes = {  
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      CurrentAssetsNoCash: PropTypes.number,
+      Date: PropTypes.string,      
+      Goodwill: PropTypes.number,
+      NonCurrentAssetsNoGoodwill: PropTypes.number,
+      TotalCash: PropTypes.number,
+      TotalEquity: PropTypes.number,
+      TotalLiabilities: PropTypes.number,
+      TotalLiabilitiesStockholdersEquity: PropTypes.number
+    }).isRequired
+  ).isRequired,
+  parentWidth: PropTypes.number.isRequired  
 }
 
 export default ResponsiveWrapper(BalanceGraph);

@@ -1,106 +1,28 @@
-import React, { Component } from 'react';
-import Link from 'next/link';
+import React from 'react';
 
-import LayoutBasic from '../components/LayoutBasic';
-import fetch from 'isomorphic-unfetch';
+import Layout from '../components/Layout';
 
-class Index extends Component {
-  static async getInitialProps({ req, query }) {
-    const userAgent = req ? req.headers['user-agent'] : navigator.userAgent;
+import SecuritySearch from '../components/SecuritySearch';
+import AuthenticatedPage from '../components/Layout/AuthenticatedPage';
 
-    // get some data from graphql endpoint
-    const data = await fetch('https://vde-app4.app.veb.net/graphql', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        operationName: null,
-        variables: {},
-        query: `
-        {
-          allSecurities(marketSize:LARGE, countryCode:"NL", etf: false){
-            id
-            name
-          }
-        }
-        `
-      })
-    })
-      .then(r => r.json())
-      .then(r => r.data);
-
-    return { userAgent, data };
-  }
-
+class SecuritySearchPage extends AuthenticatedPage {
   render() {
-    const { session, navMenu, data } = this.props;
+    const { session } = this.props;
 
     return (
-      <LayoutBasic
+      <Layout
         {...this.props}
+        session={session}
         title={'VEB - Overview'}
         description={'Overview'}
-        session={session}
         navMenu={true}
-        signinBtn={true}
+        signInBtn={true}
+        footer={true}
       >
-        <div className="content">
-          <p>
-            <Link href="/security-search" prefetch={true}>
-              <a>Security search</a>
-            </Link>
-          </p>
-
-          <ul>
-            {data &&
-              data.allSecurities &&
-              data.allSecurities.map(s => (
-                <li key={s.id}>
-                  <Link key={s.id} href={`/security?id=${s.id}`} as={`/security/${s.id}`}>
-                    <a>{s.name}</a>
-                  </Link>
-                </li>
-              ))}
-          </ul>
-          <p>
-            <Link href="/horizon">
-              <a>Horizon graph</a>
-            </Link>
-          </p>
-          <p>
-            <Link href="/circular">
-              <a>Circular graph</a>
-            </Link>
-          </p>
-          <p>
-            <Link href="/stock">
-              <a>Stock graph</a>
-            </Link>
-          </p>
-          <p>
-            <Link href="/gauge">
-              <a>Gauge graph</a>
-            </Link>
-          </p>
-          <p>
-            <Link href="/negative">
-              <a>Negative graph</a>
-            </Link>
-          </p>
-          <p>
-            <Link href="/balance">
-              <a>Balance graph</a>
-            </Link>
-          </p>
-          <p>
-            <Link href="/area">
-              <a>Area graph</a>
-            </Link>
-          </p>
-        </div>
-      </LayoutBasic>
+        <SecuritySearch />
+      </Layout>
     );
   }
 }
-export default Index;
+
+export default SecuritySearchPage;

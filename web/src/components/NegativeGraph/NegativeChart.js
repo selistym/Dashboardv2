@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import * as d3 from 'd3';
 
 class BarGroup extends React.Component {
@@ -33,20 +34,17 @@ class BarGroup extends React.Component {
 
   drawBars() {
     const { data, xScale, bandwidth, step_data, identy } = this.state;
-    let rsz = 10,
-      durate = 1000;
+    let durate = 1000;
     let yScale = d3
       .scaleBand()
       .domain(data.values.slice(0, 4).map(d => d.label))
       .rangeRound([0, bandwidth]);
     let step = 100 / step_data.range;
     let bar_data = data.values.slice(0, 4).map(d => {
-      d.label = d.label;
       d.value = +d.value;
       return d;
     });
     let ebitdas = data.values.slice(4, 5).map(d => {
-      d.label = d.label;
       d.value = +d.value;
       return d;
     });
@@ -62,7 +60,7 @@ class BarGroup extends React.Component {
       .data(bar_data)
       .enter()
       .append('path')
-      .attr('class', d => 'negative' + identy)
+      .attr('class', 'negative' + identy)
       .attr('fill', d => color(d.label))
       .attr('opacity', d => (d.label.includes('Ebitda') ? 0 : 1))
       .attr('d', d => {
@@ -295,8 +293,6 @@ class Axis extends React.Component {
   getRange(data) {
     let arr = [];
     let cnv_data = data.map(d => {
-      d.year = d.year;
-      d.values = d.values;
       return d;
     });
 
@@ -370,4 +366,59 @@ class NegativeChart extends Component {
   }
 }
 
+BarGroup.propTypes = {
+  data: PropTypes.shape({
+    year: PropTypes.number.isRequired,
+    values: PropTypes.arrayOf(
+      PropTypes.shape({
+        label: PropTypes.string.isRequired,
+        value: PropTypes.number
+      })
+    )
+  }).isRequired,
+  bandwidth: PropTypes.number.isRequired,
+  xScale: PropTypes.func.isRequired,
+  step_data: PropTypes.object.isRequired,
+  identy: PropTypes.number.isRequired
+};
+
+Axis.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      year: PropTypes.number.isRequired,
+      values: PropTypes.arrayOf(
+        PropTypes.shape({
+          label: PropTypes.string.isRequired,
+          value: PropTypes.number
+        })
+      )
+    })
+  ).isRequired,
+  svgDimen: PropTypes.shape({
+    width: PropTypes.number.isRequired,
+    height: PropTypes.number.isRequired
+  }),
+  margins: PropTypes.shape({
+    left: PropTypes.number.isRequired,
+    top: PropTypes.number.isRequired,
+    right: PropTypes.number.isRequired,
+    bottom: PropTypes.number.isRequired
+  })
+};
+
+NegativeChart.propTypes = {
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      year: PropTypes.number.isRequired,
+      values: PropTypes.arrayOf(
+        PropTypes.shape({
+          label: PropTypes.string.isRequired,
+          value: PropTypes.number
+        })
+      )
+    })
+  ).isRequired
+};
 export default NegativeChart;

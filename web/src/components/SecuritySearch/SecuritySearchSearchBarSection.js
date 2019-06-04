@@ -3,7 +3,15 @@ import AwesomeDebouncePromise from 'awesome-debounce-promise';
 
 import { AppContext } from '../AppContext';
 
-// todo: add the search icon and spinner back
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
+
+import '../../styles/main.sass';
+
+library.add(faSpinner);
+library.add(faSearch);
+
 const SecuritySearchSearchBarSection = () => {
   const { store, dispatch } = useContext(AppContext);
   const inputEl = useRef(store.securityFilterText);
@@ -24,11 +32,11 @@ const SecuritySearchSearchBarSection = () => {
       >
         <p className="control has-icons-left" style={{ width: 'inherit', paddingRight: 'inherit' }}>
           <input
-            className="input"
+            className="inputText"
             type="text"
             onChange={() => asyncDispatchDebounced()}
             ref={inputEl}
-            placeholder="Search a specific stock... "
+            placeholder="Search a specific security... "
           />
         </p>
         <button className="button" style={{ backgroundColor: '#b9b9b9', color: 'white', fontStyle: 'italic' }}>

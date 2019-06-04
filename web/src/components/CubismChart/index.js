@@ -1,11 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import ResponsiveWrapper from './ResponsiveWrapper';
-import { context, version } from '../../util/cubism-es.esm';
+import PropTypes from 'prop-types';
+import { context } from '../../lib/cubism-es.esm';
 import * as d3 from 'd3';
 
-function CubismChart({ data, parentWidth }) {
+const CubismChart = ({ data, parentWidth }) => {
   const demoRef = useRef(null);
-  let dataRangeLen = 0;
+
   const getDateArray = (_start, _end) => {
     var arr = new Array(),
       dt = new Date(_start);
@@ -18,16 +19,17 @@ function CubismChart({ data, parentWidth }) {
   };
   const getConvertData = input_data => {
     let toDate = input_data[0].globalQuotes[input_data[0].globalQuotes.length - 1].date;
-    let fromDate = new Date(new Date(toDate).getTime() - parentWidth * 24 * 3600 * 1000).toISOString().slice(0, 10);    
-    
+    let fromDate = new Date(new Date(toDate).getTime() - parentWidth * 24 * 3600 * 1000).toISOString().slice(0, 10);
+
+    // let fromDate = (toDate.split('-')[0] - 2) + '-' + toDate.split('-')[1] + '-' + toDate.split('-')[2];
     let c_data = [],
       prv_data = { date: fromDate, close: 0, is_null: true };
     let dateRange = getDateArray(new Date(fromDate), new Date(toDate));
-    dataRangeLen = dateRange.length;
+
     for (let p = 0; p < input_data.length; p++) {
       prv_data = { date: fromDate, close: 0, is_null: true };
       let c_el = {
-        ticker: input_data[p].ticker,
+        ticker: input_data[p].name,
         globalQuotes: []
       };
       for (let i = 0; i < dateRange.length; i++) {
@@ -98,10 +100,10 @@ function CubismChart({ data, parentWidth }) {
     var bodyRect = document.body.getBoundingClientRect(),
       elemRect = demoRef.current.getBoundingClientRect(),
       offset_top = elemRect.top - bodyRect.top,
-      offset_left = elemRect.left - bodyRect.left;    
+      offset_left = elemRect.left - bodyRect.left;
 
     d.selectAll('.line')
-      .style('margin-left', (offset_left - 20) + 'px')
+      .style('margin-left', offset_left - 20 + 'px')
       .style('top', offset_top + 'px')
       .style('height', 300 + 'px')
       .style('width', '1px')
@@ -128,7 +130,7 @@ function CubismChart({ data, parentWidth }) {
             .style('top', offset_top + 'px')
             .style('height', 300 + 'px');
           if (i == null) {
-           return null;
+            return null;
           } else {
             if (i > 60) return c.size() - i + 'px';
             else return c.size() - 60 - i + 'px';
@@ -144,13 +146,13 @@ function CubismChart({ data, parentWidth }) {
       }
       return;
     }
-    function stock(datum) {      
+    function stock(datum) {
       var value = 0,
         values = [],
         i = 0,
         last;
 
-      return c.metric(function(start, stop, step, callback) {        
+      return c.metric(function(start, stop, step, callback) {
         (start = +start), (stop = +stop);
         let initValue = datum.globalQuotes[0].close == 0 ? getNearest(datum.globalQuotes) : datum.globalQuotes[0].close,
           showValue;
@@ -170,7 +172,8 @@ function CubismChart({ data, parentWidth }) {
           showValue = ((value - initValue) / initValue).toFixed(2);
           values.push(showValue);
           i++;
-        }        
+        }
+        // console.log(values, ' values')
 
         callback(null, (values = values.slice((start - stop) / step)));
       }, datum.ticker);
@@ -239,7 +242,7 @@ function CubismChart({ data, parentWidth }) {
         .horizon .title {
           left: 0;
           font-size: 1rem;
-          font-weight: 300;
+          font-weight: 800;
         }
         .horizon .value {
           bottom: 0;
@@ -254,6 +257,27 @@ function CubismChart({ data, parentWidth }) {
       `}</style>
     </div>
   );
+}
+
+CubismChart.propTypes = {
+  parentWidth: PropTypes.number.isRequired,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      security: PropTypes.objectOf(
+        PropTypes.shape({
+          globalQuotes: PropTypes.arrayOf(
+            PropTypes.shape({
+              date: PropTypes.string,
+              close: PropTypes.number
+            })
+          ).isRequired,
+          id: PropTypes.string.isRequired,
+          name: PropTypes.string.isRequired,
+          ticker: PropTypes.string.isRequired
+        })        
+      )
+    })
+  )
 }
 
 export default ResponsiveWrapper(CubismChart);

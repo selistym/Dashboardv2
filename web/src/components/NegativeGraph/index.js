@@ -1,12 +1,13 @@
 import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
 import ResponsiveWrapper from './ResponsiveWrapper';
-import * as d3 from 'd3';
+
 import NegativeChart from './NegativeChart';
 
 class NegativeGraph extends Component {
   constructor(props) {
     super(props);
-    const { parentWidth, parentHeight, data } = this.props;
+    const { parentWidth, data } = this.props;
     if (this.isEmpty(data)) {
       this.state = {
         is_empty: true
@@ -22,7 +23,7 @@ class NegativeGraph extends Component {
   }
   componentDidMount() {}
   componentWillReceiveProps(nextProps) {
-    const { parentWidth, parentHeight, data } = nextProps;
+    const { parentWidth, data } = nextProps;
     if (this.isEmpty(data)) {
       this.setState = {
         is_empty: true
@@ -39,7 +40,7 @@ class NegativeGraph extends Component {
   isEmpty(data) {
     return !data ? true : false;
   }
-  preCorrection(data) {}
+  preCorrection() {}
   render() {
     if (this.state.is_empty) {
       <Fragment>No data</Fragment>;
@@ -47,7 +48,7 @@ class NegativeGraph extends Component {
       const { data } = this.state;
       let cap_data = [
         {
-          year: '2019',
+          year: data.LY,
           values: [
             { label: 'NetoperatingCashFlowLY', value: data.NetoperatingCashFlowLY ? data.NetoperatingCashFlowLY : 0 },
             { label: 'NetInvestingCashFlowLY', value: data.NetInvestingCashFlowLY ? data.NetInvestingCashFlowLY : 0 },
@@ -57,7 +58,7 @@ class NegativeGraph extends Component {
           ]
         },
         {
-          year: '2018',
+          year: data.LY - 1,
           values: [
             {
               label: 'NetoperatingCashFlowLYMin1',
@@ -76,7 +77,7 @@ class NegativeGraph extends Component {
           ]
         },
         {
-          year: '2017',
+          year: data.LY - 2,
           values: [
             {
               label: 'NetoperatingCashFlowLYMin2',
@@ -95,7 +96,7 @@ class NegativeGraph extends Component {
           ]
         },
         {
-          year: '2016',
+          year: data.LY - 3,
           values: [
             {
               label: 'NetoperatingCashFlowLYMin3',
@@ -114,7 +115,7 @@ class NegativeGraph extends Component {
           ]
         },
         {
-          year: '2015',
+          year: data.LY - 4,
           values: [
             {
               label: 'NetoperatingCashFlowLYMin4',
@@ -143,4 +144,41 @@ class NegativeGraph extends Component {
   }
 }
 
+NegativeGraph.propTypes = {
+  parentWidth: PropTypes.number.isRequired,
+  data: PropTypes.shape({
+    DividendPayOutLY: PropTypes.number,
+    DividendPayOutLYMin1: PropTypes.number,
+    DividendPayOutLYMin2: PropTypes.number,
+    EbitdaLY: PropTypes.number,
+    EbitdaLYMin1: PropTypes.number,
+    EbitdaLYMin2: PropTypes.number,
+    EbitdaLYMin3: PropTypes.number,
+    EbitdaLYMin4: PropTypes.number,
+    LY: PropTypes.number,
+    NetFinancingCashFlowLY: PropTypes.number,
+    NetFinancingCashFlowLYMin1: PropTypes.number,
+    NetFinancingCashFlowLYMin2: PropTypes.number,
+    NetFinancingCashFlowLYMin3: PropTypes.number,
+    NetFinancingCashFlowLYMin4: PropTypes.number,
+    NetInvestingCashFlowLY: PropTypes.number,
+    NetInvestingCashFlowLYMin1: PropTypes.number,
+    NetInvestingCashFlowLYMin2: PropTypes.number,
+    NetInvestingCashFlowLYMin3: PropTypes.number,
+    NetInvestingCashFlowLYMin4: PropTypes.number,
+    NetchangeInCashLY: PropTypes.number,
+    NetchangeInCashLYMin1: PropTypes.number,
+    NetchangeInCashLYMin2: PropTypes.number,
+    NetchangeInCashLYMin3: PropTypes.number,
+    NetchangeInCashLYMin4: PropTypes.number,
+    NetoperatingCashFlowLY: PropTypes.number,
+    NetoperatingCashFlowLYMin1: PropTypes.number,
+    NetoperatingCashFlowLYMin2: PropTypes.number,
+    NetoperatingCashFlowLYMin3: PropTypes.number,
+    NetoperatingCashFlowLYMin4: PropTypes.number,
+    SalesOrRevenueLY: PropTypes.number,
+    SalesOrRevenueLYMin1: PropTypes.number,
+    SalesOrRevenueLYMin2: PropTypes.number
+  })
+};
 export default ResponsiveWrapper(NegativeGraph);

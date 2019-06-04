@@ -1,12 +1,13 @@
 import gql from 'graphql-tag';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { AppContext } from '../AppContext';
 import { Query } from 'react-apollo';
 import ErrorMessage from '../ErrorMessage';
 import Loading from '../Loading';
-import SecuritiesSection from './SecuritiesSection'
+import SecuritiesSection from './SecuritiesSection';
+import { usePortfolio } from '../../lib/custom-hooks';
 
-const SECURITIES_PER_PAGE = 10;
+const SECURITIES_PER_PAGE = 5;
 
 // you will export this query because when you create the mutation,
 // you can refetch this query when doing mutations like add to portfolio
@@ -18,11 +19,14 @@ export const SECURITIES_QUERY = gql`
       code
       name
     }
-    securities(filter: $filter, offset: $offset, limit: $limit) @connection(key: "security", filter: ["filter"]) {
+    securities(filter: $filter, offset: $offset, limit: $limit) @connection(key: "mainFilter") {
       id
       name
       sector
       currency
+      country {
+        code
+      }
       liveData {
         last
         changePercent
@@ -35,13 +39,12 @@ export const SECURITIES_QUERY = gql`
         Growth
         Value
       }
-      isInLocalPortfolio @client
     }
   }
 `;
 
 export const SECURITIES_SUBSCRIPTION = gql`
-  subscription SecuritySearchSubscription($securityIds: [String]!) {
+  subscription SecuritiesSearchSubscription($securityIds: [String]!) {
     securityUpdated(securityIds: $securityIds) {
       id
       liveData {
@@ -58,7 +61,9 @@ export const SECURITIES_SUBSCRIPTION = gql`
 
 const SecuritiesContainer = () => {
   let { store } = useContext(AppContext);
-  console.log(store)
+
+  const { togglePortfolio, isInPortfolio } = usePortfolio({});
+
   return (
     <Query
       query={SECURITIES_QUERY}
@@ -67,15 +72,20 @@ const SecuritiesContainer = () => {
           name: store.securityFilterText,
           year: store.securityFilterYear,
           sectors: store.securityFilterSector,
-          marketSize: store.securityFilterMarketSize
+          marketSize: store.securityFilterMarketSize,
+          country: store.securityFilterCountry
         },
         offset: 0,
         limit: SECURITIES_PER_PAGE
       }}
+      pollInterval={500}
     >
       {({ loading, error, data: { securities }, fetchMore, subscribeToMore }) => {
         if (error) return <ErrorMessage message="Error loading securities." />;
         if (loading) return <Loading />;
+        if (securities === undefined) {
+          return <p>Undefined securities</p>;
+        }
 
         const loadMoreSecurities = () => {
           fetchMore({
@@ -95,10 +105,12 @@ const SecuritiesContainer = () => {
         };
 
         const subscribeToSecurities = () => {
-          subscribeToMore({
-            document: SECURITIES_SUBSCRIPTION,
-            variables: { securityIds: securities.map(s => s.id) }
-          });
+          if (securities !== undefined) {
+            subscribeToMore({
+              document: SECURITIES_SUBSCRIPTION,
+              variables: { securityIds: securities.map(s => s.id) }
+            });
+          }
         };
 
         return (
@@ -106,6 +118,8 @@ const SecuritiesContainer = () => {
             securities={securities}
             loadMoreSecurities={loadMoreSecurities}
             subscribeToSecurities={subscribeToSecurities}
+            togglePortfolio={togglePortfolio}
+            isInPortfolio={isInPortfolio}
           />
         );
       }}
@@ -114,6 +128,5 @@ const SecuritiesContainer = () => {
 };
 
 SecuritiesContainer.propTypes = {};
-
 
 export default SecuritiesContainer;

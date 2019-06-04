@@ -1,6 +1,8 @@
 import React from 'react';
-import { render } from 'react-testing-library';
+import { render } from 'react-testing-library/typings';
 import App from '../pages/index.js';
+
+require('jest-dom/extend-expect');
 
 jest.mock('next/link', () => {
   return ({ children }) => {
@@ -23,14 +25,15 @@ const session = {
 };
 
 // skip this when the next.js development environment is running
-describe('index', () => {
+describe.skip('index', () => {
   it('app shows navbar when navMenu is true', () => {
-    const { getByPlaceholderText } = render(<App session={{ user: null }} navMenu={true} />);
+    const { getByPlaceholderText, container } = render(<App session={{ user: null }} navMenu={true} />);
     expect(getByPlaceholderText(/zoek naar nieuws, aandelen of een specifiek dossier/i)).toBeDefined();
+    expect(container.firstChild).toHaveClass('navbar');
+    expect(container.firstChild.classList.contains('navbar')).toBe(true);
   });
   it('app does not show navbar when navMenu is false', () => {
-    const { queryByText } = render(<App session={session} navMenu={false} />);
-
-    expect(queryByText(/pruts/)).toBeNull();
+    const { container } = render(<App session={session} navMenu={false} />);
+    expect(container.firstChild.classList.contains('navbar')).toBe(false);
   });
 });

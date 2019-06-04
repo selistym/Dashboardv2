@@ -10,7 +10,6 @@ import ApolloClient from 'apollo-client/index';
 import { InMemoryCache } from 'apollo-cache-inmemory/lib/index';
 import { HttpLink } from 'apollo-link-http/lib/index';
 import { ApolloProvider } from 'react-apollo/index';
-import gql from 'graphql-tag';
 
 import { AppProvider } from '../AppContext';
 import SecuritySearch from './index';
@@ -27,34 +26,7 @@ const client = new ApolloClient({
   ssrMode: true,
   link,
   fetch,
-  cache,
-  resolvers: {
-    Security: {
-      isInLocalPortfolio: (security, _args, { cache }) => {
-        // console.log('the id is: ', security.id);
-        // const { cartItems } = cache.readQuery({
-        //   query: GET_CART_ITEMS
-        // });
-        //return cartItems.includes(launch.id);
-        // todo: make some sensitive defaults
-        return false;
-      }
-    },
-    Mutation: {
-      toggleLocalPortfolio: (_root, variables, { cache, getCacheKey }) => {
-        const id = getCacheKey({ __typename: 'Security', id: variables.id });
-        const fragment = gql`
-          fragment localPortfolio on Security {
-            isInLocalPortfolio
-          }
-        `;
-        const security = cache.readFragment({ fragment, id });
-        const data = { ...security, isInLocalPortfolio: !security.isInLocalPortfolio };
-        cache.writeData({ id, data });
-        return null;
-      }
-    }
-  }
+  cache
 });
 
 describe('SecuritySearch', () => {

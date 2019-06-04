@@ -1,7 +1,9 @@
-import gql from 'graphql-tag';
+import getConfig from 'next/config';
+const { publicRuntimeConfig } = getConfig();
 
 import { ApolloClient } from 'apollo-client';
-import { ApolloLink, split } from 'apollo-link'
+import { ApolloLink, split } from 'apollo-link';
+import { setContext } from 'apollo-link-context';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
 import { WebSocketLink } from 'apollo-link-ws';
@@ -10,15 +12,17 @@ import { getMainDefinition } from 'apollo-utilities';
 import fetch from 'isomorphic-unfetch';
 
 if (!process.browser) {
-  global.fetch = fetch
+  global.fetch = fetch;
 }
 
 let apolloClient = null;
 
-function create(initialState) {
+function create(initialState, { accessToken }) {
+
+  const cache = new InMemoryCache().restore(initialState || {});
+
   const httpLink = new HttpLink({
-    uri: 'https://vde-app4.app.veb.net/graphql',
-    //uri: 'http://localhost:4070/graphql',
+    uri: publicRuntimeConfig.graphApi,
     opts: {
       credentials: 'same-origin'
     },
@@ -26,14 +30,29 @@ function create(initialState) {
     fetch: !process.browser && fetch
   });
 
+  const authLink = setContext((_, { headers }) => {
+    // get the authentication token from local storage if it exists
+    // return the headers to the context so httpLink can read them
+
+    return {
+      headers: {
+        ...headers,
+        authorization: accessToken ? `Bearer ${accessToken}` : ''
+      }
+    };
+  });
+
   const wsLink =
     process.browser &&
     new WebSocketLink({
-      uri: 'wss://vde-app4.app.veb.net/graphql',
-      //uri: 'ws://localhost:4070/graphql',
+      uri: publicRuntimeConfig.graphWsApi,
       options: {
-        reconnect: true
-      }
+        reconnect: true,
+        connectionParams: {
+          authToken: accessToken
+        }
+      },
+      credentials: 'same-origin'
     });
 
   const link = process.browser
@@ -49,54 +68,24 @@ function create(initialState) {
     : httpLink;
 
   return new ApolloClient({
+    cache,
+    link: ApolloLink.from([authLink, link]),
     connectToDevTools: process.browser,
     ssrMode: !process.browser, // Disables forceFetch on the server (so queries are only run once)
-    link:  ApolloLink.from([link]),
-    cache: new InMemoryCache().restore(initialState || {}),
-    typeDefs: gql`
-      extend type Security {
-        isInLocalPortfolio: Boolean!
-      }
-    `,
-    resolvers: {
-      Security: {
-        isInLocalPortfolio: (security, _args, { cache }) => {
-          // console.log('the id is: ', security.id);
-          // const { cartItems } = cache.readQuery({
-          //   query: GET_CART_ITEMS
-          // });
-          //return cartItems.includes(launch.id);
-          return false;
-        }
-      },
-      Mutation: {
-        toggleLocalPortfolio: (_root, variables, { cache, getCacheKey }) => {
-          const id = getCacheKey({ __typename: 'Security', id: variables.id });
-          const fragment = gql`
-            fragment localPortfolio on Security {
-              isInLocalPortfolio
-            }
-          `;
-          const security = cache.readFragment({ fragment, id });
-          const data = { ...security, isInLocalPortfolio: !security.isInLocalPortfolio };
-          cache.writeData({ id, data });
-          return null;
-        }
-      }
-    }
+    credentials: 'same-origin'
   });
 }
 
-export default function initApollo(initialState) {
+export default function initApollo(initialState, options) {
   // Make sure to create a new client for every server-side request so that data
   // isn't shared between connections (which would be bad)
   if (!process.browser) {
-    return create(initialState);
+    return create(initialState, options);
   }
 
   // Reuse client on the client-side
   if (!apolloClient) {
-    apolloClient = create(initialState);
+    apolloClient = create(initialState, options);
   }
 
   return apolloClient;

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import SingleSlider from './SingleSlider';
+import PropTypes from 'prop-types';
 import * as d3 from 'd3';
 
 class Chart extends Component {
@@ -189,7 +190,6 @@ class Bar extends Component {
     const { svgDimen, bar_height, data, identy } = this.state;
 
     let bar_width = svgDimen.width * 0.25,
-      durate = 1000,
       rate = bar_height / 100;
     let step = 0;
 
@@ -300,11 +300,11 @@ class BalanceChart extends Component {
     });
   }
   parseYear(data) {
-    return data.map(d => parseInt(d.Date.split('-')[0]));
+    return data.map(d => d.Date.split('-')[0]);
   }
   handleChangeYear = curYear => {
     const { data } = this.state;
-    let years = data.map(d => parseInt(d.Date.split('-')[0]));
+    let years = data.map(d => d.Date.split('-')[0]);
     for (let i = 0; i < data.length; i++) {
       if (years[i] == curYear) {
         this.setState({
@@ -333,4 +333,47 @@ class BalanceChart extends Component {
   }
 }
 
+//TypeChecking
+Chart.propTypes = {
+  data: PropTypes.shape({
+    CurrentAssetsNoCash: PropTypes.number.isRequired,
+    Date: PropTypes.string.isRequired,
+    Goodwill: PropTypes.number.isRequired,
+    NonCurrentAssetsNoGoodwill: PropTypes.number.isRequired,
+    TotalCash: PropTypes.number.isRequired,
+    TotalEquity: PropTypes.number.isRequired,
+    TotalLiabilities: PropTypes.number.isRequired,
+    TotalLiabilitiesStockholdersEquity: PropTypes.number.isRequired
+  }).isRequired,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired
+};
+
+Bar.propTypes = {
+  transX: PropTypes.number.isRequired,
+  bar_height: PropTypes.number.isRequired,
+  svgDimen: PropTypes.shape({
+    width: PropTypes.number.isRequired,
+    height: PropTypes.number.isRequired
+  }).isRequired,
+  identy: PropTypes.string.isRequired,
+  data: PropTypes.arrayOf(PropTypes.number).isRequired
+};
+
+BalanceChart.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      CurrentAssetsNoCash: PropTypes.number.isRequired,
+      Date: PropTypes.string.isRequired,
+      Goodwill: PropTypes.number.isRequired,
+      NonCurrentAssetsNoGoodwill: PropTypes.number.isRequired,
+      TotalCash: PropTypes.number.isRequired,
+      TotalEquity: PropTypes.number.isRequired,
+      TotalLiabilities: PropTypes.number.isRequired,
+      TotalLiabilitiesStockholdersEquity: PropTypes.number.isRequired
+    }).isRequired
+  ).isRequired,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired
+};
 export default BalanceChart;

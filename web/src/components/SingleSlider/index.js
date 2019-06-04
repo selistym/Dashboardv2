@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import * as d3 from 'd3';
 
 const SingleSlider = props => {
@@ -24,7 +25,37 @@ const SingleSlider = props => {
     event.preventDefault();
     setOveredObj(event.target.parentNode.className.baseVal);
   };
-  useEffect(() => drawAxis(), [width, height, years]);
+
+  const yearStr = JSON.stringify(years);
+  useEffect(() => {
+    const drawAxis = () => {
+      d3.select(axisRef.current)
+        .call(
+          d3
+            .axisBottom()
+            .scale(xScale)
+            .ticks(years.length)
+            .tickFormat(d3.format(''))
+        )
+        .selectAll('text')
+        .style('opacity', d => (d == first || d == last ? 1 : 0))
+        .style('font-size', '14px')
+        .style('font-weight', 600)
+        .style('fill', 'grey')
+        .select('.domain')
+        .remove();
+      d3.select(axisRef.current)
+        .select('path')
+        .style('opacity', '0');
+      d3.select(axisRef.current)
+        .selectAll('line')
+        .style('opacity', '0');
+      d3.select(axisRef.current)
+        .select('path')
+        .style('d', 'none');
+    };
+    drawAxis();
+  }, [width, height, yearStr, first, last, xScale, years.length]);
   useEffect(() => controlHandlers());
 
   const controlHandlers = () => {
@@ -60,32 +91,7 @@ const SingleSlider = props => {
       return Math.round(xScale.invert(mouseValue));
     }
   };
-  const drawAxis = () => {
-    d3.select(axisRef.current)
-      .call(
-        d3
-          .axisBottom()
-          .scale(xScale)
-          .ticks(years.length)
-          .tickFormat(d3.format(''))
-      )
-      .selectAll('text')
-      .style('opacity', d => (d == first || d == last ? 1 : 0))
-      .style('font-size', '14px')
-      .style('font-weight', 600)
-      .style('fill', 'grey')
-      .select('.domain')
-      .remove();
-    d3.select(axisRef.current)
-      .select('path')
-      .style('opacity', '0');
-    d3.select(axisRef.current)
-      .selectAll('line')
-      .style('opacity', '0');
-    d3.select(axisRef.current)
-      .select('path')
-      .style('d', 'none');
-  };
+
   return (
     <svg className="singleSlider" width={width} height={height}>
       <g className="XAxisArea" ref={axisRef} transform={`translate(${margins.left}, 25)`} />
@@ -103,5 +109,13 @@ const SingleSlider = props => {
     </svg>
   );
 };
+
+SingleSlider.propTypes = {
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+  years: PropTypes.array.isRequired,
+  initYear: PropTypes.number.isRequired,
+  onChangeYear: PropTypes.func.isRequired
+}
 
 export default SingleSlider;

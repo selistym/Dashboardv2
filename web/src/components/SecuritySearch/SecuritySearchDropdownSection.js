@@ -1,19 +1,14 @@
 import React, { useContext } from 'react';
 import { AppContext } from '../AppContext';
 import CustomDropdown from '../CustomDropdown';
-import SingleSlider from '../SingleSlider';
 
 const SecuritySearchDropdownSection = () => {
   let { store, dispatch } = useContext(AppContext);
-
+  
   //for security filter checkboxs
   const securityFilterCheckboxes = [
-    [
-      { code: 'LARGE', name: 'Large Caps' },
-      { code: 'MEDIUM', name: 'Medium Caps' },
-      { code: 'SMALL', name: 'Small Caps' }
-    ],
-    [{ code: 'B0', name: 'B0' }, { code: 'B1', name: 'B1' }, { code: 'B2', name: 'B2' }, { code: 'B3', name: 'B3' }],
+    store.allMarketSizes,
+    store.allCountries,
     [
       { code: 'Dividend', name: 'Dividend' },
       { code: 'Balance', name: 'Balance' },
@@ -23,12 +18,12 @@ const SecuritySearchDropdownSection = () => {
     store.allSectors
   ];
 
-  const titles = ['Market Size', 'Values', 'Areas', 'Sectors'];
-  const years = [2013, 2014, 2015, 2016, 2017, 2018];
+  const titles = ['Market Size', 'Country', 'Area', 'Sector'];
+  //const years = [2013, 2014, 2015, 2016, 2017, 2018];
 
-  const handleFilterYearChange = async year => {
-    await dispatch({ type: 'CHANGE_FILTER_YEAR', year: year });
-  };
+  // const handleFilterYearChange = async year => {
+  //   await dispatch({ type: 'CHANGE_FILTER_YEAR', year: year });
+  // };
   const handleDropDownItemChange = (filterAction, checkedItem) => {
     dispatch({ type: filterAction, filter: checkedItem });
   };
@@ -53,7 +48,7 @@ const SecuritySearchDropdownSection = () => {
           items={securityFilterCheckboxes[1]}
           index={1}
           hasSlider={false}
-          initial={store.securityFilterValue}
+          initial={store.securityFilterCountry}
           onDropDownChange={(e, b) => handleDropDownItemChange(e, b)}
         />
       </div>
@@ -79,7 +74,7 @@ const SecuritySearchDropdownSection = () => {
           onDropDownChange={handleDropDownItemChange}
         />
       </div>
-      <div className="column">
+      {/* <div className="column">
         <SingleSlider
           onChangeYear={handleFilterYearChange}
           initYear={store.securityFilterYear}
@@ -87,7 +82,7 @@ const SecuritySearchDropdownSection = () => {
           height={70}
           years={years}
         />
-      </div>
+      </div> */}
     </div>
   );
 };

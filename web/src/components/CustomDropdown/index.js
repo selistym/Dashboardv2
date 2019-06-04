@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
+import PropTypes from 'prop-types';
 import RangeSlider from './RangeSlider';
 
-const actions = ['CHANGE_FILTER_MARKETSIZE', 'CHANGE_FILTER_VALUE', 'CHANGE_FILTER_AREA', 'CHANGE_FILTER_SECTOR'];
+const actions = ['CHANGE_FILTER_MARKETSIZE', 'CHANGE_FILTER_COUNTRY', 'CHANGE_FILTER_AREA', 'CHANGE_FILTER_SECTOR'];
 
 const DropdownItem = props => {
   const { parent_index, index, item, checked, onDropDownItemChange } = props;
@@ -39,7 +40,7 @@ const DropdownItem = props => {
             </div>
           </>
         ),
-        [checked]
+        [checked, index, item.name, parent_index]
       )}
     </div>
   );
@@ -48,7 +49,15 @@ const DropdownItem = props => {
 const CustomDropdown = props => {
   const { title, items, index, initial, hasSlider, onDropDownChange } = props;
 
-  const onViewAll = () => onDropDownChange(actions[index], items.map(d => d.code));
+  const onViewAll = () => {
+    let t_items = items.map(d => d.code);
+    if (JSON.stringify(initial.sort()) == JSON.stringify(t_items.sort())) {
+      //deselect all
+      onDropDownChange(actions[index], []);
+    } else {
+      onDropDownChange(actions[index], t_items);
+    }
+  };
 
   return (
     <div className="dropdown">
@@ -65,7 +74,9 @@ const CustomDropdown = props => {
             style={{ width: '190px', height: '280px', overflowY: 'scroll', overflowX: 'hidden' }}
           >
             <button className="button is-small pull-right has-margin-right-xs" onClick={() => onViewAll()}>
-              {'select all'}
+              {JSON.stringify(initial.sort()) == JSON.stringify(items.map(d => d.code).sort())
+                ? 'Deselect all'
+                : 'Select all'}
             </button>
             {items.map((item, i) => (
               <DropdownItem
@@ -89,4 +100,28 @@ const CustomDropdown = props => {
   );
 };
 
+DropdownItem.propTypes = {
+  parent_index: PropTypes.number.isRequired,
+  index: PropTypes.number.isRequired,
+  item: PropTypes.shape({
+    code: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired
+  }),
+  checked: PropTypes.bool,
+  onDropDownItemChange: PropTypes.func.isRequired
+};
+
+CustomDropdown.propTypes = {
+  title: PropTypes.string.isRequired,
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      code: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired
+    })
+  ).isRequired,
+  index: PropTypes.number.isRequired,
+  initial: PropTypes.array.isRequired,
+  hasSlider: PropTypes.bool,
+  onDropDownChange: PropTypes.func.isRequired
+};
 export default CustomDropdown;

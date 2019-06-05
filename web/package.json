@@ -45,7 +45,7 @@
     "intl": "^1.2.5",
     "isomorphic-unfetch": "^3.0.0",
     "lusca": "^1.6.1",
-    "next": "^8.0.4",
+    "next": "^8.1.0",
     "next-routes": "^1.4.2",
     "node-sass": "^4.11.0",
     "passport": "^0.4.0",

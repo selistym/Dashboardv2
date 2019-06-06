@@ -1,12 +1,12 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ResponsiveWrapper from './ResponsiveWrapper';
 import PropTypes from 'prop-types';
 import { context } from '../../lib/cubism-es.esm';
+import Link from 'next/link';
 import * as d3 from 'd3';
 
-const CubismChart = ({ data, parentWidth }) => {
-  const demoRef = useRef(null);
-
+const CubismChart = ({ data, parentWidth }) => {  
+  const demoRef = useRef(null);  
   const getDateArray = (_start, _end) => {
     var arr = new Array(),
       dt = new Date(_start);
@@ -94,7 +94,7 @@ const CubismChart = ({ data, parentWidth }) => {
       .select(demoRef.current)
       .append('div')
       .attr('class', 'rule')
-      .attr('id', 'rule');
+      .attr('id', 'rule')
     c.rule().render(d);
 
     var bodyRect = document.body.getBoundingClientRect(),
@@ -116,12 +116,14 @@ const CubismChart = ({ data, parentWidth }) => {
       .enter()
       .insert('div', '.bottom')
       .attr('class', 'horizon')
-      .style('height', '50px');
+      .style('height', '50px')
 
     c.horizon()
       .format(d3.format('+,.2p'))
       .render(d3.selectAll('.horizon'));
-
+    
+    d3.selectAll('.title')
+      .html((d, i) => `<a href="/security/${data[i].id}">${data[i].name}</a>`)
     c.on('focus', i => {
       d3.selectAll('.value')
         .style('color', 'black')
@@ -135,9 +137,8 @@ const CubismChart = ({ data, parentWidth }) => {
             if (i > 60) return c.size() - i + 'px';
             else return c.size() - 60 - i + 'px';
           }
-        });
+        });      
     });
-
     function getNearest(arr) {
       for (let i = 0; i < arr.length; i++) {
         if (arr[i].close != 0) {
@@ -154,8 +155,7 @@ const CubismChart = ({ data, parentWidth }) => {
 
       return c.metric(function(start, stop, step, callback) {
         (start = +start), (stop = +stop);
-        let initValue = datum.globalQuotes[0].close == 0 ? getNearest(datum.globalQuotes) : datum.globalQuotes[0].close,
-          showValue;
+        let initValue = datum.globalQuotes[0].close == 0 ? getNearest(datum.globalQuotes) : datum.globalQuotes[0].close,showValue;
         datum.globalQuotes[0].close = initValue;
         let prv_data = initValue;
         for (let i = 1; i < datum.globalQuotes.length; i++) {
@@ -179,83 +179,89 @@ const CubismChart = ({ data, parentWidth }) => {
       }, datum.ticker);
     }
   });
-  return (
-    <div ref={demoRef} style={{ height: '40px' }}>
-      <style jsx global>{`
-        .group {
-          margin-bottom: 1em;
-        }
+  return (    
+      <div ref={demoRef} style={{ height: '40px' }}>
+        <style jsx global>{`
+          .group {
+            margin-bottom: 1em;
+          }
 
-        .axis {
-          font: 10px sans-serif;
-          padding-bottom: 0px;
-          pointer-events: none;
-          z-index: 2;
-        }
+          .axis {
+            font: 10px sans-serif;
+            padding-bottom: 0px;
+            pointer-events: none;
+            z-index: 2;
+          }
 
-        .axis text {
-          -webkit-transition: fill-opacity 250ms linear;
-        }
+          .axis text {
+            -webkit-transition: fill-opacity 250ms linear;
+          }
 
-        .axis path {
-          display: none;
-        }
+          .axis path {
+            display: none;
+          }
 
-        .axis line {
-          stroke: #000;
-          shape-rendering: crispEdges;
-        }
+          .axis line {
+            stroke: #000;
+            shape-rendering: crispEdges;
+          }
 
-        .axis.bottom {
-          background-image: linear-gradient(bottom, #fff 0%, rgba(255, 255, 255, 0) 100%);
-          background-image: -o-linear-gradient(bottom, #fff 0%, rgba(255, 255, 255, 0) 100%);
-          background-image: -moz-linear-gradient(bottom, #fff 0%, rgba(255, 255, 255, 0) 100%);
-          background-image: -webkit-linear-gradient(bottom, #fff 0%, rgba(255, 255, 255, 0) 100%);
-          background-image: -ms-linear-gradient(bottom, #fff 0%, rgba(255, 255, 255, 0) 100%);
-        }
+          .axis.bottom {
+            background-image: linear-gradient(bottom, #fff 0%, rgba(255, 255, 255, 0) 100%);
+            background-image: -o-linear-gradient(bottom, #fff 0%, rgba(255, 255, 255, 0) 100%);
+            background-image: -moz-linear-gradient(bottom, #fff 0%, rgba(255, 255, 255, 0) 100%);
+            background-image: -webkit-linear-gradient(bottom, #fff 0%, rgba(255, 255, 255, 0) 100%);
+            background-image: -ms-linear-gradient(bottom, #fff 0%, rgba(255, 255, 255, 0) 100%);
+          }
 
-        .horizon {
-          overflow: hidden;
-          position: relative;
-        }
+          .horizon {
+            overflow: hidden;
+            position: relative;
+          }
 
-        .horizon {
-        }
+          .horizon {
+          }
 
-        .horizon + .horizon {
-          border-top: none;
-        }
+          .horizon + .horizon {
+            border-top: none;
+          }
 
-        .horizon canvas {
-          display: block;
-          height: 40px;
-        }
+          .horizon canvas {
+            display: block;
+            height: 40px;
+          }
 
-        .horizon .title {
-          bottom: 0;
-          line-height: 40px;
-          margin: 0 6px;
-          position: absolute;
-          white-space: nowrap;
-        }
+          .horizon .title {          
+            bottom: 0;
+            line-height: 40px;
+            margin: 0 6px;
+            position: absolute;
+            white-space: nowrap;
+          }
 
-        .horizon .title {
-          left: 0;
-          font-size: 1rem;
-          font-weight: 800;
-        }
-        .horizon .value {
-          bottom: 0;
-          line-height: 50px;
-          margin: 0 6px 12px 6px;
-          position: absolute;
-          white-space: nowrap;
-        }
-        .horizon .value {
-          right: 0;
-        }
-      `}</style>
-    </div>
+          .horizon .title {
+            left: 0;
+            font-size: 1rem;
+            font-weight: 800;
+          }
+          .horizon .title:hover {
+            color: blue;
+            text-decoration: underline;
+            cursor: pointer;
+          }
+          .horizon .value {
+            bottom: 0;
+            line-height: 50px;
+            margin: 0 6px 12px 6px;
+            position: absolute;
+            white-space: nowrap;
+          }
+          .horizon .value {
+            right: 0;
+          }
+          
+        `}</style>
+      </div>
   );
 }
 

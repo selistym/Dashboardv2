@@ -16,7 +16,7 @@ const Loading = ({ marginTop }) => (
 );
 
 Loading.propTypes = {
-  marginTop: PropTypes.number
+  marginTop: PropTypes.string
 };
 
 export default Loading;

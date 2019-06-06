@@ -147,25 +147,51 @@ const GaugeChart = props => {
           .selectAll('text.label')
           .data(ticks)
           .enter()
-          .append('text')
-          .attr('class', d => {
-            if (d === Math.floor(data_cnv[1] * step)) {
-              return 'gauge-label-branche' + kind;
-            }            
-            if (d === Math.floor(data_cnv[2] * step)) {
-              return 'gauge-label-market' + kind;
-            }
-            return 'gauge-label-normal' + kind;
-          })
+          .append('text')          
           .attr('transform', function(d) {
             let _in = scale(d) - halfPi;
-            let topX = radius * Math.cos(_in),
-                topY = (radius + 10) * Math.sin(_in);
+            let topX = (radius + 5) * Math.cos(_in),
+                topY = (radius + 5) * Math.sin(_in);
             return 'translate(' + topX + ',' + topY + ')';
           })
           .style('text-anchor', d => d < (rmax - rmin) / 2 ? 'end' : 'start')
+          .style('alignment-baseline', d => {
+            if(data_cnv[1] > data_cnv[2] && d < (rmax - rmin) / 2){
+              if (d === Math.floor(data_cnv[1] * step)) {
+                return 'ideographic';  
+              }
+              if (d === Math.floor(data_cnv[2] * step)) {
+                return 'hanging';
+              }
+            }
+            if(data_cnv[1] < data_cnv[2] && d < (rmax - rmin) / 2){
+              if (d === Math.floor(data_cnv[1] * step)) {
+                return 'hanging';  
+              }
+              if (d === Math.floor(data_cnv[2] * step)) {
+                return 'ideographic';
+              }
+            }
+            if(data_cnv[1] > data_cnv[2] && d >= (rmax - rmin) / 2){
+              if (d === Math.floor(data_cnv[1] * step)) {
+                return 'hanging';  
+              }
+              if (d === Math.floor(data_cnv[2] * step)) {
+                return 'ideographic';
+              }
+            }
+            if(data_cnv[1] < data_cnv[2] && d >= (rmax - rmin) / 2){
+              if (d === Math.floor(data_cnv[1] * step)) {
+                return 'ideographic';  
+              }
+              if (d === Math.floor(data_cnv[2] * step)) {
+                return 'hanging';
+              }
+            }
+          })
           .style('font-size', width * 0.04 + 'pt')
-          .attr('fill', '#929292')
+          .style('font-weight', '500')
+          .attr('fill', 'black')
           .text(d => {
             if (d === Math.floor(data_cnv[1] * step)) {
               return 'Branche';

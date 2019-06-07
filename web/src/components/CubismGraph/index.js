@@ -217,11 +217,12 @@ const CubismGraph = ({ data, period, width }) => {
           prv_data = datum.globalQuotes[i].close;
         }
         
-        if (isNaN(last)) last = start;
-        let revision;
+        if (isNaN(last)) last = start + step;
+        let revision;        
         while (last < stop) {
           if(i > datum.globalQuotes.length - 1) break;
-          revision = new Date(last).toISOString().slice(0, 10);          
+          revision = new Date(last).toISOString().slice(0, 10);
+          // console.log(revision, new Date(last), 'ridiew')
           if(revision == datum.globalQuotes[i].date){
             value = datum.globalQuotes[i].close;
             showValue = ((value - initValue) / initValue).toFixed(2);
@@ -231,7 +232,7 @@ const CubismGraph = ({ data, period, width }) => {
             i++;
           }
         }
-        // console.log(values, ' values')
+        console.log(values, ' values')
 
         callback(null, (values = values.slice((start - stop) / step)));
       }, datum.ticker);

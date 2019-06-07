@@ -8,7 +8,7 @@ const dataRange = [
   { title: 'PE-ratio', min: 0, max: 40, direction: 0 },
   { title: 'ROIC', min: 0, max: 0.2, direction: 1 },
   { title: 'Return on equity', min: 0, max: 0.2, direction: 1 },
-  { title: 'Revenue Growth', min: -30, max: 60, direction: 1 },
+  { title: 'Revenue per share', min: -30, max: 60, direction: 1 },
   { title: 'Debt-ratio', min: 0, max: 4, direction: 0 },
   { title: 'Nett-Debt / EBITDA', min: -3, max: 3, direction: 0 }
 ];

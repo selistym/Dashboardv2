@@ -1,4 +1,4 @@
-import React, { useState, useRef, useReducer, useEffect, useContext, createContext, Fragment} from 'react';
+import React, { useRef, useReducer, useEffect, useContext, createContext, Fragment} from 'react';
 import useDimensions from '../Dimensions';
 import PropTypes from 'prop-types';
 
@@ -8,14 +8,42 @@ const AreaContext = createContext(null);
 const margins = 30;
 const parseTime = d3.timeParse('%Y-%m-%d');
 
-const Chart = ({column, width, height}) => {
-  let { areaStore } = useContext(AreaContext);  
+const AreaGraph = ({data, column, width, height}) => {
+  const {areaStore} = useContext(AreaContext);
   const chartRef = useRef();
-  //draw areachart
-  useEffect(() => {
+  const barRef = useRef();
+  
+  const g_w = width - margins * 2, g_h = height * 5 / 6 - margins * 2,
+        s_w = width - margins * 2, s_h = height / 6 - margins;
+  
+  const dates = data.map(d => parseTime(d.Date));  
+  let   rangeStart = parseTime(areaStore.partial[0].Date),
+        rangeEnd = parseTime(areaStore.partial[areaStore.partial.length - 1].Date);
+  const xScale = d3
+        .scaleTime()
+        .range([0, s_w])//or g_w
+        .domain([dates[0], dates[dates.length - 1]])
+        .clamp(true);
+
+  const getPartial = (data, start, end) => {
+    let partial = [];    
+    let y, m, d;
+    y = new Date(start).getFullYear();
+    m = new Date(start).getMonth() + 1;
+    d = new Date(start).getDate();
+    start = parseTime(y + '-' + m + '-' + d);    
+    for(let i = 0; i < data.length; i++){      
+      if(parseTime(data[i].Date) >= start && parseTime(data[i].Date) <= end){        
+        partial.push(data[i]);
+      }
+    }
+    return partial;
+  }
+  const drawAreaGraph = (data, w, h) => {
+    console.log('call me!!!')
     let c_data = column.slice(2, 3).map(id => ({
       id: id,
-      values: areaStore.partial.map(d => ({
+      values: data.map(d => ({
           date: parseTime(d.Date),
           value: d[id]
         }))
@@ -31,12 +59,12 @@ const Chart = ({column, width, height}) => {
     
     let x = d3
       .scaleTime()
-      .range([0, width])
+      .range([0, w])
       .domain([area_data[0].date, area_data[area_data.length - 1].date])
       .clamp(true);
     let y = d3
       .scaleLinear()
-      .range([height, 0])
+      .range([h, 0])
       .domain([rmin, max]);
     let area = d3
       .area()
@@ -50,7 +78,7 @@ const Chart = ({column, width, height}) => {
 
     chart
       .append('g')
-      .attr('transform', `translate(0, ${height})`)
+      .attr('transform', `translate(0, ${h})`)
       .call(
         d3
           .axisBottom(x)
@@ -91,8 +119,8 @@ const Chart = ({column, width, height}) => {
     chart
       .append('rect')      
       .attr('class', 'overlay')
-      .attr('width', width)
-      .attr('height', height)
+      .attr('width', w)
+      .attr('height', h)
       .style('opacity', 0)
       .on('mousemove', function() {
         let x0 = x.invert(d3.mouse(this)[0]),
@@ -141,87 +169,72 @@ const Chart = ({column, width, height}) => {
             .text(d => '€ ' + d)
         );
 
-      const { y, width: w, height: h } = text.node().getBBox();
-      text.attr('transform', `translate(${-w / 2},${15 - y})`);
+      const { y, width: tw, height: th } = text.node().getBBox();
+      text.attr('transform', `translate(${-tw / 2},${15 - y})`);
       path
-        .attr('d', `M${-w / 2 - 10},5H-5l5,-5l5,5H${w / 2 + 10}v${h + 10}h-${w + 20}z`)
+        .attr('d', `M${-tw / 2 - 10},5H-5l5,-5l5,5H${tw / 2 + 10}v${th + 10}h-${tw + 20}z`)
         .attr('transform', `translate(0,5)`);
     }
-  });
-  return (
-    <g ref={chartRef} width={width} height={height} />
-  );
-}
-
-const GraphSlider = ({data, column, width, height}) => {
-  let { areaStore, areaDispatch } = useContext(AreaContext);  
-  const dates = data.map(d => parseTime(d.Date));
-  const xScale = d3
-        .scaleTime()
-        .range([0, width])
-        .domain([dates[0], dates[dates.length - 1]])
-        .clamp(true);
-  let rangeStart = parseTime(areaStore.partial[0].Date),
-      rangeEnd = parseTime(areaStore.partial[areaStore.partial.length - 1].Date);
+  }
+  useEffect(() => {
+    drawAreaGraph(areaStore.partial, g_w, g_h);
+    d3.select(".leftHandler").attr('x', xScale(rangeStart) - 5);
+    d3.select(".rightHandler").attr('x', xScale(rangeEnd) - 5);
+    }, [areaStore.partial, g_w, g_h]);
   
-  const barRef = useRef();  
-  const leftHandlerRef = useRef();
-  const rightHandlerRef = useRef();
-  
-  const [overed, setOvered] = useState('');  
-
-  const onMouseOver = event => setOvered(event.target.parentNode.className.baseVal);
-  
-  //control handler
-  useEffect(() => {    
-    let trueMouseValue, drag, left_margin, rect_width, startPos, endPos, rectX, range;
+  useEffect(() => {
+    console.log('pas here?')
+    let trueMouseValue, drag, left_margin, rect_width, startPos, endPos, rectX;
     drag = d3
       .drag()
       .on('start', dragstart)
-      .on('drag', draged)
-      .on('end', dragend);
+      .on('drag', draged);
       
-    d3.select(".sliderBar").call(drag);
+    d3.select(".rectFillBar").call(drag);
+    d3.select(".leftHandler").call(drag);
+    d3.select(".rightHandler").call(drag);
+    const zone = d3.select(".barZone").node();
+    
     function dragstart() {
-      trueMouseValue = getTrueMouseValue(d3.mouse(this)[0]);
-      if (overed == 'sliderBar'){
-        rectX = d3.select("rect[id='rectFillBar']").attr('x');
-        rect_width = d3.select("rect[id='rectFillBar']").attr('width');
-        left_margin = d3.mouse(this)[0] - rectX;
-      }
+      trueMouseValue = getTrueMouseValue(d3.mouse(zone)[0]);
+      rectX = d3.select(".rectFillBar").attr('x');
+      left_margin = d3.mouse(this)[0] - rectX;      
+      rect_width = d3.select(".rectFillBar").attr('width');
     }
-    function draged() {
-      trueMouseValue = getTrueMouseValue(d3.mouse(this)[0]);
-      if (overed == 'sliderBar'){
-        let mouseValue = d3.mouse(this)[0];
+    function draged() {      
+      trueMouseValue = getTrueMouseValue(d3.mouse(zone)[0]);
+      if (d3.select(this).attr('class') == 'rectFillBar'){
+        let mouseValue = d3.mouse(zone)[0];
         startPos = mouseValue - left_margin;
         endPos = 1.0 * startPos + 1.0 * rect_width;
-        if (xScale(getTrueMouseValue(startPos)) == xScale(parseTime(data[0].Date))) return;
-        if (xScale(getTrueMouseValue(endPos)) == xScale(parseTime(data[data.length - 1].Date))) return;
-        areaDispatch({type: 'CHANGE_RANGE', value: {startDate: getTrueMouseValue(startPos), endDate: getTrueMouseValue(endPos)}});
+        if(startPos <= 0 || endPos >= s_w) return;
+        d3.select(this).attr('x', xScale(getTrueMouseValue(startPos)));
+        rangeStart = getTrueMouseValue(startPos);
+        rangeEnd = getTrueMouseValue(endPos);        
+        d3.select(".leftHandler").attr('x', xScale(rangeStart) - 5);
+        d3.select(".rightHandler").attr('x', xScale(rangeEnd) - 5);
+      }else{
+        if (d3.select(this).attr('class') == 'leftHandler') {
+          rangeStart = trueMouseValue;
+        }
+        if(d3.select(this).attr('class') == 'rightHandler'){
+          rangeEnd = trueMouseValue;
+        }
+        if(rangeEnd - rangeStart <= 30 * 24 * 60 * 60 * 1000) return;
+        d3.select(".leftHandler").attr('x', xScale(rangeStart) - 5);
+        d3.select(".rightHandler").attr('x', xScale(rangeEnd) - 5);
+        d3.select('.rectFillBar').attr('x', xScale(rangeStart));
+        d3.select('.rectFillBar').attr('width', xScale(rangeEnd) - xScale(rangeStart));
       }
-      if (overed == 'leftHandler') {
-        if(rangeEnd - trueMouseValue <= 30 * 24 * 60 * 60 * 1000) return;
-        areaDispatch({type: 'CHANGE_RANGE', value: {startDate: trueMouseValue, endDate: rangeEnd}});        
-      }
-      if(overed == 'rightHandler'){
-        if(trueMouseValue - rangeStart <= 30 * 24 * 60 * 60 * 1000) return;
-        areaDispatch({type: 'CHANGE_RANGE', value: {startDate: rangeStart, endDate: trueMouseValue}});        
-      }
-    }
-    function dragend() {}
+      drawAreaGraph(getPartial(data, rangeStart, rangeEnd), g_w, g_h);
+    }    
     function getTrueMouseValue(mouseValue) {
-      return Math.round(xScale.invert(mouseValue));
+      return (xScale.invert(mouseValue));
     }
   });
-  //draw slider graph
-  useEffect(() => {    
-    const dates = data.map(d => parseTime(d.Date));
-    const xScale = d3
-          .scaleTime()
-          .range([0, width])
-          .domain([dates[0], dates[dates.length - 1]]);
 
+  //draw slider graph
+  useEffect(() => {
     let c_data = column.slice(2, 3).map(id => ({
         id: id,
         values: data.map(d => ({
@@ -232,7 +245,7 @@ const GraphSlider = ({data, column, width, height}) => {
     let min = d3.min(c_data[0].values, d => d.value), max = d3.max(c_data[0].values, d => d.value);    
     let y = d3
       .scaleLinear()
-      .range([height, 0])
+      .range([s_h, 0])
       .domain([min, max]);
 
     let area = d3
@@ -247,7 +260,7 @@ const GraphSlider = ({data, column, width, height}) => {
     
     graph
       .append('g')
-      .attr('transform', `translate(0, ${height})`)
+      .attr('transform', `translate(0, ${s_h})`)
       .call(
         d3
           .axisBottom(xScale)
@@ -274,44 +287,22 @@ const GraphSlider = ({data, column, width, height}) => {
       .append('path')
       .attr('d', d => area(d.values))
       .style('fill', '#ddd');
-  }, [data, width, height, column]);
-    
-  return (    
-    <g className="sliderBar" onMouseOver={(e) => onMouseOver(e)}>
-      <g ref={barRef} />
-      <rect id="rectFillBar" x={xScale(rangeStart)} width={xScale(rangeEnd) - xScale(rangeStart)} height={height} fill="rgba(150, 150, 150, 0.3)"/>
-      <g className="leftHandler" ref={leftHandlerRef} transform={`translate(${xScale(rangeStart)}, -2)`} style={{cursor: 'pointer'}}>
-        <rect rx="3" ry="3" width="10" height={height + 4} fill="rgba(150, 150, 150, 0.8)" transform={`translate(-5, 0)`}/>
-      </g>
-      <g className="rightHandler" ref={rightHandlerRef} transform={`translate(${xScale(rangeEnd)}, -2)`} style={{cursor: 'pointer'}}>
-        <rect rx="3" ry="3" width="10" height={height + 4} fill="rgba(150, 150, 150, 0.8)" transform={`translate(-5, 0)`}/>
-      </g>
-    </g>
-  );
-}
-
-const AreaChart = ({data, column, width, height}) => {  
-  
+  }, [data, s_w, s_h]);
   return(
-    <svg width={width} height={height}>
-      <g transform={`translate(${margins}, ${margins})`}>
-        <Chart width={width - margins * 2} 
-          height={height * 5 / 6 - margins * 2}
-          column={column} />
-      </g>
-      <g transform={`translate(${margins}, ${height * 5 / 6})`}>
-        <GraphSlider 
-          data={data}
-          column={column}
-          width={width - margins * 2}
-          height={height / 6 - margins}        
-          />
-      </g>
+    <svg width={width} height={height}>{console.log('render', rangeStart, rangeEnd)}
+      <g ref={chartRef} transform={`translate(${margins}, ${margins})`}/>
+      <g className="sliderBar" transform={`translate(${margins}, ${height * 5 / 6})`}>
+        <g className="sliderGraph" ref={barRef} />
+        <rect className="barZone" x={0} width={s_w} height={s_h} fill="transparent"/>
+        <rect className="rectFillBar" x={xScale(rangeStart)} width={xScale(rangeEnd) - xScale(rangeStart)} height={s_h} fill="rgba(150, 150, 150, 0.3)"/>
+        <rect className="leftHandler" x={xScale(rangeStart) - 5} y={-2} width="10" rx="3" ry="3"  height={s_h + 4} fill="rgba(150, 150, 150, 0.8)"/>
+        <rect className="rightHandler" x={xScale(rangeEnd) - 5} y={-2} width="10" rx="3" ry="3"  height={s_h + 4} fill="rgba(150, 150, 150, 0.8)"/>
+      </g>      
     </svg>
   );
 };
  
-const AreaGraph = props => {  
+const AreaGraphContainer = props => {  
   const {data, companyName} = props;
   const [svgContainerRef, svgSize] = useDimensions();
 
@@ -331,25 +322,30 @@ const AreaGraph = props => {
     d.Close = d.Close ? d.Close : 0;
     return d;
   });
-
-  const sorted_data = !isEmpty(data) ? preCorrection(data).sort((x, y) => d3.ascending(parseTime(x.Date), parseTime(y.Date))) : [];
-  //initial State
+  
+  const sorted_data = !isEmpty(data) ? preCorrection(data).sort((x, y) => d3.ascending(parseTime(x.Date), parseTime(y.Date))) : [];    
+  //initial State  
   const getPartial = (start, end) => {
     if(sorted_data.length == 0) return [];
-    let partial = [];
-    for(let i = 0; i < sorted_data.length; i++){
-      if(start <= parseTime(sorted_data[i].Date) && end >= parseTime(sorted_data[i].Date)){
+    let partial = [];    
+    let y, m, d;
+    y = new Date(start).getFullYear();
+    m = new Date(start).getMonth() + 1;
+    d = new Date(start).getDate();
+    start = parseTime(y + '-' + m + '-' + d);    
+    for(let i = 0; i < sorted_data.length; i++){      
+      if(parseTime(sorted_data[i].Date) >= start && parseTime(sorted_data[i].Date) <= end){        
         partial.push(sorted_data[i]);
       }
-    }    
+    }
     return {partial: partial};
   }
   const initStore = {
     partial: !isEmpty(data) ? sorted_data : []
   };
   //use reducer
-  const areaReducer = (state, action) => {
-    let start, end;    
+  const areaReducer = (state, action) => {    
+    let start, end;
     switch (action.type) {
       case 'RANGE_1_MONTH':
         end = sorted_data[sorted_data.length - 1].Date;
@@ -375,7 +371,7 @@ const AreaGraph = props => {
         end = sorted_data[sorted_data.length - 1].Date;
         start = sorted_data[0].Date;
         return getPartial(parseTime(start), parseTime(end));
-      case 'CHANGE_RANGE':        
+      case 'CHANGE_RANGE':
         return getPartial(action.value.startDate, action.value.endDate);
       default:
         throw new Error();
@@ -411,7 +407,7 @@ const AreaGraph = props => {
       }
     }
   }  
-  
+    
   return (
     <Fragment>
       {isEmpty(data)? <> No data </> :
@@ -430,10 +426,10 @@ const AreaGraph = props => {
                 <span style={{ color: 'grey', fontWeight: '600', fontSize: '15pt' }}>●&nbsp;</span>
                 <span>Industry</span>
               </div>      
-            </div>    
+            </div>
             <div className="columns" style={{width:'100%', justifyContent: 'center'}} ref={svgContainerRef}>
-              {svgSize.width && 
-                <AreaChart
+              {svgSize.width &&
+                <AreaGraph
                   data={sorted_data}
                   column={getColumn(sorted_data)}
                   width={svgSize.width}
@@ -447,27 +443,8 @@ const AreaGraph = props => {
     </Fragment>
   );
 }
-Chart.propTypes = {  
-  column: PropTypes.arrayOf(PropTypes.string).isRequired,
-  width: PropTypes.number.isRequired,
-  height: PropTypes.number.isRequired
-};
 
-GraphSlider.propTypes = {
-  data: PropTypes.arrayOf(
-    PropTypes.shape({
-      Close: PropTypes.number.isRequired,
-      Date: PropTypes.string.isRequired,
-      Volume: PropTypes.number.isRequired,
-      __typename: PropTypes.string.isRequired
-    }).isRequired
-  ).isRequired,
-  column: PropTypes.arrayOf(PropTypes.string).isRequired,
-  width: PropTypes.number.isRequired,
-  height: PropTypes.number.isRequired  
-};
-
-AreaChart.propTypes = {
+AreaGraph.propTypes = {
   data: PropTypes.arrayOf(
     PropTypes.shape({
       Close: PropTypes.number.isRequired,
@@ -480,8 +457,7 @@ AreaChart.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired
 };
-
-AreaGraph.propTypes = {
+AreaGraphContainer.propTypes = {
   data: PropTypes.arrayOf(
     PropTypes.shape({
       Close: PropTypes.number.isRequired,
@@ -492,4 +468,4 @@ AreaGraph.propTypes = {
   ).isRequired,
   companyName: PropTypes.string.isRequired
 };
-export default AreaGraph;
+export default AreaGraphContainer;

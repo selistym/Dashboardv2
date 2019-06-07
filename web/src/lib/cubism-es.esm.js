@@ -918,7 +918,7 @@ var apiHorizon = function apiHorizon(context) {
           return d;
         },
         _format: format('.2s'),
-        _colors: ['#08519c', '#3182bd', '#6baed6', '#bdd7e7', '#bae4b3', '#74c476', '#31a354', '#006d2c']
+        _colors: ['#073c72, #08519c', '#3182bd', '#6baed6', '#bdd7e7', '#bae4b3', '#74c476', '#31a354', '#006d2c']
       };
 
       return Object.assign(state, apiRemove$2(state), apiMisc(state), apiRender$2(context, state));

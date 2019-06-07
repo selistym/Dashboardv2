@@ -9,7 +9,7 @@ const margins = 30;
 const parseTime = d3.timeParse('%Y-%m-%d');
 
 const AreaGraph = ({data, column, width, height}) => {
-  const {areaStore} = useContext(AreaContext);
+  const {areaStore, areaDispatch} = useContext(AreaContext);
   const chartRef = useRef();
   const barRef = useRef();
   
@@ -180,15 +180,17 @@ const AreaGraph = ({data, column, width, height}) => {
     drawAreaGraph(areaStore.partial, g_w, g_h);
     d3.select(".leftHandler").attr('x', xScale(rangeStart) - 5);
     d3.select(".rightHandler").attr('x', xScale(rangeEnd) - 5);
+    d3.select(".rectFillBar").attr('x', xScale(rangeStart));
+    d3.select(".rectFillBar").attr('width', xScale(rangeEnd) - xScale(rangeStart));
     }, [areaStore.partial, g_w, g_h]);
   
-  useEffect(() => {
-    console.log('pas here?')
+  useEffect(() => {    
     let trueMouseValue, drag, left_margin, rect_width, startPos, endPos, rectX;
     drag = d3
       .drag()
       .on('start', dragstart)
-      .on('drag', draged);
+      .on('drag', draged)
+      .on('end', dragend);
       
     d3.select(".rectFillBar").call(drag);
     d3.select(".leftHandler").call(drag);
@@ -227,7 +229,10 @@ const AreaGraph = ({data, column, width, height}) => {
         d3.select('.rectFillBar').attr('width', xScale(rangeEnd) - xScale(rangeStart));
       }
       drawAreaGraph(getPartial(data, rangeStart, rangeEnd), g_w, g_h);
-    }    
+    }
+    function dragend() {
+      // areaDispatch({type: 'CHANGE_RANGE', value: {startDate: rangeStart, startEnd: rangeEnd}});
+    }
     function getTrueMouseValue(mouseValue) {
       return (xScale.invert(mouseValue));
     }

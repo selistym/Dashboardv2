@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 import * as d3 from 'd3';
-import AreaGraph from '../AreaGraph';
-import CubismChart from '../CubismChart';
+import AreaGraphContainer from '../AreaGraph';
+import CubismGraphContainer from '../CubismGraph';
 import GaugeGraph from '../GaugeGraph';
 import StockGraph from '../StockGraph';
 import NegativeGraph from '../NegativeGraph';
@@ -271,7 +271,7 @@ const Security = props => {
             </table>
           </div>
           <div className="column is-8">
-            <AreaGraph data={security && security.historyPrice100} companyName={security && security.name} />
+            <AreaGraphContainer data={security && security.historyPrice100} companyName={security && security.name} />
           </div>
         </div>
       </div>
@@ -322,14 +322,14 @@ const Security = props => {
           </div>
         </div>
       </div>
-      <div className="box  has-text-grey" style={{ height: '430px' }}>
+      <div className="box  has-text-grey" style={{ height: '460px' }}>
         <h3 className="subtitle is-5 has-text-weight-bold has-text-grey" style={{ height: '10px' }}>
           Historic performance
         </h3>
         <hr />
         {security.globalQuotes ? (
           security.top5IndustryHistory ? (
-            <CubismChart data={[security, ...security.top5IndustryHistory.map(t => t.security)]} />
+            <CubismGraphContainer data={[security, ...security.top5IndustryHistory.map(t => t.security)]} />
           ) : (
             <p>No Data</p>
           )

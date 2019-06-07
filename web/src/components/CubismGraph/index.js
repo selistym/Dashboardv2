@@ -1,31 +1,78 @@
-import React, { useEffect, useRef, useState } from 'react';
-import ResponsiveWrapper from './ResponsiveWrapper';
+import React, { useEffect, useRef, useState, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import useDimensions from '../Dimensions';
 import { context } from '../../lib/cubism-es.esm';
-import Link from 'next/link';
+
 import * as d3 from 'd3';
 
-const CubismChart = ({ data, parentWidth }) => {  
-  const demoRef = useRef(null);  
+const deselect_btStyle = {
+  color: '#006d2c',
+  backgroundColor: '#fff',
+  width: '40px', 
+  marginRight: '5px', 
+  fontSize: '10pt'
+};
+const select_btStyle = {
+  color: '#fff',
+  backgroundColor: '#006d2c',
+  width: '40px', 
+  marginRight: '5px', 
+  fontSize: '10pt'
+}; 
+
+const CubismGraph = ({ data, period, width }) => {
+  const graphRef = useRef();
+  let toDate, fromDate, dateLen;
   const getDateArray = (_start, _end) => {
     var arr = new Array(),
-      dt = new Date(_start);
-
+        dt = _start;
     while (dt <= _end) {
       arr.push(new Date(dt).toISOString().slice(0, 10));
-      dt.setDate(dt.getDate() + 1);
+      dt.setDate(dt.getDate() + 1);      
     }
     return arr;
   };
-  const getConvertData = input_data => {
-    let toDate = input_data[0].globalQuotes[input_data[0].globalQuotes.length - 1].date;
-    let fromDate = new Date(new Date(toDate).getTime() - parentWidth * 24 * 3600 * 1000).toISOString().slice(0, 10);
-
-    // let fromDate = (toDate.split('-')[0] - 2) + '-' + toDate.split('-')[1] + '-' + toDate.split('-')[2];
-    let c_data = [],
-      prv_data = { date: fromDate, close: 0, is_null: true };
+  const setShowDateInfo = period => {
+    switch(period){
+      case 'All':
+        fromDate = data[0].globalQuotes[0].date;
+        toDate = data[0].globalQuotes[data[0].globalQuotes.length - 1].date;
+        dateLen = getDateArray(new Date(fromDate), new Date(toDate)).length;        
+        console.log('cac!', fromDate, toDate, dateLen)
+        break;
+      case '1 M':
+        dateLen = 30;
+        toDate = data[0].globalQuotes[data[0].globalQuotes.length - 1].date;
+        fromDate = new Date(new Date(toDate) - dateLen * 24 * 3600 * 1000).toISOString().slice(0, 10);        
+        break;
+      case '6 M':
+        dateLen = 180;
+        toDate = data[0].globalQuotes[data[0].globalQuotes.length - 1].date;
+        fromDate = new Date(new Date(toDate) - dateLen * 24 * 3600 * 1000).toISOString().slice(0, 10);        
+        break;
+      case '1 Y':
+        dateLen = 365;
+        toDate = data[0].globalQuotes[data[0].globalQuotes.length - 1].date;
+        fromDate = new Date(new Date(toDate) - dateLen * 24 * 3600 * 1000).toISOString().slice(0, 10);        
+        break;
+      case '3 Y':
+        dateLen = 3 * 365;
+        toDate = data[0].globalQuotes[data[0].globalQuotes.length - 1].date;
+        fromDate = new Date(new Date(toDate) - dateLen * 24 * 3600 * 1000).toISOString().slice(0, 10);        
+        break;
+      case '5 Y':
+        dateLen = 5 * 365;
+        toDate = data[0].globalQuotes[data[0].globalQuotes.length - 1].date;
+        fromDate = new Date(new Date(toDate) - dateLen * 24 * 3600 * 1000).toISOString().slice(0, 10);
+        break;
+    }    
+  };
+  setShowDateInfo(period);
+  const getConvertData = (input_data) => {    
+    
+    let c_data = [], prv_data = { date: fromDate, close: 0, is_null: true };
     let dateRange = getDateArray(new Date(fromDate), new Date(toDate));
-
+    
     for (let p = 0; p < input_data.length; p++) {
       prv_data = { date: fromDate, close: 0, is_null: true };
       let c_el = {
@@ -61,26 +108,29 @@ const CubismChart = ({ data, parentWidth }) => {
   const data2 = data.map(d => {
     return Object.assign({}, d, { globalQuotes: d.globalQuotes.sort((x, y) => d3.ascending(x.date, y.date)) });
   });
-
+  console.log(data2, 'prev data');
   let c_data = getConvertData(data2);
+  console.log(c_data, 'converted data');
   useEffect(() => {
+    let showStep = dateLen / width;
     var c = context()
       //.serverDelay(30 * 1000)
       //.step(10 * 1000) // ten seconds per value
-      .step(24 * 60 * 60 * 1000) // ten seconds per value
-      .size(parentWidth) // fetch 1112 values
+      .step(showStep * 24 * 60 * 60 * 1000) // ten seconds per value
+      .size(width)
       .stop();
-
-    d3.select(demoRef.current)
+    console.log(showStep , 'pre calced step')
+    d3.select(graphRef.current)
       .selectAll('*')
       .remove();
 
-    d3.select(demoRef.current)
+    d3.select(graphRef.current)
       .selectAll('.axis')
       .data(['bottom'])
       .enter()
       .append('div')
-      .attr('class', function(d) {
+      .attr('left', 20)
+      .attr('class', function(d) {        
         return d + ' axis';
       })
       .each(function(d) {
@@ -91,14 +141,14 @@ const CubismChart = ({ data, parentWidth }) => {
       });
 
     const d = d3
-      .select(demoRef.current)
+      .select(graphRef.current)
       .append('div')
       .attr('class', 'rule')
       .attr('id', 'rule')
     c.rule().render(d);
 
     var bodyRect = document.body.getBoundingClientRect(),
-      elemRect = demoRef.current.getBoundingClientRect(),
+      elemRect = graphRef.current.getBoundingClientRect(),
       offset_top = elemRect.top - bodyRect.top,
       offset_left = elemRect.left - bodyRect.left;
 
@@ -110,7 +160,7 @@ const CubismChart = ({ data, parentWidth }) => {
       .style('background', '#000')
       .style('zIndex', 2);
 
-    d3.select(demoRef.current)
+    d3.select(graphRef.current)
       .selectAll('.horizon')
       .data(c_data.map(stock))
       .enter()
@@ -155,23 +205,31 @@ const CubismChart = ({ data, parentWidth }) => {
 
       return c.metric(function(start, stop, step, callback) {
         (start = +start), (stop = +stop);
-        let initValue = datum.globalQuotes[0].close == 0 ? getNearest(datum.globalQuotes) : datum.globalQuotes[0].close,showValue;
+        let initValue = datum.globalQuotes[0].close == 0 ? getNearest(datum.globalQuotes) : datum.globalQuotes[0].close,
+            showValue;
         datum.globalQuotes[0].close = initValue;
         let prv_data = initValue;
+        console.log((start), new Date(stop), step, 'start, stop, step')
         for (let i = 1; i < datum.globalQuotes.length; i++) {
           if (datum.globalQuotes[i].close == 0) {
             datum.globalQuotes[i].close = prv_data;
           }
           prv_data = datum.globalQuotes[i].close;
         }
-
+        
         if (isNaN(last)) last = start;
+        let revision;
         while (last < stop) {
-          last += step;
-          value = datum.globalQuotes[i].close;
-          showValue = ((value - initValue) / initValue).toFixed(2);
-          values.push(showValue);
-          i++;
+          if(i > datum.globalQuotes.length - 1) break;
+          revision = new Date(last).toISOString().slice(0, 10);          
+          if(revision == datum.globalQuotes[i].date){
+            value = datum.globalQuotes[i].close;
+            showValue = ((value - initValue) / initValue).toFixed(2);
+            values.push(showValue);
+            last += step;
+          }else{
+            i++;
+          }
         }
         // console.log(values, ' values')
 
@@ -180,7 +238,7 @@ const CubismChart = ({ data, parentWidth }) => {
     }
   });
   return (    
-      <div ref={demoRef} style={{ height: '40px' }}>
+      <div ref={graphRef} style={{ height: '40px', marginLeft: '20px', justifyContent: 'center'}}>
         <style jsx global>{`
           .group {
             margin-bottom: 1em;
@@ -265,8 +323,52 @@ const CubismChart = ({ data, parentWidth }) => {
   );
 }
 
-CubismChart.propTypes = {
-  parentWidth: PropTypes.number.isRequired,
+const CubismGraphContainer = ({data}) => {
+  const [containerRef, containerSize] = useDimensions();
+  const btRefs = useRef([React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef()]);
+  
+  const btLabels = ['1 M', '6 M', '1 Y', '3 Y', '5 Y', 'All'];
+  const [period, setPeriod] = useState(btLabels[5]);
+
+  const onRangeButtonHandler = type_index => {
+    setPeriod(btLabels[type_index]);
+    for(let i = 0; i < 6; i++){
+      if(i == type_index){
+        btRefs.current[type_index].current.style.backgroundColor = '#006d2c';
+        btRefs.current[type_index].current.style.color = '#fff';
+      }else{
+        btRefs.current[i].current.style.backgroundColor = '#fff';
+        btRefs.current[i].current.style.color = '#006d2c';
+      }
+    }
+  }
+  return (
+    <Fragment>
+      <div style={{width: '100%', justifyContent: 'center'}}>
+        <div className="columns">
+          <div className="column is-desktop" style={{ margin: '10px', padding: '0px', justifyContent: 'center', textAlign: 'center'}}>
+            {btLabels.map((e, i) => (
+              i == 5 ? <span key={i} className="button" ref={btRefs.current[i]} onClick={() => onRangeButtonHandler(i)} style={select_btStyle}>{e}</span>
+                : <span key={i} className="button" ref={btRefs.current[i]} onClick={() => onRangeButtonHandler(i)} style={deselect_btStyle}>{e}</span>
+            ))}
+          </div>
+        </div>
+        <div className="columns" style={{width:'100%', justifyContent: 'center'}} ref={containerRef}>
+          {containerSize.width &&
+            <CubismGraph
+              data={data}
+              width={containerSize.width}
+              period={period}
+            />
+          }
+        </div>
+      </div>
+    </Fragment>
+  );
+}
+CubismGraph.propTypes = {
+  width: PropTypes.number.isRequired,
+  period: PropTypes.string.isRequired,
   data: PropTypes.arrayOf(
     PropTypes.shape({
       security: PropTypes.objectOf(
@@ -285,5 +387,23 @@ CubismChart.propTypes = {
     })
   )
 }
-
-export default ResponsiveWrapper(CubismChart);
+CubismGraphContainer.propTypes = {  
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      security: PropTypes.objectOf(
+        PropTypes.shape({
+          globalQuotes: PropTypes.arrayOf(
+            PropTypes.shape({
+              date: PropTypes.string,
+              close: PropTypes.number
+            })
+          ).isRequired,
+          id: PropTypes.string.isRequired,
+          name: PropTypes.string.isRequired,
+          ticker: PropTypes.string.isRequired
+        })        
+      )
+    })
+  )
+}
+export default CubismGraphContainer;

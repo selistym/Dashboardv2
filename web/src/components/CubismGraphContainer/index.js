@@ -8,71 +8,71 @@ import * as d3 from 'd3';
 const deselect_btStyle = {
   color: '#006d2c',
   backgroundColor: '#fff',
-  width: '40px', 
-  marginRight: '5px', 
+  width: '40px',
+  marginRight: '5px',
   fontSize: '10pt'
 };
 const select_btStyle = {
   color: '#fff',
   backgroundColor: '#006d2c',
-  width: '40px', 
-  marginRight: '5px', 
+  width: '40px',
+  marginRight: '5px',
   fontSize: '10pt'
-}; 
+};
 
 const CubismGraph = ({ data, period, width }) => {
   const graphRef = useRef();
   let toDate, fromDate, dateLen;
   const getDateArray = (_start, _end) => {
     var arr = new Array(),
-        dt = _start;
+      dt = _start;
     while (dt <= _end) {
       arr.push(new Date(dt).toISOString().slice(0, 10));
-      dt.setDate(dt.getDate() + 1);      
+      dt.setDate(dt.getDate() + 1);
     }
     return arr;
   };
   const setShowDateInfo = period => {
-    switch(period){
+    switch (period) {
       case 'All':
         fromDate = data[0].globalQuotes[0].date;
         toDate = data[0].globalQuotes[data[0].globalQuotes.length - 1].date;
-        dateLen = getDateArray(new Date(fromDate), new Date(toDate)).length;        
-        console.log('cac!', fromDate, toDate, dateLen)
+        dateLen = getDateArray(new Date(fromDate), new Date(toDate)).length;
+
         break;
       case '1 M':
         dateLen = 30;
-        toDate = data[0].globalQuotes[data[0].globalQuotes.length - 1].date;
-        fromDate = new Date(new Date(toDate) - dateLen * 24 * 3600 * 1000).toISOString().slice(0, 10);        
+        toDate = new Date().toISOString().slice(0, 10);
+        fromDate = new Date(new Date(toDate) - dateLen * 24 * 3600 * 1000).toISOString().slice(0, 10);
         break;
       case '6 M':
         dateLen = 180;
-        toDate = data[0].globalQuotes[data[0].globalQuotes.length - 1].date;
-        fromDate = new Date(new Date(toDate) - dateLen * 24 * 3600 * 1000).toISOString().slice(0, 10);        
+        toDate = new Date().toISOString().slice(0, 10);
+        fromDate = new Date(new Date(toDate) - dateLen * 24 * 3600 * 1000).toISOString().slice(0, 10);
         break;
       case '1 Y':
         dateLen = 365;
-        toDate = data[0].globalQuotes[data[0].globalQuotes.length - 1].date;
-        fromDate = new Date(new Date(toDate) - dateLen * 24 * 3600 * 1000).toISOString().slice(0, 10);        
+        toDate = new Date().toISOString().slice(0, 10);
+        fromDate = new Date(new Date(toDate) - dateLen * 24 * 3600 * 1000).toISOString().slice(0, 10);
         break;
       case '3 Y':
         dateLen = 3 * 365;
-        toDate = data[0].globalQuotes[data[0].globalQuotes.length - 1].date;
-        fromDate = new Date(new Date(toDate) - dateLen * 24 * 3600 * 1000).toISOString().slice(0, 10);        
+        toDate = new Date().toISOString().slice(0, 10);
+        fromDate = new Date(new Date(toDate) - dateLen * 24 * 3600 * 1000).toISOString().slice(0, 10);
         break;
       case '5 Y':
         dateLen = 5 * 365;
-        toDate = data[0].globalQuotes[data[0].globalQuotes.length - 1].date;
+        toDate = new Date().toISOString().slice(0, 10);
         fromDate = new Date(new Date(toDate) - dateLen * 24 * 3600 * 1000).toISOString().slice(0, 10);
         break;
-    }    
+    }
   };
   setShowDateInfo(period);
-  const getConvertData = (input_data) => {    
-    
-    let c_data = [], prv_data = { date: fromDate, close: 0, is_null: true };
+  const getConvertData = input_data => {
+    let c_data = [],
+      prv_data = { date: fromDate, close: 0, is_null: true };
     let dateRange = getDateArray(new Date(fromDate), new Date(toDate));
-    
+
     for (let p = 0; p < input_data.length; p++) {
       prv_data = { date: fromDate, close: 0, is_null: true };
       let c_el = {
@@ -108,9 +108,8 @@ const CubismGraph = ({ data, period, width }) => {
   const data2 = data.map(d => {
     return Object.assign({}, d, { globalQuotes: d.globalQuotes.sort((x, y) => d3.ascending(x.date, y.date)) });
   });
-  console.log(data2, 'prev data');
   let c_data = getConvertData(data2);
-  console.log(c_data, 'converted data');
+
   useEffect(() => {
     let showStep = dateLen / width;
     var c = context()
@@ -119,7 +118,7 @@ const CubismGraph = ({ data, period, width }) => {
       .step(showStep * 24 * 60 * 60 * 1000) // ten seconds per value
       .size(width)
       .stop();
-    console.log(showStep , 'pre calced step')
+
     d3.select(graphRef.current)
       .selectAll('*')
       .remove();
@@ -129,8 +128,7 @@ const CubismGraph = ({ data, period, width }) => {
       .data(['bottom'])
       .enter()
       .append('div')
-      .attr('left', 20)
-      .attr('class', function(d) {        
+      .attr('class', function(d) {
         return d + ' axis';
       })
       .each(function(d) {
@@ -144,7 +142,7 @@ const CubismGraph = ({ data, period, width }) => {
       .select(graphRef.current)
       .append('div')
       .attr('class', 'rule')
-      .attr('id', 'rule')
+      .attr('id', 'rule');
     c.rule().render(d);
 
     var bodyRect = document.body.getBoundingClientRect(),
@@ -166,14 +164,13 @@ const CubismGraph = ({ data, period, width }) => {
       .enter()
       .insert('div', '.bottom')
       .attr('class', 'horizon')
-      .style('height', '50px')
+      .style('height', '50px');
 
     c.horizon()
       .format(d3.format('+,.2p'))
       .render(d3.selectAll('.horizon'));
-    
-    d3.selectAll('.title')
-      .html((d, i) => `<a href="/security/${data[i].id}">${data[i].name}</a>`)
+
+    d3.selectAll('.title').html((d, i) => `<a href="/security/${data[i].id}">${data[i].name}</a>`);
     c.on('focus', i => {
       d3.selectAll('.value')
         .style('color', 'black')
@@ -187,7 +184,7 @@ const CubismGraph = ({ data, period, width }) => {
             if (i > 60) return c.size() - i + 'px';
             else return c.size() - 60 - i + 'px';
           }
-        });      
+        });
     });
     function getNearest(arr) {
       for (let i = 0; i < arr.length; i++) {
@@ -205,168 +202,189 @@ const CubismGraph = ({ data, period, width }) => {
 
       return c.metric(function(start, stop, step, callback) {
         (start = +start), (stop = +stop);
+
         let initValue = datum.globalQuotes[0].close == 0 ? getNearest(datum.globalQuotes) : datum.globalQuotes[0].close,
-            showValue;
+          showValue;
         datum.globalQuotes[0].close = initValue;
         let prv_data = initValue;
-        console.log((start), new Date(stop), step, 'start, stop, step')
+
         for (let i = 1; i < datum.globalQuotes.length; i++) {
           if (datum.globalQuotes[i].close == 0) {
             datum.globalQuotes[i].close = prv_data;
           }
           prv_data = datum.globalQuotes[i].close;
         }
-        
-        if (isNaN(last)) last = start + step;
-        let revision;        
+
+        if (isNaN(last)) last = start;
+        let revision;
         while (last < stop) {
-          if(i > datum.globalQuotes.length - 1) break;
+          if (i > datum.globalQuotes.length - 1) break;
           revision = new Date(last).toISOString().slice(0, 10);
-          // console.log(revision, new Date(last), 'ridiew')
-          if(revision == datum.globalQuotes[i].date){
+
+          if (revision == datum.globalQuotes[i].date) {
             value = datum.globalQuotes[i].close;
             showValue = ((value - initValue) / initValue).toFixed(2);
             values.push(showValue);
             last += step;
-          }else{
+          } else {
             i++;
           }
         }
-        console.log(values, ' values')
-
         callback(null, (values = values.slice((start - stop) / step)));
       }, datum.ticker);
     }
   });
-  return (    
-      <div ref={graphRef} style={{ height: '40px', marginLeft: '20px', justifyContent: 'center'}}>
-        <style jsx global>{`
-          .group {
-            margin-bottom: 1em;
-          }
+  return (
+    <div ref={graphRef} style={{ height: '40px', marginLeft: '20px', justifyContent: 'center' }}>
+      <style jsx global>{`
+        .group {
+          margin-bottom: 1em;
+        }
 
-          .axis {
-            font: 10px sans-serif;
-            padding-bottom: 0px;
-            pointer-events: none;
-            z-index: 2;
-          }
+        .axis {
+          font: 10px sans-serif;
+          padding-bottom: 0px;
+          pointer-events: none;
+          z-index: 2;
+        }
 
-          .axis text {
-            -webkit-transition: fill-opacity 250ms linear;
-          }
+        .axis text {
+          -webkit-transition: fill-opacity 250ms linear;
+        }
 
-          .axis path {
-            display: none;
-          }
+        .axis path {
+          display: none;
+        }
 
-          .axis line {
-            stroke: #000;
-            shape-rendering: crispEdges;
-          }
+        .axis line {
+          stroke: #000;
+          shape-rendering: crispEdges;
+        }
 
-          .axis.bottom {
-            background-image: linear-gradient(bottom, #fff 0%, rgba(255, 255, 255, 0) 100%);
-            background-image: -o-linear-gradient(bottom, #fff 0%, rgba(255, 255, 255, 0) 100%);
-            background-image: -moz-linear-gradient(bottom, #fff 0%, rgba(255, 255, 255, 0) 100%);
-            background-image: -webkit-linear-gradient(bottom, #fff 0%, rgba(255, 255, 255, 0) 100%);
-            background-image: -ms-linear-gradient(bottom, #fff 0%, rgba(255, 255, 255, 0) 100%);
-          }
+        .axis.bottom {
+          background-image: linear-gradient(bottom, #fff 0%, rgba(255, 255, 255, 0) 100%);
+          background-image: -o-linear-gradient(bottom, #fff 0%, rgba(255, 255, 255, 0) 100%);
+          background-image: -moz-linear-gradient(bottom, #fff 0%, rgba(255, 255, 255, 0) 100%);
+          background-image: -webkit-linear-gradient(bottom, #fff 0%, rgba(255, 255, 255, 0) 100%);
+          background-image: -ms-linear-gradient(bottom, #fff 0%, rgba(255, 255, 255, 0) 100%);
+        }
 
-          .horizon {
-            overflow: hidden;
-            position: relative;
-          }
+        .horizon {
+          overflow: hidden;
+          position: relative;
+        }
 
-          .horizon {
-          }
+        .horizon {
+        }
 
-          .horizon + .horizon {
-            border-top: none;
-          }
+        .horizon + .horizon {
+          border-top: none;
+        }
 
-          .horizon canvas {
-            display: block;
-            height: 40px;
-          }
+        .horizon canvas {
+          display: block;
+          height: 40px;
+        }
 
-          .horizon .title {          
-            bottom: 0;
-            line-height: 40px;
-            margin: 0 6px;
-            position: absolute;
-            white-space: nowrap;
-          }
+        .horizon .title {
+          bottom: 0;
+          line-height: 40px;
+          margin: 0 6px;
+          position: absolute;
+          white-space: nowrap;
+        }
 
-          .horizon .title {
-            left: 0;
-            font-size: 1rem;
-            font-weight: 800;
-          }
-          .horizon .title:hover {
-            color: blue;
-            text-decoration: underline;
-            cursor: pointer;
-          }
-          .horizon .value {
-            bottom: 0;
-            line-height: 50px;
-            margin: 0 6px 12px 6px;
-            position: absolute;
-            white-space: nowrap;
-          }
-          .horizon .value {
-            right: 0;
-          }
-          
-        `}</style>
-      </div>
+        .horizon .title {
+          left: 0;
+          font-size: 1rem;
+          font-weight: 800;
+        }
+        .horizon .title:hover {
+          color: blue;
+          text-decoration: underline;
+          cursor: pointer;
+        }
+        .horizon .value {
+          bottom: 0;
+          line-height: 50px;
+          margin: 0 6px 12px 6px;
+          position: absolute;
+          white-space: nowrap;
+        }
+        .horizon .value {
+          right: 0;
+        }
+      `}</style>
+    </div>
   );
-}
+};
 
-const CubismGraphContainer = ({data}) => {
+const CubismGraphContainer = ({ data }) => {
   const [containerRef, containerSize] = useDimensions();
-  const btRefs = useRef([React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef()]);
-  
+  const btRefs = useRef([
+    React.createRef(),
+    React.createRef(),
+    React.createRef(),
+    React.createRef(),
+    React.createRef(),
+    React.createRef()
+  ]);
+
   const btLabels = ['1 M', '6 M', '1 Y', '3 Y', '5 Y', 'All'];
   const [period, setPeriod] = useState(btLabels[5]);
 
   const onRangeButtonHandler = type_index => {
     setPeriod(btLabels[type_index]);
-    for(let i = 0; i < 6; i++){
-      if(i == type_index){
+    for (let i = 0; i < 6; i++) {
+      if (i == type_index) {
         btRefs.current[type_index].current.style.backgroundColor = '#006d2c';
         btRefs.current[type_index].current.style.color = '#fff';
-      }else{
+      } else {
         btRefs.current[i].current.style.backgroundColor = '#fff';
         btRefs.current[i].current.style.color = '#006d2c';
       }
     }
-  }
+  };
   return (
     <Fragment>
-      <div style={{width: '100%', justifyContent: 'center'}}>
+      <div style={{ width: '100%', justifyContent: 'center' }}>
         <div className="columns">
-          <div className="column is-desktop" style={{ margin: '10px', padding: '0px', justifyContent: 'center', textAlign: 'center'}}>
-            {btLabels.map((e, i) => (
-              i == 5 ? <span key={i} className="button" ref={btRefs.current[i]} onClick={() => onRangeButtonHandler(i)} style={select_btStyle}>{e}</span>
-                : <span key={i} className="button" ref={btRefs.current[i]} onClick={() => onRangeButtonHandler(i)} style={deselect_btStyle}>{e}</span>
-            ))}
+          <div
+            className="column is-desktop"
+            style={{ margin: '10px', padding: '0px', justifyContent: 'center', textAlign: 'center' }}
+          >
+            {btLabels.map((e, i) =>
+              i == 5 ? (
+                <span
+                  key={i}
+                  className="button"
+                  ref={btRefs.current[i]}
+                  onClick={() => onRangeButtonHandler(i)}
+                  style={select_btStyle}
+                >
+                  {e}
+                </span>
+              ) : (
+                <span
+                  key={i}
+                  className="button"
+                  ref={btRefs.current[i]}
+                  onClick={() => onRangeButtonHandler(i)}
+                  style={deselect_btStyle}
+                >
+                  {e}
+                </span>
+              )
+            )}
           </div>
         </div>
-        <div className="columns" style={{width:'100%', justifyContent: 'center'}} ref={containerRef}>
-          {containerSize.width &&
-            <CubismGraph
-              data={data}
-              width={containerSize.width}
-              period={period}
-            />
-          }
+        <div className="columns" style={{ width: '100%', justifyContent: 'center' }} ref={containerRef}>
+          {containerSize.width && <CubismGraph data={data} width={containerSize.width} period={period} />}
         </div>
       </div>
     </Fragment>
   );
-}
+};
 CubismGraph.propTypes = {
   width: PropTypes.number.isRequired,
   period: PropTypes.string.isRequired,
@@ -383,12 +401,12 @@ CubismGraph.propTypes = {
           id: PropTypes.string.isRequired,
           name: PropTypes.string.isRequired,
           ticker: PropTypes.string.isRequired
-        })        
+        })
       )
     })
   )
-}
-CubismGraphContainer.propTypes = {  
+};
+CubismGraphContainer.propTypes = {
   data: PropTypes.arrayOf(
     PropTypes.shape({
       security: PropTypes.objectOf(
@@ -402,9 +420,9 @@ CubismGraphContainer.propTypes = {
           id: PropTypes.string.isRequired,
           name: PropTypes.string.isRequired,
           ticker: PropTypes.string.isRequired
-        })        
+        })
       )
     })
   )
-}
+};
 export default CubismGraphContainer;

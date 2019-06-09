@@ -40,6 +40,7 @@ const SingleSlider = props => {
         .selectAll('text')
         .style('opacity', d => (d == first || d == last ? 1 : 0))
         .style('font-size', '14px')
+        .style('cursor', 'pointer')
         .style('font-weight', 600)
         .style('fill', 'grey')
         .select('.domain')

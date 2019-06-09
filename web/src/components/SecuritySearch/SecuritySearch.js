@@ -6,9 +6,9 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 library.add(faSpinner);
 library.add(faSearch);
 
-import SecuritiesContainer from './SecuritiesContainer';
 import SecuritySearchSearchBarSection from './SecuritySearchSearchBarSection';
 import SecuritySearchDropdownSection from './SecuritySearchDropdownSection';
+import SuggestionsContainer from './SuggestionsContainer';
 
 const SecuritySearchLayout = () => {
   return (
@@ -22,7 +22,7 @@ const SecuritySearchLayout = () => {
           </h3>
         </div>
       </div>
-      <SecuritiesContainer />
+      <SuggestionsContainer />
     </div>
   );
 };

@@ -26,8 +26,8 @@ const LocalPortfolio = ({ security, index }) => {
       key={security.id}
       style={{ borderRadius: '1px', height: '320px', padding: '10px' }}
     >
-      <div className="columns" style={{ width: '230px', height: '28px' }}>
-        <div className="column is-8">
+      <div className="columns" style={{ minWidth: '250px', height: '28px', display: 'flex' }}>
+        <div className="column is-7">
           <Link key={security.id} href={`/security?id=${security.id}`} as={`/security/${security.id}`}>
             <h3
               className="subtitle is-5 has-text-weight-bold has-text-grey"

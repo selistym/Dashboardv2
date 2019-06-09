@@ -4,8 +4,8 @@ import * as d3 from 'd3';
 
 const Handle = props => {
   const { margins, onChangeYear, svgDimen, initialValue, xScale, handle } = props;
-  const [handler, setHandler] = useState(handle);
-  const circle = <circle r="7px" fill="#de0730" />;
+  const [setHandler] = useState(handle);
+  const circle = <circle r="7px" fill="#de0730" style={{cursor:'pointer'}} />;
   const text = <text style={{ opacity: 1, fontSize: 14, fill: '#de0730', fontWeight: '600' }} />;
 
   const onMouseOver = () => {
@@ -113,6 +113,7 @@ const SingleSlider = props => {
       transform={`translate(${margins.left}, 0)`}
       height="8"
       fill="grey"
+      style={{cursor:'pointer'}}
     />
   );
   let first = parseInt(years[0]);
@@ -161,7 +162,8 @@ Handle.propTypes = {
   }).isRequired,
   onChangeYear: PropTypes.func.isRequired,
   initialValue: PropTypes.number.isRequired,
-  handle: PropTypes.string.isRequired
+  handle: PropTypes.string.isRequired,
+  xScale: PropTypes.number
 }
 
 Axis.propTypes = {

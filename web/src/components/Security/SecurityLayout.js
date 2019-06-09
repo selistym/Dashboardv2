@@ -10,7 +10,7 @@ const SecurityLayout = ({ children, security, session }) => (
       <LeftNavbar security={security} session={session}/>
       <div>
         <div
-          className="column is-full-mobile is-full-tablet is-four-fifths-desktop is-10-widescreen is-10-fullhd"
+          className="column is-full-mobile is-full-tablet is-four-fifths-desktop is-12-widescreen is-10-fullhd"
           style={{ padding: '50px' }}
         >
           {children}

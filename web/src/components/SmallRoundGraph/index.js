@@ -28,8 +28,8 @@ const RoundGraph = props => {
       value: params.Value ? params.Value / 100 : 0
     }
   ];
-  let width = props.parentWidth,
-      height = props.parentWidth;
+  let width = props.parentWidth, /* eslint-disable-line */
+      height = props.parentWidth; /* eslint-disable-line */
 
   const roundRef = useRef();
 

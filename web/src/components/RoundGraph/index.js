@@ -183,7 +183,8 @@ RoundGraph.propTypes = {
     Value: PropTypes.number.isRequired
   }).isRequired,
   idx: PropTypes.string.isRequired,
-  filterCondition: PropTypes.array
+  filterCondition: PropTypes.array,
+  parentWidth: PropTypes.number
 };
 
 export default ResponsiveWrapper(RoundGraph);

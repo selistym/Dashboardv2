@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 import * as d3 from 'd3';
-import AreaGraphContainer from '../AreaGraph';
-import CubismGraphContainer from '../CubismGraph';
+import AreaGraphContainer from '../AreaGraphContainer';
+import CubismGraphContainer from '../CubismGraphContainer';
 import GaugeGraph from '../GaugeGraph';
 import StockGraph from '../StockGraph';
 import NegativeGraph from '../NegativeGraph';
@@ -44,21 +44,19 @@ const Security = props => {
     }
   };
   let gauges = getGaugeArray(security.calculated);
-  console.log(security);
+  console.log(security); // eslint-disable-line no-console
   return (
     <div>
       <div className="has-background-white-ter">
         <div className="box has-text-grey">
           <div className="columns is-mobile">
-            <div className="column is-one-third-mobile is-one-fifth-tablet is-one-fifth-desktop is-2-widescreen is-2-fullhd">
-              <figure className="image is-128x128">
-                <img src="https://bulma.io/images/placeholders/128x128.png" />
-                <img src="https://bulma.io/images/placeholders/128x128.png" />
-                <img src="https://bulma.io/images/placeholders/128x128.png" />
-                <img src="https://bulma.io/images/placeholders/128x128.png" />
-              </figure>
+            <div className="column is-one-third-mobile is-one-fourth-tablet is-3-desktop is-one-fourth-widescreen is-one-fifth-fullhd">
+              <img
+                src={`../static/jpg/${security.sector}.jpg`}
+                style={{ borderRadius: '3px', maxHeight: '420px', height: '100%' }}
+              />
             </div>
-            <div className="column is-two-thirds-mobile is-four-fifths-tablet is-four-fifths-desktop is-10-widescreen is-10-fullhd">
+            <div className="column is-two-thirds-mobile is-three-quarters-tablet is-three-quarters-desktop is-three-quarters-widescreen is-four-fifths-fullhd">
               <div className="content">
                 <h3
                   className="subtitle is-5 has-text-weight-bold has-text-grey"
@@ -81,14 +79,13 @@ const Security = props => {
                       </button>
                     )}
                     <p style={{ paddingTop: '10px' }}>{security.longBusinessDescription}</p>
-                    
                   </div>
                 </div>
                 <div
                   className="column is-full-mobile is-full-tablet is-one-third-desktop is-one-third-widescreen is-one-third-fullhd"
                   style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
                 >
-                  <div className={'RoundGraph' + security.id} style={{ width: '230px', height: '230px' }}>
+                  <div className={'RoundGraph' + security.id} style={{ width: '220px', height: '230px' }}>
                     {security.calculatedCircular[0] != null ? (
                       <RoundGraph
                         key={security.id}
@@ -101,72 +98,73 @@ const Security = props => {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <div className="columns" style={{ paddingLeft: '25px' }}>
+            <div className="column is-2">
               <div className="columns">
-                <div className="column is-2">
-                  <div className="columns">
-                    <h3 className="subtitle is-6 has-text-weight-bold has-text-grey" style={{ height: '25px' }}>
-                      Price
-                    </h3>
-                  </div>
-                  <div className="columns" style={{ height: '50px' }}>
-                    <h3 className={classNames('subtitle', 'is-4', 'has-text-weight-bold', 'has-text-grey')}>
-                      {last ? formatIntl(last, security.currency) : 'N/A'}
-                    </h3>
-                  </div>
+                <h3 className="subtitle is-6 has-text-weight-bold has-text-grey" style={{ height: '25px' }}>
+                  Price
+                </h3>
+              </div>
+              <div className="columns" style={{ height: '50px' }}>
+                <h3 className={classNames('subtitle', 'is-4', 'has-text-weight-bold', 'has-text-grey')}>
+                  {last ? formatIntl(last, security.currency) : 'N/A'}
+                </h3>
+              </div>
+            </div>
+            <div className="column is-3">
+              <div className="columns">
+                <h3 className="subtitle is-6 has-text-weight-bold has-text-grey" style={{ height: '25px' }}>
+                  &nbsp;Branche
+                </h3>
+              </div>
+              <div className="columns" style={{ height: '50px', fontSize: 'small' }}>
+                <div className="column is-2" style={{ padding: 'inherit' }}>
+                  <img src={`../static/svg/${security.sector}.svg`} style={{ height: '34px' }} />
                 </div>
-                <div className="column is-3">
-                  <div className="columns">
-                    <h3 className="subtitle is-6 has-text-weight-bold has-text-grey" style={{ height: '25px' }}>
-                      &nbsp;Branche
-                    </h3>
-                  </div>
-                  <div className="columns" style={{ height: '50px', fontSize: 'small' }}>
-                    <div className="column is-2" style={{ padding: 'inherit' }}>
-                      <img src={`../static/svg/${security.sector}.svg`} style={{ height: '34px' }} />
-                    </div>
-                    <div className="column is-10" style={{ padding: 'inherit' }}>
-                      {security.sector}
-                    </div>
-                  </div>
+                <div className="column is-10" style={{ padding: 'inherit' }}>
+                  {security.sector}
                 </div>
+              </div>
+            </div>
 
-                <div className="column is-2">
-                  <div className="columns">
-                    <h3 className="subtitle is-6 has-text-weight-bold has-text-grey" style={{ height: '25px' }}>
-                      Revenue
-                    </h3>
-                  </div>
-                  <div className="columns" style={{ height: '50px' }}>
-                    <h3 className="subtitle is-4 has-text-weight-bold has-text-grey">
-                      {security.calculated3Y ? security.calculated3Y.SalesOrRevenueLY : 'undefined'}
-                    </h3>
-                  </div>
-                </div>
+            <div className="column is-2">
+              <div className="columns">
+                <h3 className="subtitle is-6 has-text-weight-bold has-text-grey" style={{ height: '25px' }}>
+                  Revenue
+                </h3>
+              </div>
+              <div className="columns" style={{ height: '50px' }}>
+                <h3 className="subtitle is-4 has-text-weight-bold has-text-grey">
+                  {security.calculated3Y ? security.calculated3Y.SalesOrRevenueLY : 'undefined'}
+                </h3>
+              </div>
+            </div>
 
-                <div className="column is-2">
-                  <div className="columns">
-                    <h3 className="subtitle is-6 has-text-weight-bold has-text-grey" style={{ height: '25px' }}>
-                      Market cap
-                    </h3>
-                  </div>
-                  <div className="columns" style={{ height: '50px' }}>
-                    <h3 className="subtitle is-4 has-text-weight-bold has-text-grey">
-                      {security && security.factsetData && security.factsetData.MarketCapitalizatino
-                        ? `${security.factsetData.MarketCapitalization.toFixed(1)}B`
-                        : 'N/A'}
-                    </h3>
-                  </div>
-                </div>
-                <div className="column is-3">
-                  <div className="columns">
-                    <h3 className="subtitle is-6 has-text-weight-bold has-text-grey" style={{ height: '25px' }}>
-                      CEO
-                    </h3>
-                  </div>
-                  <div className="columns" style={{ height: '50px' }}>
-                    <h3 className="subtitle is-5 has-text-weight-bold has-text-grey">{security.factsetData.CEO}</h3>
-                  </div>
-                </div>
+            <div className="column is-2">
+              <div className="columns">
+                <h3 className="subtitle is-6 has-text-weight-bold has-text-grey" style={{ height: '25px' }}>
+                  Market cap
+                </h3>
+              </div>
+              <div className="columns" style={{ height: '50px' }}>
+                <h3 className="subtitle is-4 has-text-weight-bold has-text-grey">
+                  {security && security.factsetData && security.factsetData.MarketCapitalizatino
+                    ? `${security.factsetData.MarketCapitalization.toFixed(1)}B`
+                    : 'N/A'}
+                </h3>
+              </div>
+            </div>
+            <div className="column is-3">
+              <div className="columns">
+                <h3 className="subtitle is-6 has-text-weight-bold has-text-grey" style={{ height: '25px' }}>
+                  CEO
+                </h3>
+              </div>
+              <div className="columns" style={{ height: '50px' }}>
+                <h3 className="subtitle is-5 has-text-weight-bold has-text-grey">{security.factsetData.CEO}</h3>
               </div>
             </div>
           </div>
@@ -295,7 +293,7 @@ const Security = props => {
             </div>
           </div>
         </div>
-        <div className="columns is-desktop">
+        <div className="columns is-desktop is-full-widescreen">
           <div className="column">
             <div className="columns">
               <div className="column is-6">{gauges ? <GaugeGraph data={gauges[4]} kind="4" /> : <p>No Data</p>}</div>

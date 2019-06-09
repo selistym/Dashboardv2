@@ -30,7 +30,7 @@ const SecuritySearchDropdownSection = () => {
 
   return (
     <div className="columns is-mobile" style={{ display: 'flex', flexFlow: 'wrap', justifyContent: 'space-around' }}>
-      <div className="column" style={{ paddingTop: '25px' }}>
+      <div style={{ paddingTop: '25px' }}>
         <CustomDropdown
           key={0}
           title={titles[0]}
@@ -41,7 +41,7 @@ const SecuritySearchDropdownSection = () => {
           onDropDownChange={(e, b) => handleDropDownItemChange(e, b)}
         />
       </div>
-      <div className="column" style={{ paddingTop: '25px' }}>
+      <div  style={{ paddingTop: '25px' }}>
         <CustomDropdown
           key={1}
           title={titles[1]}
@@ -52,7 +52,7 @@ const SecuritySearchDropdownSection = () => {
           onDropDownChange={(e, b) => handleDropDownItemChange(e, b)}
         />
       </div>
-      <div className="column" style={{ paddingTop: '25px' }}>
+      <div style={{ paddingTop: '25px' }}>
         <CustomDropdown
           key={2}
           title={titles[2]}
@@ -63,7 +63,7 @@ const SecuritySearchDropdownSection = () => {
           onDropDownChange={(e, b) => handleDropDownItemChange(e, b)}
         />
       </div>
-      <div className="column" style={{ paddingTop: '25px' }}>
+      <div  style={{ paddingTop: '25px' }}>
         <CustomDropdown
           key={3}
           title={titles[3]}

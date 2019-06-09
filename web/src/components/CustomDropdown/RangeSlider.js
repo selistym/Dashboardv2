@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
 import * as d3 from 'd3';
 
 const RangeSlider = props => {
@@ -7,7 +8,7 @@ const RangeSlider = props => {
     rightHandlerRef = useRef(),
     fillbarRef = useRef();
 
-  const { width, height, index } = props,
+  const { width, height, index } = props, 
     margins = { left: 20, top: 10, right: 20, bottom: 10 },
     slider_w = width - margins.left - margins.right,
     RangeBar = <rect rx="5" ry="5" y="0" width={slider_w} height="5" fill="grey" />,
@@ -135,5 +136,10 @@ const RangeSlider = props => {
     </svg>
   );
 };
-
+RangeSlider.propTypes = {
+  index: PropTypes.number.isRequired,
+  width: PropTypes.number,
+  height: PropTypes.number,
+ 
+};
 export default RangeSlider;

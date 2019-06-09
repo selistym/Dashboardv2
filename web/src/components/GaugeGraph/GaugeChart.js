@@ -20,7 +20,7 @@ const GaugeChart = props => {
   if (kind > 0 && kind < 4) {
     data_cnv[0] = data_cnv[0] * 100;
   }
-  
+
   useEffect(() => {
     {
       const drawChart = () => {
@@ -91,10 +91,10 @@ const GaugeChart = props => {
               .scaleLinear()
               .range(['#b3d1a7', '#66ad2b'])
               .domain([0, range / 2]);
-          }else{
+          } else {
             linearColor = d3
               .scaleLinear()
-              .range(['#cc1414','#e98787'])
+              .range(['#cc1414', '#e98787'])
               .domain([-range / 2, 0]);
           }
         }
@@ -117,8 +117,16 @@ const GaugeChart = props => {
             .data(field)
             .enter()
             .append('path')
-            .attr('stroke', (d, i) => (i + 1 <= data_cnv[0] * step ? linearColor(data_cnv[0]) : '#e4e7ec'))
-            .attr('fill', (d, i) => (i + 1 <= data_cnv[0] * step ? linearColor(data_cnv[0]) : '#e4e7ec'))
+            .attr('stroke', (d, i) =>
+              i + 1 <= (Math.abs(dataRange.min) + data_cnv[0]) * step
+                ? linearColor(Math.abs(dataRange.min) + data_cnv[0])
+                : '#e4e7ec'
+            )
+            .attr('fill', (d, i) =>
+              i + 1 <= (Math.abs(dataRange.min) + data_cnv[0]) * step
+                ? linearColor(Math.abs(dataRange.min) + data_cnv[0])
+                : '#e4e7ec'
+            )
             .attr('d', arc);
         else
           d3.select(chartRef.current)
@@ -136,10 +144,15 @@ const GaugeChart = props => {
           .select(chartRef.current)
           .append('path')
           .attr('class', 'needle')
-          .attr('fill', kind == 0 || kind == 4 || kind == 5 ? linearColor(data_cnv[0]) : linearColor(step1));
+          .attr(
+            'fill',
+            kind == 0 || kind == 4 || kind == 5
+              ? linearColor(Math.abs(dataRange.min) + data_cnv[0])
+              : linearColor(step1)
+          );
 
         // add branche, market label
-        
+
         let ticks = scale.ticks(100);
         d3.select(chartRef.current)
           .append('g')
@@ -147,44 +160,44 @@ const GaugeChart = props => {
           .selectAll('text.label')
           .data(ticks)
           .enter()
-          .append('text')          
+          .append('text')
           .attr('transform', function(d) {
             let _in = scale(d) - halfPi;
             let topX = (radius + 5) * Math.cos(_in),
-                topY = (radius + 5) * Math.sin(_in);
+              topY = (radius + 5) * Math.sin(_in);
             return 'translate(' + topX + ',' + topY + ')';
           })
-          .style('text-anchor', d => d < (rmax - rmin) / 2 ? 'end' : 'start')
+          .style('text-anchor', d => (d < (rmax - rmin) / 2 ? 'end' : 'start'))
           .style('alignment-baseline', d => {
-            if(data_cnv[1] > data_cnv[2] && d < (rmax - rmin) / 2){
-              if (d === Math.floor(data_cnv[1] * step)) {
-                return 'ideographic';  
+            if (data_cnv[1] > data_cnv[2] && d < (rmax - rmin) / 2) {
+              if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[1]) * step)) {
+                return 'ideographic';
               }
-              if (d === Math.floor(data_cnv[2] * step)) {
+              if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[2]) * step)) {
                 return 'hanging';
               }
             }
-            if(data_cnv[1] < data_cnv[2] && d < (rmax - rmin) / 2){
-              if (d === Math.floor(data_cnv[1] * step)) {
-                return 'hanging';  
+            if (data_cnv[1] < data_cnv[2] && d < (rmax - rmin) / 2) {
+              if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[1]) * step)) {
+                return 'hanging';
               }
-              if (d === Math.floor(data_cnv[2] * step)) {
+              if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[2]) * step)) {
                 return 'ideographic';
               }
             }
-            if(data_cnv[1] > data_cnv[2] && d >= (rmax - rmin) / 2){
-              if (d === Math.floor(data_cnv[1] * step)) {
-                return 'hanging';  
+            if (data_cnv[1] > data_cnv[2] && d >= (rmax - rmin) / 2) {
+              if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[1]) * step)) {
+                return 'hanging';
               }
-              if (d === Math.floor(data_cnv[2] * step)) {
+              if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[2]) * step)) {
                 return 'ideographic';
               }
             }
-            if(data_cnv[1] < data_cnv[2] && d >= (rmax - rmin) / 2){
-              if (d === Math.floor(data_cnv[1] * step)) {
-                return 'ideographic';  
+            if (data_cnv[1] < data_cnv[2] && d >= (rmax - rmin) / 2) {
+              if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[1]) * step)) {
+                return 'ideographic';
               }
-              if (d === Math.floor(data_cnv[2] * step)) {
+              if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[2]) * step)) {
                 return 'hanging';
               }
             }
@@ -193,21 +206,21 @@ const GaugeChart = props => {
           .style('font-weight', '500')
           .attr('fill', 'black')
           .text(d => {
-            if (d === Math.floor(data_cnv[1] * step)) {
+            if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[1]) * step)) {
               return 'Branche';
-            }            
-            if (d === Math.floor(data_cnv[2] * step)) {
+            }
+            if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[2]) * step)) {
               return 'Market';
             }
             return '';
           });
-        
+
         // if(d3.select(chartRef.current)){
         //   let branch_anchor = d3.select(chartRef.current).select('.gauge-label-branche' + kind).style('text-anchor'),
         //       market_anchor = d3.select(chartRef.current).select('.gauge-label-market' + kind).style('text-anchor');
-          
+
         //   if(data_cnv[1] > data_cnv[2]){
-            
+
         //     d3.select(chartRef.current)
         //       .select('.gauge-label-market' + kind)
         //       .style('text-anchor', branch_anchor == 'start' ? 'end' : 'start');
@@ -217,8 +230,7 @@ const GaugeChart = props => {
         //       .style('text-anchor', market_anchor == 'start' ? 'end' : 'start');
         //   }
         // }
-        
-        
+
         // add marker
         d3.select(chartRef.current)
           .append('g')
@@ -229,10 +241,10 @@ const GaugeChart = props => {
           .append('path')
           .style('stroke', '#929292')
           .style('stroke-width', function(d) {
-            if (d === Math.floor(data_cnv[1] * step)) {
+            if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[1]) * step)) {
               return 3;
             }
-            if (d === Math.floor(data_cnv[2] * step)) {
+            if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[2]) * step)) {
               return 3;
             }
             return 0;
@@ -311,7 +323,10 @@ const GaugeChart = props => {
             };
           };
         }
-        updateNeedle(scale(0), scale(kind == 0 || kind == 4 || kind == 5 ? data_cnv[0] * step : preStep) + 0.01);
+        updateNeedle(
+          scale(0),
+          scale(kind == 0 || kind == 4 || kind == 5 ? (Math.abs(dataRange.min) + data_cnv[0]) * step : preStep) + 0.01
+        );
         updatePercent(0, data_cnv[0]);
       };
       drawChart();

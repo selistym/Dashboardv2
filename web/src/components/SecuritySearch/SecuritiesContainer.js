@@ -1,5 +1,7 @@
-import gql from 'graphql-tag';
 import React, { useContext } from 'react';
+import PropTypes from 'prop-types';
+
+import gql from 'graphql-tag';
 import { AppContext } from '../AppContext';
 import { Query } from 'react-apollo';
 import ErrorMessage from '../ErrorMessage';
@@ -7,19 +9,13 @@ import Loading from '../Loading';
 import SecuritiesSection from './SecuritiesSection';
 import { usePortfolio } from '../../lib/custom-hooks';
 
+import { filter, includes } from 'lodash';
+
 const SECURITIES_PER_PAGE = 5;
 
-// you will export this query because when you create the mutation,
-// you can refetch this query when doing mutations like add to portfolio
-// we put the file here to keep the queries as close as possible
-// to the component that uses it
-export const SECURITIES_QUERY = gql`
-  query Securities($filter: SecurityFilterInput, $offset: Int, $limit: Int) {
-    allSectors {
-      code
-      name
-    }
-    securities(filter: $filter, offset: $offset, limit: $limit) @connection(key: "mainFilter") {
+const FILTERED_SECURITIES_QUERY = gql`
+  query FilteredSecurities($filter: SecurityFilterInput, $offset: Int, $limit: Int) {
+    securities(filter: $filter, offset: $offset, limit: $limit) {
       id
       name
       sector
@@ -59,38 +55,56 @@ export const SECURITIES_SUBSCRIPTION = gql`
   }
 `;
 
-const SecuritiesContainer = () => {
+const SecuritiesContainer = ({ suggestions }) => {
   let { store } = useContext(AppContext);
 
   const { togglePortfolio, isInPortfolio } = usePortfolio({});
 
+  const { securityFilterText, securityFilterSector, securityFilterMarketSize, securityFilterCountry } = store;
+
+  let filteredSuggestions = suggestions;
+
+  if (securityFilterText && securityFilterText !== '') {
+    filteredSuggestions = filter(suggestions, s => {
+      return s.name.toLowerCase().indexOf(securityFilterText.toLowerCase()) > -1;
+    });
+  }
+
+  if (securityFilterCountry && securityFilterCountry.length > 0) {
+    filteredSuggestions = filter(filteredSuggestions, s => includes(securityFilterCountry, s.countryCode));
+  }
+
+  if (securityFilterMarketSize && securityFilterMarketSize.length > 0) {
+    filteredSuggestions = filter(filteredSuggestions, s => includes(securityFilterMarketSize, s.marketSize));
+  }
+
+  if (securityFilterSector && securityFilterSector.length > 0) {
+    filteredSuggestions = filter(filteredSuggestions, s => includes(securityFilterSector, s.sector));
+  }
+
   return (
     <Query
-      query={SECURITIES_QUERY}
+      query={FILTERED_SECURITIES_QUERY}
       variables={{
         filter: {
-          name: store.securityFilterText,
-          year: store.securityFilterYear,
-          sectors: store.securityFilterSector,
-          marketSize: store.securityFilterMarketSize,
-          country: store.securityFilterCountry
+          ids: filteredSuggestions.map(s => s.id)
         },
         offset: 0,
         limit: SECURITIES_PER_PAGE
       }}
-      pollInterval={500}
     >
-      {({ loading, error, data: { securities }, fetchMore, subscribeToMore }) => {
-        if (error) return <ErrorMessage message="Error loading securities." />;
+      {({ loading, error, data, fetchMore, subscribeToMore }) => {
+        if (error) return <ErrorMessage message={error} />;
         if (loading) return <Loading />;
-        if (securities === undefined) {
+        if (data.securities === undefined) {
           return <p>Undefined securities</p>;
         }
 
         const loadMoreSecurities = () => {
           fetchMore({
             variables: {
-              offset: securities.length
+              offset: data.securities.length,
+              limit: SECURITIES_PER_PAGE
             },
             updateQuery: (prev, { fetchMoreResult }) => {
               if (!fetchMoreResult) {
@@ -105,17 +119,17 @@ const SecuritiesContainer = () => {
         };
 
         const subscribeToSecurities = () => {
-          if (securities !== undefined) {
+          if (data.securities !== undefined) {
             subscribeToMore({
               document: SECURITIES_SUBSCRIPTION,
-              variables: { securityIds: securities.map(s => s.id) }
+              variables: { securityIds: data.securities.map(s => s.id) }
             });
           }
         };
 
         return (
           <SecuritiesSection
-            securities={securities}
+            securities={data.securities}
             loadMoreSecurities={loadMoreSecurities}
             subscribeToSecurities={subscribeToSecurities}
             togglePortfolio={togglePortfolio}
@@ -127,6 +141,8 @@ const SecuritiesContainer = () => {
   );
 };
 
-SecuritiesContainer.propTypes = {};
+SecuritiesContainer.propTypes = {
+  suggestions: PropTypes.array.isRequired
+};
 
 export default SecuritiesContainer;

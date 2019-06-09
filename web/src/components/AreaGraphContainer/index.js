@@ -1,4 +1,4 @@
-import React, { useRef, useReducer, useEffect, useContext, createContext, Fragment} from 'react';
+import React, { useRef, useReducer, useEffect, useContext, createContext, Fragment } from 'react';
 import useDimensions from '../Dimensions';
 import PropTypes from 'prop-types';
 
@@ -8,55 +8,57 @@ const AreaContext = createContext(null);
 const margins = 30;
 const parseTime = d3.timeParse('%Y-%m-%d');
 
-const AreaGraph = ({data, column, width, height}) => {
-  const {areaStore, areaDispatch} = useContext(AreaContext);
+const AreaGraph = ({ data, column, width, height }) => {
+  const { areaStore } = useContext(AreaContext);
   const chartRef = useRef();
   const barRef = useRef();
-  
-  const g_w = width - margins * 2, g_h = height * 5 / 6 - margins * 2,
-        s_w = width - margins * 2, s_h = height / 6 - margins;
-  
-  const dates = data.map(d => parseTime(d.Date));  
-  let   rangeStart = parseTime(areaStore.partial[0].Date),
-        rangeEnd = parseTime(areaStore.partial[areaStore.partial.length - 1].Date);
+
+  const g_w = width - margins * 2,
+    g_h = (height * 5) / 6 - margins * 2,
+    s_w = width - margins * 2,
+    s_h = height / 6 - margins;
+
+  const dates = data.map(d => parseTime(d.Date));
+  let rangeStart = parseTime(areaStore.partial[0].Date),
+    rangeEnd = parseTime(areaStore.partial[areaStore.partial.length - 1].Date);
   const xScale = d3
-        .scaleTime()
-        .range([0, s_w])//or g_w
-        .domain([dates[0], dates[dates.length - 1]])
-        .clamp(true);
+    .scaleTime()
+    .range([0, s_w]) //or g_w
+    .domain([dates[0], dates[dates.length - 1]])
+    .clamp(true);
 
   const getPartial = (data, start, end) => {
-    let partial = [];    
+    let partial = [];
     let y, m, d;
     y = new Date(start).getFullYear();
     m = new Date(start).getMonth() + 1;
     d = new Date(start).getDate();
-    start = parseTime(y + '-' + m + '-' + d);    
-    for(let i = 0; i < data.length; i++){      
-      if(parseTime(data[i].Date) >= start && parseTime(data[i].Date) <= end){        
+    start = parseTime(y + '-' + m + '-' + d);
+    for (let i = 0; i < data.length; i++) {
+      if (parseTime(data[i].Date) >= start && parseTime(data[i].Date) <= end) {
         partial.push(data[i]);
       }
     }
     return partial;
-  }
+  };
   const drawAreaGraph = (data, w, h) => {
-    console.log('call me!!!')
     let c_data = column.slice(2, 3).map(id => ({
       id: id,
       values: data.map(d => ({
-          date: parseTime(d.Date),
-          value: d[id]
-        }))
+        date: parseTime(d.Date),
+        value: d[id]
+      }))
     }));
 
-    let area_data = c_data[0].values.map(d => {      
+    let area_data = c_data[0].values.map(d => {
       d.value = +d.value;
       return d;
     });
-    
-    let min = d3.min(area_data, d => d.value), max = d3.max(area_data, d => d.value);
+
+    let min = d3.min(area_data, d => d.value),
+      max = d3.max(area_data, d => d.value);
     let rmin = min - (max - min) * 0.1;
-    
+
     let x = d3
       .scaleTime()
       .range([0, w])
@@ -85,9 +87,9 @@ const AreaGraph = ({data, column, width, height}) => {
           .ticks(5)
           .tickFormat(d3.timeFormat('%Y-%m-%d'))
       )
-      .selectAll('text')      
+      .selectAll('text')
       .style('font-size', '8pt')
-      .style('fill', 'grey')      
+      .style('fill', 'grey');
 
     chart
       .append('g')
@@ -99,7 +101,7 @@ const AreaGraph = ({data, column, width, height}) => {
       )
       .selectAll('text')
       .attr('x', -4)
-      .style('font-size', '8pt')      
+      .style('font-size', '8pt')
       .style('fill', 'grey')
       .select('.domain')
       .style('opacity', 0);
@@ -115,9 +117,9 @@ const AreaGraph = ({data, column, width, height}) => {
 
     const tooltip = chart.append('g');
     const bisectDate = d3.bisector(d => d.date).right;
-    
+
     chart
-      .append('rect')      
+      .append('rect')
       .attr('class', 'overlay')
       .attr('width', w)
       .attr('height', h)
@@ -127,7 +129,7 @@ const AreaGraph = ({data, column, width, height}) => {
           i = bisectDate(area_data, x0, 0),
           d0 = area_data[i - 1],
           d1 = area_data[i],
-          d = x0 - d0.date > d1.date - x0 ? d1 : d0;        
+          d = x0 - d0.date > d1.date - x0 ? d1 : d0;
         tooltip.attr('transform', `translate(${x(d.date)},${y(d.value)})`).call(callout, d.value);
       });
     chart.on('mouseleave', () => tooltip.call(callout, null));
@@ -174,80 +176,75 @@ const AreaGraph = ({data, column, width, height}) => {
       path
         .attr('d', `M${-tw / 2 - 10},5H-5l5,-5l5,5H${tw / 2 + 10}v${th + 10}h-${tw + 20}z`)
         .attr('transform', `translate(0,5)`);
-    }
-  }
+    };
+  };
   useEffect(() => {
     drawAreaGraph(areaStore.partial, g_w, g_h);
-    d3.select(".leftHandler").attr('x', xScale(rangeStart) - 5);
-    d3.select(".rightHandler").attr('x', xScale(rangeEnd) - 5);
-    d3.select(".rectFillBar").attr('x', xScale(rangeStart));
-    d3.select(".rectFillBar").attr('width', xScale(rangeEnd) - xScale(rangeStart));
-    }, [areaStore.partial, g_w, g_h]);
-  
-  useEffect(() => {    
+    d3.select('.leftHandler').attr('x', xScale(rangeStart) - 5);
+    d3.select('.rightHandler').attr('x', xScale(rangeEnd) - 5);
+  }, [areaStore.partial, g_w, g_h]);
+
+  useEffect(() => {
     let trueMouseValue, drag, left_margin, rect_width, startPos, endPos, rectX;
     drag = d3
       .drag()
       .on('start', dragstart)
-      .on('drag', draged)
-      .on('end', dragend);
-      
-    d3.select(".rectFillBar").call(drag);
-    d3.select(".leftHandler").call(drag);
-    d3.select(".rightHandler").call(drag);
-    const zone = d3.select(".barZone").node();
-    
+      .on('drag', draged);
+
+    d3.select('.rectFillBar').call(drag);
+    d3.select('.leftHandler').call(drag);
+    d3.select('.rightHandler').call(drag);
+    const zone = d3.select('.barZone').node();
+
     function dragstart() {
       trueMouseValue = getTrueMouseValue(d3.mouse(zone)[0]);
-      rectX = d3.select(".rectFillBar").attr('x');
-      left_margin = d3.mouse(this)[0] - rectX;      
-      rect_width = d3.select(".rectFillBar").attr('width');
+      rectX = d3.select('.rectFillBar').attr('x');
+      left_margin = d3.mouse(this)[0] - rectX;
+      rect_width = d3.select('.rectFillBar').attr('width');
     }
-    function draged() {      
+    function draged() {
       trueMouseValue = getTrueMouseValue(d3.mouse(zone)[0]);
-      if (d3.select(this).attr('class') == 'rectFillBar'){
+      if (d3.select(this).attr('class') == 'rectFillBar') {
         let mouseValue = d3.mouse(zone)[0];
         startPos = mouseValue - left_margin;
         endPos = 1.0 * startPos + 1.0 * rect_width;
-        if(startPos <= 0 || endPos >= s_w) return;
+        if (startPos <= 0 || endPos >= s_w) return;
         d3.select(this).attr('x', xScale(getTrueMouseValue(startPos)));
         rangeStart = getTrueMouseValue(startPos);
-        rangeEnd = getTrueMouseValue(endPos);        
-        d3.select(".leftHandler").attr('x', xScale(rangeStart) - 5);
-        d3.select(".rightHandler").attr('x', xScale(rangeEnd) - 5);
-      }else{
+        rangeEnd = getTrueMouseValue(endPos);
+        d3.select('.leftHandler').attr('x', xScale(rangeStart) - 5);
+        d3.select('.rightHandler').attr('x', xScale(rangeEnd) - 5);
+      } else {
         if (d3.select(this).attr('class') == 'leftHandler') {
           rangeStart = trueMouseValue;
         }
-        if(d3.select(this).attr('class') == 'rightHandler'){
+        if (d3.select(this).attr('class') == 'rightHandler') {
           rangeEnd = trueMouseValue;
         }
-        if(rangeEnd - rangeStart <= 30 * 24 * 60 * 60 * 1000) return;
-        d3.select(".leftHandler").attr('x', xScale(rangeStart) - 5);
-        d3.select(".rightHandler").attr('x', xScale(rangeEnd) - 5);
+        if (rangeEnd - rangeStart <= 30 * 24 * 60 * 60 * 1000) return;
+        d3.select('.leftHandler').attr('x', xScale(rangeStart) - 5);
+        d3.select('.rightHandler').attr('x', xScale(rangeEnd) - 5);
         d3.select('.rectFillBar').attr('x', xScale(rangeStart));
         d3.select('.rectFillBar').attr('width', xScale(rangeEnd) - xScale(rangeStart));
       }
       drawAreaGraph(getPartial(data, rangeStart, rangeEnd), g_w, g_h);
     }
-    function dragend() {
-      // areaDispatch({type: 'CHANGE_RANGE', value: {startDate: rangeStart, startEnd: rangeEnd}});
-    }
     function getTrueMouseValue(mouseValue) {
-      return (xScale.invert(mouseValue));
+      return xScale.invert(mouseValue);
     }
   });
 
   //draw slider graph
   useEffect(() => {
     let c_data = column.slice(2, 3).map(id => ({
-        id: id,
-        values: data.map(d => ({
-            date: parseTime(d.Date),
-            value: d[id]
-          }))
-      }));    
-    let min = d3.min(c_data[0].values, d => d.value), max = d3.max(c_data[0].values, d => d.value);    
+      id: id,
+      values: data.map(d => ({
+        date: parseTime(d.Date),
+        value: d[id]
+      }))
+    }));
+    let min = d3.min(c_data[0].values, d => d.value),
+      max = d3.max(c_data[0].values, d => d.value);
     let y = d3
       .scaleLinear()
       .range([s_h, 0])
@@ -262,29 +259,23 @@ const AreaGraph = ({data, column, width, height}) => {
 
     let graph = d3.select(barRef.current);
     graph.selectAll('*').remove();
-    
+
     graph
       .append('g')
       .attr('transform', `translate(0, ${s_h})`)
-      .call(
-        d3
-          .axisBottom(xScale)
-          .tickFormat(d3.timeFormat('%Y'))
-      )
+      .call(d3.axisBottom(xScale).tickFormat(d3.timeFormat('%Y')))
       .select('.domain')
       .style('opacity', 0);
-    
+
     graph
       .append('g')
-      .call(
-        d3.axisLeft(y)
-      )
+      .call(d3.axisLeft(y))
       .select('.domain')
       .style('opacity', 0);
-    
+
     graph.selectAll('text').style('opacity', 0);
     graph.selectAll('line').style('opacity', 0);
-    
+
     graph
       .selectAll('.area')
       .data(c_data)
@@ -293,25 +284,58 @@ const AreaGraph = ({data, column, width, height}) => {
       .attr('d', d => area(d.values))
       .style('fill', '#ddd');
   }, [data, s_w, s_h]);
-  return(
-    <svg width={width} height={height}>{console.log('render', rangeStart, rangeEnd)}
-      <g ref={chartRef} transform={`translate(${margins}, ${margins})`}/>
-      <g className="sliderBar" transform={`translate(${margins}, ${height * 5 / 6})`}>
+  return (
+    <svg width={width} height={height}>
+      <g ref={chartRef} transform={`translate(${margins}, ${margins})`} />
+      <g className="sliderBar" transform={`translate(${margins}, ${(height * 5) / 6})`}>
         <g className="sliderGraph" ref={barRef} />
-        <rect className="barZone" x={0} width={s_w} height={s_h} fill="transparent"/>
-        <rect className="rectFillBar" x={xScale(rangeStart)} width={xScale(rangeEnd) - xScale(rangeStart)} height={s_h} fill="rgba(150, 150, 150, 0.3)"/>
-        <rect className="leftHandler" x={xScale(rangeStart) - 5} y={-2} width="10" rx="3" ry="3"  height={s_h + 4} fill="rgba(150, 150, 150, 0.8)"/>
-        <rect className="rightHandler" x={xScale(rangeEnd) - 5} y={-2} width="10" rx="3" ry="3"  height={s_h + 4} fill="rgba(150, 150, 150, 0.8)"/>
-      </g>      
+        <rect className="barZone" x={0} width={s_w} height={s_h} fill="transparent" />
+        <rect
+          className="rectFillBar"
+          x={xScale(rangeStart)}
+          width={xScale(rangeEnd) - xScale(rangeStart)}
+          height={s_h}
+          fill="rgba(150, 150, 150, 0.3)"
+        />
+        <rect
+          className="leftHandler"
+          style={{ cursor: 'pointer' }}
+          x={xScale(rangeStart) - 5}
+          y={-2}
+          width="10"
+          rx="3"
+          ry="3"
+          height={s_h + 4}
+          fill="rgba(150, 150, 150, 0.8)"
+        />
+        <rect
+          className="rightHandler"
+          style={{ cursor: 'pointer' }}
+          x={xScale(rangeEnd) - 5}
+          y={-2}
+          width="10"
+          rx="3"
+          ry="3"
+          height={s_h + 4}
+          fill="rgba(150, 150, 150, 0.8)"
+        />
+      </g>
     </svg>
   );
 };
- 
-const AreaGraphContainer = props => {  
-  const {data, companyName} = props;
+
+const AreaGraphContainer = props => {
+  const { data, companyName } = props;
   const [svgContainerRef, svgSize] = useDimensions();
 
-  const btRefs = useRef([React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef(), React.createRef()]);  
+  const btRefs = useRef([
+    React.createRef(),
+    React.createRef(),
+    React.createRef(),
+    React.createRef(),
+    React.createRef(),
+    React.createRef()
+  ]);
 
   const getColumn = origin => {
     let column = [];
@@ -319,37 +343,40 @@ const AreaGraphContainer = props => {
       column.push(key);
     }
     return column;
-  }
-  const isEmpty = origin => !origin || origin.length == 0 ? true : false;
-  const preCorrection = origin =>  origin.map(d => {
-    d.Date = d.Date ? d.Date : '';
-    d.Volume = d.Volume ? d.Volume : 0;
-    d.Close = d.Close ? d.Close : 0;
-    return d;
-  });
-  
-  const sorted_data = !isEmpty(data) ? preCorrection(data).sort((x, y) => d3.ascending(parseTime(x.Date), parseTime(y.Date))) : [];    
-  //initial State  
+  };
+  const isEmpty = origin => (!origin || origin.length == 0 ? true : false);
+  const preCorrection = origin =>
+    origin.map(d => {
+      d.Date = d.Date ? d.Date : '';
+      d.Volume = d.Volume ? d.Volume : 0;
+      d.Close = d.Close ? d.Close : 0;
+      return d;
+    });
+
+  const sorted_data = !isEmpty(data)
+    ? preCorrection(data).sort((x, y) => d3.ascending(parseTime(x.Date), parseTime(y.Date)))
+    : [];
+  //initial State
   const getPartial = (start, end) => {
-    if(sorted_data.length == 0) return [];
-    let partial = [];    
+    if (sorted_data.length == 0) return [];
+    let partial = [];
     let y, m, d;
     y = new Date(start).getFullYear();
     m = new Date(start).getMonth() + 1;
     d = new Date(start).getDate();
-    start = parseTime(y + '-' + m + '-' + d);    
-    for(let i = 0; i < sorted_data.length; i++){      
-      if(parseTime(sorted_data[i].Date) >= start && parseTime(sorted_data[i].Date) <= end){        
+    start = parseTime(y + '-' + m + '-' + d);
+    for (let i = 0; i < sorted_data.length; i++) {
+      if (parseTime(sorted_data[i].Date) >= start && parseTime(sorted_data[i].Date) <= end) {
         partial.push(sorted_data[i]);
       }
     }
-    return {partial: partial};
-  }
+    return { partial: partial };
+  };
   const initStore = {
     partial: !isEmpty(data) ? sorted_data : []
   };
   //use reducer
-  const areaReducer = (state, action) => {    
+  const areaReducer = (state, action) => {
     let start, end;
     switch (action.type) {
       case 'RANGE_1_MONTH':
@@ -362,15 +389,15 @@ const AreaGraphContainer = props => {
         return getPartial(parseTime(start), parseTime(end));
       case 'RANGE_1_YEAR':
         end = sorted_data[sorted_data.length - 1].Date;
-        start = (end.split('-')[0] - 1) + '-' + end.split('-')[1] + '-' + end.split('-')[2];
+        start = end.split('-')[0] - 1 + '-' + end.split('-')[1] + '-' + end.split('-')[2];
         return getPartial(parseTime(start), parseTime(end));
       case 'RANGE_3_YEAR':
         end = sorted_data[sorted_data.length - 1].Date;
-        start = (end.split('-')[0] - 3) + '-' + end.split('-')[1] + '-' + end.split('-')[2];
+        start = end.split('-')[0] - 3 + '-' + end.split('-')[1] + '-' + end.split('-')[2];
         return getPartial(parseTime(start), parseTime(end));
       case 'RANGE_5_YEAR':
         end = sorted_data[sorted_data.length - 1].Date;
-        start = (end.split('-')[0] - 5) + '-' + end.split('-')[1] + '-' + end.split('-')[2];
+        start = end.split('-')[0] - 5 + '-' + end.split('-')[1] + '-' + end.split('-')[2];
         return getPartial(parseTime(start), parseTime(end));
       case 'RANGE_ALL':
         end = sorted_data[sorted_data.length - 1].Date;
@@ -387,67 +414,89 @@ const AreaGraphContainer = props => {
   const deselect_btStyle = {
     color: '#de0730',
     backgroundColor: '#fff',
-    width: '40px', 
-    marginRight: '5px', 
+    width: '40px',
+    marginRight: '5px',
     fontSize: '10pt'
   };
   const select_btStyle = {
     color: '#fff',
     backgroundColor: '#de0730',
-    width: '40px', 
-    marginRight: '5px', 
+    width: '40px',
+    marginRight: '5px',
     fontSize: '10pt'
-  };  
+  };
   const btLabels = ['1 M', '6 M', '1 Y', '3 Y', '5 Y', 'All'];
   const action_types = ['RANGE_1_MONTH', 'RANGE_6_MONTH', 'RANGE_1_YEAR', 'RANGE_3_YEAR', 'RANGE_5_YEAR', 'RANGE_ALL'];
   const onRangeButtonHandler = type_index => {
-    areaDispatch({type: action_types[type_index]});
-    for(let i = 0; i < 6; i++){
-      if(i == type_index){
+    areaDispatch({ type: action_types[type_index] });
+    for (let i = 0; i < 6; i++) {
+      if (i == type_index) {
         btRefs.current[type_index].current.style.backgroundColor = '#de0730';
         btRefs.current[type_index].current.style.color = '#fff';
-      }else{
+      } else {
         btRefs.current[i].current.style.backgroundColor = '#fff';
         btRefs.current[i].current.style.color = '#de0730';
       }
     }
-  }  
-    
+  };
+
   return (
     <Fragment>
-      {isEmpty(data)? <> No data </> :
-      <AreaContext.Provider value={{areaStore, areaDispatch}}>
-        <div>
+      {isEmpty(data) ? (
+        <> No data </>
+      ) : (
+        <AreaContext.Provider value={{ areaStore, areaDispatch }}>
+          <div>
             <div className="columns">
-              <div className="column is-desktop is-7" style={{ margin: '0px', padding: '0px', justifyContent: 'center', textAlign: 'center'}}>
-                {btLabels.map((e, i) => (
-                  i == 5 ? <span key={i} className="button" ref={btRefs.current[i]} onClick={() => onRangeButtonHandler(i)} style={select_btStyle}>{e}</span>
-                   : <span key={i} className="button" ref={btRefs.current[i]} onClick={() => onRangeButtonHandler(i)} style={deselect_btStyle}>{e}</span>
-                ))}
+              <div
+                className="column is-desktop is-7"
+                style={{ margin: '0px', padding: '0px', justifyContent: 'center', textAlign: 'center' }}
+              >
+                {btLabels.map((e, i) =>
+                  i == 5 ? (
+                    <span
+                      key={i}
+                      className="button"
+                      ref={btRefs.current[i]}
+                      onClick={() => onRangeButtonHandler(i)}
+                      style={select_btStyle}
+                    >
+                      {e}
+                    </span>
+                  ) : (
+                    <span
+                      key={i}
+                      className="button"
+                      ref={btRefs.current[i]}
+                      onClick={() => onRangeButtonHandler(i)}
+                      style={deselect_btStyle}
+                    >
+                      {e}
+                    </span>
+                  )
+                )}
               </div>
-              <div className="column is-desktop is-5" style={{ margin: '0px', padding: '0px', justifyContent: 'center', textAlign: 'center'}}>
+              <div
+                className="column is-desktop is-5"
+                style={{ margin: '0px', padding: '0px', justifyContent: 'center', textAlign: 'center' }}
+              >
                 <span style={{ color: '#de0730', fontWeight: '600', fontSize: '15pt' }}>●&nbsp;</span>
                 <span style={{ marginRight: '15px' }}>{companyName}</span>
                 <span style={{ color: 'grey', fontWeight: '600', fontSize: '15pt' }}>●&nbsp;</span>
                 <span>Industry</span>
-              </div>      
+              </div>
             </div>
-            <div className="columns" style={{width:'100%', justifyContent: 'center'}} ref={svgContainerRef}>
-              {svgSize.width &&
-                <AreaGraph
-                  data={sorted_data}
-                  column={getColumn(sorted_data)}
-                  width={svgSize.width}
-                  height={400}
-                />
-              }
+            <div className="columns" style={{ width: '100%', justifyContent: 'center' }} ref={svgContainerRef}>
+              {svgSize.width && (
+                <AreaGraph data={sorted_data} column={getColumn(sorted_data)} width={svgSize.width} height={400} />
+              )}
             </div>
-        </div>
-      </AreaContext.Provider>
-      }
+          </div>
+        </AreaContext.Provider>
+      )}
     </Fragment>
   );
-}
+};
 
 AreaGraph.propTypes = {
   data: PropTypes.arrayOf(
@@ -457,7 +506,7 @@ AreaGraph.propTypes = {
       Volume: PropTypes.number.isRequired,
       __typename: PropTypes.string.isRequired
     }).isRequired
-  ).isRequired,  
+  ).isRequired,
   column: PropTypes.arrayOf(PropTypes.string).isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired

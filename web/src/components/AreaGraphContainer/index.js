@@ -1,7 +1,6 @@
 import React, { useRef, useReducer, useEffect, useContext, createContext, Fragment } from 'react';
 import useDimensions from '../Dimensions';
 import PropTypes from 'prop-types';
-
 import * as d3 from 'd3';
 
 const AreaContext = createContext(null);
@@ -19,8 +18,8 @@ const AreaGraph = ({ data, column, width, height }) => {
     s_h = height / 6 - margins;
 
   const dates = data.map(d => parseTime(d.Date));
-  let rangeStart = parseTime(areaStore.partial[0].Date),
-    rangeEnd = parseTime(areaStore.partial[areaStore.partial.length - 1].Date);
+  const rangeStart = useRef(parseTime(areaStore.partial[0].Date)),
+        rangeEnd = useRef(parseTime(areaStore.partial[areaStore.partial.length - 1].Date));
   const xScale = d3
     .scaleTime()
     .range([0, s_w]) //or g_w
@@ -180,9 +179,9 @@ const AreaGraph = ({ data, column, width, height }) => {
   };
   useEffect(() => {
     drawAreaGraph(areaStore.partial, g_w, g_h);
-    d3.select('.leftHandler').attr('x', xScale(rangeStart) - 5);
-    d3.select('.rightHandler').attr('x', xScale(rangeEnd) - 5);
-  }, [areaStore.partial, g_w, g_h]);
+    d3.select('.leftHandler').attr('x', xScale(rangeStart.current) - 5);
+    d3.select('.rightHandler').attr('x', xScale(rangeEnd.current) - 5);
+  }, [areaStore.partial, g_w, g_h]); //eslint-disable-line
 
   useEffect(() => {
     let trueMouseValue, drag, left_margin, rect_width, startPos, endPos, rectX;
@@ -210,24 +209,24 @@ const AreaGraph = ({ data, column, width, height }) => {
         endPos = 1.0 * startPos + 1.0 * rect_width;
         if (startPos <= 0 || endPos >= s_w) return;
         d3.select(this).attr('x', xScale(getTrueMouseValue(startPos)));
-        rangeStart = getTrueMouseValue(startPos);
-        rangeEnd = getTrueMouseValue(endPos);
-        d3.select('.leftHandler').attr('x', xScale(rangeStart) - 5);
-        d3.select('.rightHandler').attr('x', xScale(rangeEnd) - 5);
+        rangeStart.current = getTrueMouseValue(startPos);
+        rangeEnd.current = getTrueMouseValue(endPos);
+        d3.select('.leftHandler').attr('x', xScale(rangeStart.current) - 5);
+        d3.select('.rightHandler').attr('x', xScale(rangeEnd.current) - 5);
       } else {
         if (d3.select(this).attr('class') == 'leftHandler') {
-          rangeStart = trueMouseValue;
+          rangeStart.current = trueMouseValue;
         }
         if (d3.select(this).attr('class') == 'rightHandler') {
-          rangeEnd = trueMouseValue;
+          rangeEnd.current = trueMouseValue;
         }
-        if (rangeEnd - rangeStart <= 30 * 24 * 60 * 60 * 1000) return;
-        d3.select('.leftHandler').attr('x', xScale(rangeStart) - 5);
-        d3.select('.rightHandler').attr('x', xScale(rangeEnd) - 5);
-        d3.select('.rectFillBar').attr('x', xScale(rangeStart));
-        d3.select('.rectFillBar').attr('width', xScale(rangeEnd) - xScale(rangeStart));
+        if (rangeEnd.current - rangeStart.current <= 30 * 24 * 60 * 60 * 1000) return;
+        d3.select('.leftHandler').attr('x', xScale(rangeStart.current) - 5);
+        d3.select('.rightHandler').attr('x', xScale(rangeEnd.current) - 5);
+        d3.select('.rectFillBar').attr('x', xScale(rangeStart.current));
+        d3.select('.rectFillBar').attr('width', xScale(rangeEnd.current) - xScale(rangeStart.current));
       }
-      drawAreaGraph(getPartial(data, rangeStart, rangeEnd), g_w, g_h);
+      drawAreaGraph(getPartial(data, rangeStart.current, rangeEnd.current), g_w, g_h);
     }
     function getTrueMouseValue(mouseValue) {
       return xScale.invert(mouseValue);
@@ -283,7 +282,7 @@ const AreaGraph = ({ data, column, width, height }) => {
       .append('path')
       .attr('d', d => area(d.values))
       .style('fill', '#ddd');
-  }, [data, s_w, s_h]);
+  }, [data, s_w, s_h]); //eslint-disable-line
   return (
     <svg width={width} height={height}>
       <g ref={chartRef} transform={`translate(${margins}, ${margins})`} />
@@ -292,15 +291,15 @@ const AreaGraph = ({ data, column, width, height }) => {
         <rect className="barZone" x={0} width={s_w} height={s_h} fill="transparent" />
         <rect
           className="rectFillBar"
-          x={xScale(rangeStart)}
-          width={xScale(rangeEnd) - xScale(rangeStart)}
+          x={xScale(rangeStart.current)}
+          width={xScale(rangeEnd.current) - xScale(rangeStart.current)}
           height={s_h}
           fill="rgba(150, 150, 150, 0.3)"
         />
         <rect
           className="leftHandler"
           style={{ cursor: 'pointer' }}
-          x={xScale(rangeStart) - 5}
+          x={xScale(rangeStart.current) - 5}
           y={-2}
           width="10"
           rx="3"
@@ -311,7 +310,7 @@ const AreaGraph = ({ data, column, width, height }) => {
         <rect
           className="rightHandler"
           style={{ cursor: 'pointer' }}
-          x={xScale(rangeEnd) - 5}
+          x={xScale(rangeEnd.current) - 5}
           y={-2}
           width="10"
           rx="3"

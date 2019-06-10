@@ -32,6 +32,7 @@ const GaugeChart = props => {
           endAngle = pi / 2,
           startAngle = -endAngle,
           n = 100,
+          show_diff = 0,
           rmin = 0,
           rmax = 100;
         switch (Number(kind)) {
@@ -40,11 +41,13 @@ const GaugeChart = props => {
             n = 25;
             rmin = 0;
             rmax = 25;
+            show_diff = 1;
             break;
           case 3:
             n = 200;
             rmin = -100;
             rmax = 100;
+            show_diff = 15;
             break;
           case 0:
           case 4:
@@ -52,11 +55,13 @@ const GaugeChart = props => {
             n = 100;
             rmin = 0;
             rmax = 100;
+            show_diff = 7;
             break;
           default:
             n = 100;
             rmin = 0;
             rmax = 100;
+            show_diff = 15;
             break;
         }
         let scale = d3
@@ -150,87 +155,9 @@ const GaugeChart = props => {
               ? linearColor(Math.abs(dataRange.min) + data_cnv[0])
               : linearColor(step1)
           );
-
-        // add branche, market label
-
-        let ticks = scale.ticks(100);
-        d3.select(chartRef.current)
-          .append('g')
-          .attr('class', 'label')
-          .selectAll('text.label')
-          .data(ticks)
-          .enter()
-          .append('text')
-          .attr('transform', function(d) {
-            let _in = scale(d) - halfPi;
-            let topX = (radius + 5) * Math.cos(_in),
-              topY = (radius + 5) * Math.sin(_in);
-            return 'translate(' + topX + ',' + topY + ')';
-          })
-          .style('text-anchor', d => (d < (rmax - rmin) / 2 ? 'end' : 'start'))
-          .style('alignment-baseline', d => {
-            if (data_cnv[1] > data_cnv[2] && d < (rmax - rmin) / 2) {
-              if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[1]) * step)) {
-                return 'ideographic';
-              }
-              if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[2]) * step)) {
-                return 'hanging';
-              }
-            }
-            if (data_cnv[1] < data_cnv[2] && d < (rmax - rmin) / 2) {
-              if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[1]) * step)) {
-                return 'hanging';
-              }
-              if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[2]) * step)) {
-                return 'ideographic';
-              }
-            }
-            if (data_cnv[1] > data_cnv[2] && d >= (rmax - rmin) / 2) {
-              if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[1]) * step)) {
-                return 'hanging';
-              }
-              if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[2]) * step)) {
-                return 'ideographic';
-              }
-            }
-            if (data_cnv[1] < data_cnv[2] && d >= (rmax - rmin) / 2) {
-              if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[1]) * step)) {
-                return 'ideographic';
-              }
-              if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[2]) * step)) {
-                return 'hanging';
-              }
-            }
-          })
-          .style('font-size', width * 0.04 + 'pt')
-          .style('font-weight', '500')
-          .attr('fill', 'black')
-          .text(d => {
-            if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[1]) * step)) {
-              return 'Branche';
-            }
-            if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[2]) * step)) {
-              return 'Market';
-            }
-            return '';
-          });
-
-        // if(d3.select(chartRef.current)){
-        //   let branch_anchor = d3.select(chartRef.current).select('.gauge-label-branche' + kind).style('text-anchor'),
-        //       market_anchor = d3.select(chartRef.current).select('.gauge-label-market' + kind).style('text-anchor');
-
-        //   if(data_cnv[1] > data_cnv[2]){
-
-        //     d3.select(chartRef.current)
-        //       .select('.gauge-label-market' + kind)
-        //       .style('text-anchor', branch_anchor == 'start' ? 'end' : 'start');
-        //   }else{
-        //     d3.select(chartRef.current)
-        //       .select('.gauge-label-branche' + kind)
-        //       .style('text-anchor', market_anchor == 'start' ? 'end' : 'start');
-        //   }
-        // }
-
+        
+        let ticks = scale.ticks(n);
+        let pos_branch, pos_market;
         // add marker
         d3.select(chartRef.current)
           .append('g')
@@ -242,9 +169,11 @@ const GaugeChart = props => {
           .style('stroke', '#929292')
           .style('stroke-width', function(d) {
             if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[1]) * step)) {
+              pos_branch = d;
               return 3;
             }
             if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[2]) * step)) {
+              pos_market = d;
               return 3;
             }
             return 0;
@@ -258,6 +187,55 @@ const GaugeChart = props => {
 
             return 'M ' + farX + ' ' + farY + ' L ' + nearX + ' ' + nearY + ' Z';
           });
+        // add branche, market label
+        d3.select(chartRef.current)
+          .append('g')
+          .attr('class', 'label')
+          .selectAll('text.label')
+          .data(ticks)
+          .enter()
+          .append('text')
+          .attr('transform', function(d) {
+            let _in = scale(d) - halfPi;
+            let topX = (radius + 5) * Math.cos(_in),
+              topY = (radius + 5) * Math.sin(_in);
+            return 'translate(' + topX + ',' + topY + ')';
+          })
+          .style('text-anchor', d => d < (rmax + rmin) / 2 ? 'end' : 'start')
+          .style('font-size', width * 0.035 + 'pt')
+          .style('font-weight', '500')
+          .attr('fill', 'black')
+          .text(d => {
+            if(kind == 3 || kind == 4 
+              || Math.floor((Math.abs(dataRange.min) + data_cnv[1]) * step) == 0 
+              || Math.floor((Math.abs(dataRange.min) + data_cnv[2]) * step) == 0
+              || Math.floor((Math.abs(dataRange.min) + data_cnv[1]) * step) == rmax + rmin
+              || Math.floor((Math.abs(dataRange.min) + data_cnv[2]) * step) == rmax + rmin
+              ){
+              if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[1]) * step)) {
+                return 'Branche';
+              }
+              if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[2]) * step)) {
+                return 'Market';
+              }
+            }else{
+              if(pos_branch > pos_market){
+                if (d - show_diff === Math.floor((Math.abs(dataRange.min) + data_cnv[1]) * step)) {
+                  return 'Branche';
+                }
+              }else{
+                if (d + show_diff === Math.floor((Math.abs(dataRange.min) + data_cnv[1]) * step)) {
+                  return 'Branche';
+                }
+              }
+              if (d === Math.floor((Math.abs(dataRange.min) + data_cnv[2]) * step)) {
+                return 'Market';
+              }
+            }
+            return '';
+          });        
+
+        
 
         function updateNeedle(oldValue, newValue) {
           needle
@@ -331,7 +309,7 @@ const GaugeChart = props => {
       };
       drawChart();
     }
-  }, [width, height, dataRange, kind, data_cnv]);
+  }, [width, height, JSON.stringify(data)]); //eslint-disable-line
 
   return (
     <svg width={width} height={height} transform={`translate(${(ptwidth - width) / 2}, 0)`}>

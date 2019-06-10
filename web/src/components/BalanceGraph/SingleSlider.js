@@ -163,7 +163,7 @@ Handle.propTypes = {
   onChangeYear: PropTypes.func.isRequired,
   initialValue: PropTypes.number.isRequired,
   handle: PropTypes.string.isRequired,
-  xScale: PropTypes.number
+  xScale: PropTypes.func.isRequired
 }
 
 Axis.propTypes = {

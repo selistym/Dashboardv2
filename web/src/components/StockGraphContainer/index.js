@@ -1,40 +1,17 @@
-import React, { Component } from 'react';
+import React, {useRef, useEffect} from 'react';
 import PropTypes from 'prop-types';
+import useDimensions from '../Dimensions';
 import * as d3 from 'd3';
 
-class Axis extends React.Component {
-  constructor(props) {
-    super(props);
-    const { svgDimen, top_margin, bottom_margin, data } = this.props;
+const margin = 20;
 
-    this.state = {
-      svgDimen: svgDimen,
-      top_margin: top_margin,
-      bottom_margin: bottom_margin,
-      data: data
-    };
-  }
-  componentDidMount() {
-    this.renderAxis();
-  }
-  componentDidUpdate() {
-    this.renderAxis();
-  }
-  componentWillReceiveProps(nextProps) {
-    const { svgDimen, top_margin, bottom_margin, data } = nextProps;
-    this.setState({
-      svgDimen: svgDimen,
-      top_margin: top_margin,
-      bottom_margin: bottom_margin,
-      data: data
-    });
-  }
-  renderAxis() {
-    const { svgDimen, top_margin, bottom_margin, data } = this.state;
-
-    let formatTime = d3.timeFormat('%Y'),
-      max = d3.max(data.map(d => d.ConsolidatedNetIncome)),
-      min = d3.min(data.map(d => d.ConsolidatedNetIncome)),
+const StockGraph = ({data, width, height}) => {  
+  const graphRef = useRef();
+  const drawGraph = (w, h, param) =>  {
+    console.log('re-effecting !', w, h, param)
+    const formatTime = d3.timeFormat('%Y');
+    let max = d3.max(param.map(d => d.ConsolidatedNetIncome)),
+      min = d3.min(param.map(d => d.ConsolidatedNetIncome)),
       domain_min,
       domain_max,
       ext = 0.1,
@@ -62,57 +39,53 @@ class Axis extends React.Component {
 
     let x = d3
         .scaleBand()
-        .range([0, svgDimen.width - 50])
-        .domain(data.map(d => formatTime(new Date(d.Date)))),
+        .range([0, w - margin * 2])
+        .domain(param.map(d => formatTime(new Date(d.Date)))),
       y = d3
         .scaleLinear()
         .domain([domain_min, domain_max])
-        .rangeRound([svgDimen.height - bottom_margin, top_margin]),
+        .rangeRound([h - margin, margin]),
       xAxis = d3
         .axisBottom(x)
-        .tickSize(0)
-        .tickPadding(0),
+        .tickSize(0),
       yAxis = d3
         .axisLeft(y)
         .tickSize(10)
         .ticks(10);
 
-    d3.select(this.xAxisElement)
-      .selectAll('*')
-      .remove();
-    d3.select(this.yAxisElement)
-      .selectAll('*')
-      .remove();
-    d3.select(this.barArea)
+    d3.select(graphRef.current)
       .selectAll('*')
       .remove();
 
-    d3.select(this.xAxisElement)
+    const xAxisArea = d3.select(graphRef.current)
+      .append("g")
       .attr('class', 'x-axis-stock')
-      .attr('transform', 'translate(40,' + y(0) + ')')
+      .attr('transform', `translate(${margin * 2}, ${y(0)})`)
       .attr('stroke-width', 2)
       .call(xAxis);
 
-    d3.select(this.xAxisElement)
+    xAxisArea
       .selectAll('text')
-      .attr('transform', 'translate(0,' + (y(domain_min) - y(0)) + ')')
-      .attr('alignment-baseline', 'hanging')
-      .attr('dy', '0.9em')
+      .attr('transform', `translate(0, ${y(domain_min) - y(0)})`)
+      .attr('dy', '1.2em')
       .style('font-size', '10pt');
 
-    d3.select(this.yAxisElement)
+    d3.select(graphRef.current)
+      .append("g")
       .attr('class', 'y-axis-stock')
-      .attr('transform', 'translate(40, 0)')
+      .attr('transform', `translate(${margin * 2}, 0)`)
       .attr('stroke-width', 1.5)
       .call(yAxis);
 
-    let stock = d3.select(this.barArea).attr('transform', 'translate(40,' + y(0) + ')');
+    const stock = d3.select(graphRef.current)
+      .append("g")
+      .attr('transform', `translate(${margin * 2}, ${y(0)})`);
 
     stock
       .append('g')
       .attr('class', 'group-grey-stock')
       .selectAll('path-group-grey-stock')
-      .data(data)
+      .data(param)
       .enter()
       .append('path')
       .attr('fill', '#a2a2a2')
@@ -258,7 +231,7 @@ class Axis extends React.Component {
       .append('g')
       .attr('class', 'group-red-stock')
       .selectAll('path-group-red-stock')
-      .data(data)
+      .data(param)
       .enter()
       .append('path')
       .attr('fill', '#df072c')
@@ -302,7 +275,7 @@ class Axis extends React.Component {
       .append('g')
       .attr('class', 'stock-lines')
       .selectAll('stock-line')
-      .data(data)
+      .data(param)
       .enter()
       .append('path')
       .attr('stroke', 'black')
@@ -333,15 +306,15 @@ class Axis extends React.Component {
       .append('g')
       .attr('class', 'text-percents')
       .selectAll('text-percent')
-      .data(data)
+      .data(param)
       .enter()
       .append('text')
       .attr('fill', 'grey')
-      .attr('x', d => x(formatTime(new Date(d.Date))) + x.bandwidth() / 2 + 20)
+      .attr('x', d => x(formatTime(new Date(d.Date))) + x.bandwidth() / 2 + 17)
       .attr('y', 0)
       .attr('text-anchor', 'start')
-      .attr('alignment-baseline', 'central')
       .attr('opacity', 0)
+      .attr('dy', '0.3em')
       .style('font-size', '11pt')
       .text(d => (d.DividendPayoutRatio > 100 ? 100 + '%' : Math.floor(d.DividendPayoutRatio) + '%'));
     stock
@@ -356,162 +329,75 @@ class Axis extends React.Component {
         return d.ConsolidatedNetIncome < 0 ? h : -h;
       });
   }
-  render() {
-    return (
-      <g className="Axis">
-        <g className="xAxis" ref={el => (this.xAxisElement = el)} />
-        <g className="yAxis" ref={el => (this.yAxisElement = el)} />
-        <g className="barArea" ref={el => (this.barArea = el)} />
-      </g>
-    );
-  }
+  useEffect(() => drawGraph(width - margin, height, data), [width, height, JSON.stringify(data)]);//eslint-disable-line
+  return (
+    <svg width={width} height={height}>
+      <g className="graphArea" ref={graphRef} transform={`translate(${margin / 2}, 0)`}/>
+    </svg>
+  );
 }
 
-class StockChart extends Component {
-  constructor(props) {
-    super(props);
-    const { width, height, data, ptwidth } = this.props;
-    let margin = { top: 0, right: 0, bottom: 40, left: 0 },
-      svgDimen = { width: width - margin.left - margin.right, height: height - margin.top - margin.bottom };
-    this.state = {
-      svgDimen: svgDimen,
-      margin: margin,
-      ptwidth: ptwidth,
-      data: data
-    };
-  }
-  componentWillReceiveProps(nextProps) {
-    const { width, height, data, ptwidth } = nextProps;
-    let margin = { top: 0, right: 0, bottom: 40, left: 0 },
-      svgDimen = { width: width - margin.left - margin.right, height: height - margin.top - margin.bottom };
-    this.setState({
-      svgDimen: svgDimen,
-      margin: margin,
-      ptwidth: ptwidth,
-      data: data
+const StockGraphContainer = ({data}) => {
+
+  const [svgContainerRef, svgSize] = useDimensions();
+  
+  const preCorrection = params => {
+    return params.map(d => {
+      d.ConsolidatedNetIncome = d.ConsolidatedNetIncome ? d.ConsolidatedNetIncome : 0;
+      d.ConsolidatedNetIncomeEUR = d.ConsolidatedNetIncomeEUR ? d.ConsolidatedNetIncomeEUR : 0;
+      d.Currency = d.Currency ? d.Currency : '';
+      d.Date = d.Date ? d.Date : '';
+      d.DividendPayoutRatio = d.DividendPayoutRatio ? d.DividendPayoutRatio : 0;
+      d.RateEUR = d.RateEUR ? d.RateEUR : 0;
+      d.RetainedEarningsEUR = d.RetainedEarningsEUR ? d.RetainedEarningsEUR : 0;
+      return d;
     });
   }
-  render() {
-    const { svgDimen, data, ptwidth } = this.state;
-
-    let real_width = svgDimen.width,
-      top_legend_height = svgDimen.height * 0.1,
-      bottom_legend_height = svgDimen.height * 0.25;
-    return (
-      <svg width={ptwidth} height={svgDimen.height}>
-        <g
-          width={svgDimen.width}
-          height={svgDimen.height}
-          transform={`translate(${(ptwidth - svgDimen.width) / 2}, 0)`}
-        >
-          <g className="topLegend" transform={`translate(${svgDimen.width / 2}, 5)`}>
-            <text
-              alignmentBaseline="text-before-edge"
-              textAnchor="middle"
-              dy="0.6em"
-              style={{ fontSize: 22, fill: '#bdbbbc', fontWeight: 'bold' }}
-            >
-              *Net Income
-            </text>
-          </g>
-          <Axis
-            svgDimen={svgDimen}
-            top_margin={top_legend_height + 30}
-            bottom_margin={bottom_legend_height}
-            data={data}
-          />
-          <g
-            className="bottomLegend"
-            transform={`translate(${(svgDimen.width - real_width) / 2 + 30}, ${svgDimen.height -
-              bottom_legend_height})`}
-          >
-            <g className="leftLegend" transform={`translate(10, ${bottom_legend_height / 2})`}>
-              <circle r="5" cx="5" cy="0" fill="#de0730" />
-              <text
-                x="15"
-                y="0"
-                alignmentBaseline="central"
-                textAnchor="start"
-                style={{ fontSize: 14, fill: '#bdbbbc' }}
-              >
-                Dividend
-              </text>
-            </g>
-            <g className="centerLegend" transform={`translate(${svgDimen.width / 3}, ${bottom_legend_height / 2})`}>
-              <circle r="5" cx="5" cy="0" fill="#bdbbbc" />
-              <text
-                x="15"
-                y="0"
-                alignmentBaseline="central"
-                textAnchor="start"
-                style={{ fontSize: 14, fill: '#bdbbbc' }}
-              >
-                Retained
-              </text>
-              <text
-                x="15"
-                dy="15"
-                alignmentBaseline="central"
-                textAnchor="start"
-                style={{ fontSize: 14, fill: '#bdbbbc' }}
-              >
-                Earnings
-              </text>
-            </g>
-            <g
-              className="rightLegend"
-              transform={`translate(${(svgDimen.width * 2) / 3 - 20}, ${bottom_legend_height / 2})`}
-            >
-              <text
-                x="15"
-                y="0"
-                alignmentBaseline="central"
-                textAnchor="start"
-                style={{ fontSize: 14, fill: '#bdbbbc' }}
-              >
-                % Pay-out
-              </text>
-              <text
-                x="40"
-                dy="15"
-                alignmentBaseline="central"
-                textAnchor="start"
-                style={{ fontSize: 14, fill: '#bdbbbc' }}
-              >
-                ratio
-              </text>
-            </g>
-          </g>
-        </g>
-      </svg>
-    );
-  }
+  
+  return (
+      <>
+        {!data || data.length == 0 ? <span>No data</span>
+        : <>
+            <div className="columns">
+              <div className="column" style={{padding: 0, textAlign:'center', fontSize: '18pt'}}>
+                <strong style={{color: '#df072c'}}>*</strong>
+                <strong>Net Income</strong>
+              </div>
+            </div>
+            <div className="columns">
+              <div className="column" style={{ width: '100%', justifyContent: 'center' }}>
+                <div ref={svgContainerRef}>
+                  {svgSize.width && <StockGraph
+                      data={preCorrection(data)}
+                      width={svgSize.width}
+                      height={300}
+                    />}
+                </div>
+              </div>
+            </div>
+            <div className="columns" style={{textAlign:'center', fontSize: '11pt'}}>
+              <div className="column" style={{padding: '0px 0px 0.75rem 0px'}}>
+                <span style={{color: '#df072c', fontSize:'14pt'}}>●</span>
+                <span>Dividend</span>
+              </div>
+              <div className="column" style={{padding: '0px 0px 0.75rem 0px'}}>
+                <span style={{color: '#a2a2a2', fontSize:'14pt'}}>●</span>
+                <span>Retained<br/>&nbsp;&nbsp;&nbsp;Earnings</span>
+              </div>
+              <div className="column" style={{padding: '0px 0px 0.75rem 0px'}}>
+                <span>%&nbsp;</span>
+                <span>Pay-out<br/>Ratio</span>
+              </div>
+            </div>
+          </>
+        }
+      </>
+  );
 }
 
-Axis.propTypes = {
-  svgDimen: PropTypes.shape({
-    width: PropTypes.number.isRequired,
-    height: PropTypes.number.isRequired
-  }).isRequired,
-  top_margin: PropTypes.number.isRequired,
-  bottom_margin: PropTypes.number.isRequired,
-  data: PropTypes.arrayOf(
-    PropTypes.shape({
-      ConsolidatedNetIncome: PropTypes.number,
-      ConsolidatedNetIncomeEUR: PropTypes.number,
-      Currency: PropTypes.string,
-      Date: PropTypes.string,
-      DividendPayoutRatio: PropTypes.number,
-      RateEUR: PropTypes.number,
-      RetainedEarningsEUR: PropTypes.number
-    })
-  ).isRequired
-};
-
-StockChart.propTypes = {
+StockGraph.propTypes = {
   width: PropTypes.number.isRequired,
-  height: PropTypes.number.isRequired,
-  ptwidth: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired, 
   data: PropTypes.arrayOf(
     PropTypes.shape({
       ConsolidatedNetIncome: PropTypes.number,
@@ -524,5 +410,18 @@ StockChart.propTypes = {
     })
   ).isRequired
 };
+StockGraphContainer.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      ConsolidatedNetIncome: PropTypes.number,
+      ConsolidatedNetIncomeEUR: PropTypes.number,
+      Currency: PropTypes.string,
+      Date: PropTypes.string,
+      DividendPayoutRatio: PropTypes.number,
+      RateEUR: PropTypes.number,
+      RetainedEarningsEUR: PropTypes.number
+    })
+  ).isRequired
+}
 
-export default StockChart;
+export default StockGraphContainer;

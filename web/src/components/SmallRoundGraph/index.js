@@ -104,7 +104,7 @@ const RoundGraph = props => {
       }
     };
     drawRound();
-  }, [params.Dividend, params.Balance, params.Growth, params.Value]);
+  }, [params.Dividend, params.Balance, params.Growth, params.Value]);//eslint-disable-line
 
   return (
     <>

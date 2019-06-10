@@ -6,8 +6,8 @@ import * as d3 from 'd3';
 import AreaGraphContainer from '../AreaGraphContainer';
 import CubismGraphContainer from '../CubismGraphContainer';
 import GaugeGraph from '../GaugeGraph';
-import StockGraph from '../StockGraph';
-import NegativeGraph from '../NegativeGraph';
+import StockGraphContainer from '../StockGraphContainer';
+import NegativeGraphContainer from '../NegativeGraphContainer';
 import BalanceGraph from '../BalanceGraph';
 import RoundGraph from '../RoundGraph';
 
@@ -344,9 +344,8 @@ const Security = props => {
             <hr />
             <div className="columns">
               <div className="column is-6">
-                <div className="content">
-                  <p style={{ fontStyle: 'italic' }}>In millions &euro;</p>
-                  <table style={{ verticalAlign: 'middle' }}>
+                <p style={{ fontStyle: 'italic' }}>In millions &euro;</p>
+                <table style={{ verticalAlign: 'middle' }}>
                     <tbody>
                       <tr>
                         <td />
@@ -443,10 +442,9 @@ const Security = props => {
                       </tr>
                     </tbody>
                   </table>
-                </div>
               </div>
               <div className="column is-6">
-                <StockGraph data={security.last3YearsDividend} />
+                <StockGraphContainer data={security.last3YearsDividend} />
               </div>
             </div>
           </div>
@@ -525,7 +523,7 @@ const Security = props => {
         </div>
         <div className="columns">
           <div className="column is-mobile is-one-two-tablet is-one-two-desktop is-one-two-widescreen is-one-two-fullhd">
-            <NegativeGraph data={security.calculated5Y} />
+            <NegativeGraphContainer data={security.calculated5Y} />
           </div>
           <div className="column is-mobile is-one-two-tablet is-one-two-desktop is-one-two-widescreen is-one-two-fullhd">
             <div className="content" style={{ height: '380px', overflowY: 'scroll' }}>

@@ -40,7 +40,7 @@ const DropdownItem = props => {
             </div>
           </>
         ),
-        [checked, index, item.name, parent_index]
+        [checked, onChangeHandler] //eslint-disable-line
       )}
     </div>
   );

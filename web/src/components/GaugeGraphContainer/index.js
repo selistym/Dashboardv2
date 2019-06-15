@@ -3,12 +3,24 @@ import PropTypes from 'prop-types';
 import useDimensions from '../Dimensions';
 import * as d3 from 'd3';
 
-const GaugeGraph = ({data, width, height, kind}) => {
-  console.log(data, 'sub data')
+const GaugeGraph = ({data, width, height, kind}) => {  
   const graphRef = useRef();
   const w = Math.min(width, height), h = Math.min(width, height);
 
+  if(kind == 0 || kind > 3){
+    data.company = data.company > data.max ? data.max : data.company;
+    data.company = data.company < data.min ? data.min : data.company;
+  }
+  data.branch = data.branch > data.max ? data.max : data.branch;
+  data.branch = data.branch < data.min ? data.min : data.branch;
+  data.market = data.market > data.max ? data.max : data.market;
+  data.market = data.market < data.min ? data.min : data.market;
+
+  if (kind > 0 && kind < 4) {
+    data.company = data.company * 100;
+  }
   useEffect(() => {
+    
     const drawGraph = () => {
       let radius = w * 0.3,
           needleRad = radius - (radius * 2) / 5,
@@ -17,26 +29,29 @@ const GaugeGraph = ({data, width, height, kind}) => {
           halfPi = pi / 2,
           endAngle = pi / 2,
           startAngle = -endAngle,
-          n, rmin, rmax;
+          n, rmin, rmax, diff;
 
       switch (Number(kind)) {
         case 1:
         case 2:
           n = 25;
           rmin = 0;
-          rmax = 25;            
+          rmax = 25;
+          diff = 2;
           break;
         case 3:
           n = 200;
           rmin = -100;
-          rmax = 100;            
+          rmax = 100;
+          diff = 15;
           break;
         case 0:
         case 4:
         case 5:
           n = 100;
           rmin = 0;
-          rmax = 100;            
+          rmax = 100;
+          diff = 8;
           break;
         default:
           n = 100;
@@ -177,6 +192,7 @@ const GaugeGraph = ({data, width, height, kind}) => {
             nearY = ((radius * 4) / 5 - 2) * Math.sin(_in);
           return 'M ' + farX + ' ' + farY + ' L ' + nearX + ' ' + nearY + ' Z';
         });
+
       // add branche, market label
       d3.select(graphRef.current)
         .append('g')
@@ -192,7 +208,7 @@ const GaugeGraph = ({data, width, height, kind}) => {
           return 'translate(' + topX + ',' + topY + ')';
         })
         .style('text-anchor', d => d < (rmax + rmin) / 2 ? 'end' : 'start')
-        .style('font-size', '9pt')
+        .style('font-size', '8pt')
         .style('font-weight', '600')
         .attr('fill', 'black')
         .text(d => { 
@@ -214,8 +230,28 @@ const GaugeGraph = ({data, width, height, kind}) => {
             topY = (radius + 5) * Math.sin(_in);
           return 'translate(' + topX + ',' + topY + ')';
         })
+        .attr('dy', () => {
+          let branch = Math.floor((Math.abs(data.min) + data.branch) * step),
+              market = Math.floor((Math.abs(data.min) + data.market) * step);
+          if(Math.abs(branch - market) <= diff){
+            if(branch < market ){
+              if(branch < (rmax + rmin) / 2 && market < (rmax + rmin) / 2){
+                return -10;
+              }else{
+                return 10;
+              }
+            }else{
+              if(branch < (rmax + rmin) / 2 && market < (rmax + rmin) / 2){
+                return 10;
+              }else{
+                return -10;
+              }
+            }
+          }else return 0;
+          
+        })
         .style('text-anchor', d => d < (rmax + rmin) / 2 ? 'end' : 'start')
-        .style('font-size', '9pt')
+        .style('font-size', '8pt')
         .style('font-weight', '600')
         .attr('fill', 'black')
         .text(d => {
@@ -278,16 +314,17 @@ const GaugeGraph = ({data, width, height, kind}) => {
       updatePercent(0, data.company);
     }
     drawGraph();
-  });
+  }, [data, width]); //eslint-disable-line
   
   return (
     <div>
-      <svg width={w} height={h * 0.6}>
+      <svg width={w} height={h * 0.5}>
         <g transform={`translate(${w / 2}, ${h * 0.4})`} ref={graphRef} />
       </svg>
-      <div className="columns" style={{padding: 0, fontSize: '22pt', fontWeight:'bold', color: '#bdbbbc', textAlign:'center'}}>
+      <div className="columns" style={{padding: 0, fontSize: '22pt', fontWeight:'bold', color: 'grey', textAlign:'center'}}>
         <div className="column" style={{padding: 0}}>
           <span>{data.company == Math.floor(data.company) ? data.company.toFixed(0) : data.company.toFixed(1)}</span>
+          <span>{kind == 1 || kind == 2 || kind == 3 ? '%' : ''}</span>
         </div>
       </div>
       <div className="columns" style={{padding: 0, fontSize: '12pt', color: '#bdbbbc', textAlign:'center'}}>
@@ -333,39 +370,39 @@ const GaugeGraphContainer = ({data}) => {
 
   return (
     <div className="column">
-      <div className="columns is-desktop">
+      <div className="columns">
         <div className="column" style={{textAlign:'center'}}>
           <div style={{width: '100%'}} ref={svgContainerRef}>
-          {svgSize.width && <GaugeGraph key={0} kind={0} data={i_data[0]} width={svgSize.width} height={250} />}
+          {svgSize.width && <GaugeGraph key={0} kind={0} data={i_data[0]} width={svgSize.width} height={270} />}
           </div>
         </div>
         <div className="column" style={{textAlign:'center'}}>
           <div style={{width: '100%'}}>
-            {svgSize.width && <GaugeGraph key={1} kind={1} data={i_data[1]} width={svgSize.width} height={250} />}
+            {svgSize.width && <GaugeGraph key={1} kind={1} data={i_data[1]} width={svgSize.width} height={270} />}
           </div>
         </div>
         <div className="column" style={{textAlign:'center'}}>
           <div style={{width: '100%'}}>
-            {svgSize.width && <GaugeGraph key={2} kind={2} data={i_data[2]} width={svgSize.width} height={250} />}
+            {svgSize.width && <GaugeGraph key={2} kind={2} data={i_data[2]} width={svgSize.width} height={270} />}
           </div>
         </div>
         <div className="column" style={{textAlign:'center'}}>
           <div style={{width: '100%'}}>
-            {svgSize.width && <GaugeGraph key={3} kind={3} data={i_data[3]} width={svgSize.width} height={250} />}
+            {svgSize.width && <GaugeGraph key={3} kind={3} data={i_data[3]} width={svgSize.width} height={270} />}
           </div>
         </div>
       </div>              
-      <div className="columns is-desktop">              
+      <div className="columns">              
         <div className="column">
-          <div className="columns is-desktop">
+          <div className="columns">
             <div className="column" style={{textAlign:'center'}}>
               <div style={{width: '100%'}}>
-                {svgSize.width && <GaugeGraph key={4} kind={4} data={i_data[4]} width={svgSize.width} height={250} />}
+                {svgSize.width && <GaugeGraph key={4} kind={4} data={i_data[4]} width={svgSize.width} height={270} />}
               </div>
             </div>
             <div className="column" style={{textAlign:'center'}}>
               <div style={{width: '100%'}}>
-                {svgSize.width && <GaugeGraph key={5} kind={5} data={i_data[5]} width={svgSize.width} height={250} />}
+                {svgSize.width && <GaugeGraph key={5} kind={5} data={i_data[5]} width={svgSize.width} height={270} />}
               </div>
             </div>
           </div>

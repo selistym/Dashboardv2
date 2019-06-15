@@ -10,7 +10,7 @@ const BalanceGraph = ({data, width, height}) => {
         rightRef = useRef();
 
   const w = width, h = height - 120;
-  const colors_left = ['#63ae2d', '#a6ae2d', '#ef7d00', '#de0730'];
+  const colors_left = ['#63ae2d', '#a6ae2d', '#cc7332', '#ff8c00'];
   const colors_right = ['#63ae2d', '#a6ae2d', '#ef7d00', '#de0730'];
   
   useEffect(() => {    
@@ -116,8 +116,8 @@ const BalanceGraphContainer = ({data}) => {
     }    
   }
   return (
-    <div className="columns">
-      <div className="column is-2">
+    <div style={{display:'flex'}}>
+      <div style={{width:'15%'}}>
         <div className="columns" style={{height: 90}}></div>
         <div className="columns">
           <ul>
@@ -130,18 +130,18 @@ const BalanceGraphContainer = ({data}) => {
               <span style={{fontSize: '10pt'}}>Current</span>
             </li>
             <li>
-              <span style={{ color: '#ef7d00', fontWeight: '600', fontSize: '15pt' }}>&nbsp;&nbsp;●&nbsp;</span>
+              <span style={{ color: '#cc7332', fontWeight: '600', fontSize: '15pt' }}>&nbsp;&nbsp;●&nbsp;</span>
               <span style={{fontSize: '10pt'}}>NonCurrent</span>
             </li>
             <li>
-              <span style={{ color: '#de0730', fontWeight: '600', fontSize: '15pt' }}>&nbsp;&nbsp;●&nbsp;</span>
+              <span style={{ color: '#ff8c00', fontWeight: '600', fontSize: '15pt' }}>&nbsp;&nbsp;●&nbsp;</span>
               <span style={{fontSize: '10pt'}}>Goodwill</span>
             </li>
           </ul>
         </div>        
       </div>
-      <div className="column is-8" style={{padding: 0}}>
-        <div style={{width: '100%'}} ref={svgContainerRef}>
+      <div style={{width:'70%', padding:'0'}}>
+        <div  ref={svgContainerRef}>
           {svgSize.width && (
             <div>
               <SingleSlider data={years} width={svgSize.width} height={70} onChangeHandler={onChangeYear}/>            
@@ -158,7 +158,7 @@ const BalanceGraphContainer = ({data}) => {
           )}
         </div>
       </div>
-      <div className="column is-2">
+      <div style={{width:'15%'}}>
       <div className="columns" style={{height: 90}}></div>
         <div className="columns">
           <ul>

@@ -8,7 +8,7 @@ import NegativeGraphContainer from '../NegativeGraphContainer';
 import BalanceGraphContainer from '../BalanceGraphContainer';
 import RoundGraphContainer from '../RoundGraphContainer';
 import StockGraphContainer from '../StockGraphContainer';
-import GaugeGraphContainer from '../GaugeGraph';
+import GaugeGraphContainer from '../GaugeGraphContainer';
 
 import { formatIntl, formatTime, formatDate, formatVolume } from '../../lib/format-intl';
 import { useHighlight } from '../../lib/custom-hooks';
@@ -17,6 +17,7 @@ const Security = props => {
   const { togglePortfolio, isInPortfolio, security } = props;
   const last = +(security && security.liveData && security.liveData.last);
   const highlightClass = useHighlight(last);
+  
   let changeClass = '';
   if (security && security.liveData && security.liveData.netChange < 0) changeClass = 'has-text-danger';
   if (security && security.liveData && security.liveData.netChange > 0) changeClass = 'has-text-success';
@@ -254,7 +255,7 @@ const Security = props => {
         </div>
       </div>
 
-      <div className="box  has-text-grey is-mobile">
+      <div className="box has-text-grey">
         <h3 className="subtitle is-5 has-text-weight-bold has-text-grey" style={{ height: '10px' }}>
           Price basics {security && security.name}
         </h3>
@@ -265,6 +266,7 @@ const Security = props => {
             : <p>No Data</p>}
         </div>
       </div>
+      
       <div className="box  has-text-grey" style={{ height: '460px' }}>
         <h3 className="subtitle is-5 has-text-weight-bold has-text-grey" style={{ height: '10px' }}>
           Historic performance

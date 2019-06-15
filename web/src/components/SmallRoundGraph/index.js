@@ -34,8 +34,7 @@ const SmallRoundGraph = props => {
         }
       ];
       let colors = { red: '#f45b63', orange: '#f49d73', green: '#72c14a' };
-      const setColor = total => (total <= 50 ? colors.red : total >= 70 ? colors.green : colors.orange);
-      const setFontSize = radius => (radius <= 10 ? 11 : radius >= 50 ? 14 : 12);
+      const setColor = total => (total <= 50 ? colors.red : total >= 70 ? colors.green : colors.orange);      
 
       let radius = Math.min(width, height) / 1.6,
         spacing = 0.05;

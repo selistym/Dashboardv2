@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import * as d3 from 'd3';
 
@@ -51,7 +51,7 @@ const SingleSlider = ({data, width, height, onChangeHandler}) => {
 
   useEffect(() => {    
     d3.select(".handler").attr('cx', xScale(data[data.length - 1]));
-  }, [width]);
+  }, [width]); //eslint-disable-line
 
   useEffect(() => {
     let trueMouseValue;

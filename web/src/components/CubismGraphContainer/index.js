@@ -22,7 +22,7 @@ const select_btStyle = {
 
 const CubismGraph = ({ data, period, width }) => {
   const graphRef = useRef();
-  let toDate, fromDate, dateLen;
+  let toDate, fromDate, dateLen;  
   const getDateArray = (_start, _end) => {
     var arr = new Array(),
       dt = _start;
@@ -34,11 +34,19 @@ const CubismGraph = ({ data, period, width }) => {
   };
   const setShowDateInfo = period => {
     switch (period) {
-      case 'All':
-        fromDate = data[0].globalQuotes[0].date;
-        toDate = data[0].globalQuotes[data[0].globalQuotes.length - 1].date;
-        dateLen = getDateArray(new Date(fromDate), new Date(toDate)).length;
-
+      case 'All':        
+        var max_date = data[0].globalQuotes[0].date, min_date = data[0].globalQuotes[0].date;
+        for(let i = 0; i < data.length; i++){
+          if(new Date(max_date) < new Date(data[i].globalQuotes[data[i].globalQuotes.length - 1].date)){
+            max_date = data[i].globalQuotes[data[i].globalQuotes.length - 1].date;
+          }
+          if(new Date(min_date) > new Date(data[i].globalQuotes[0].date)){
+            min_date = data[i].globalQuotes[0].date;
+          }
+        }
+        fromDate = min_date;
+        toDate = max_date;
+        dateLen = getDateArray(new Date(fromDate), new Date(toDate)).length;        
         break;
       case '1 M':
         dateLen = 30;
@@ -84,7 +92,7 @@ const CubismGraph = ({ data, period, width }) => {
         for (let j = 0; j < input_data[p].globalQuotes.length; j++) {
           if (input_data[p].globalQuotes[j].date == dateRange[i]) {
             prv_data = {
-              date: input_data[p].globalQuotes[j].date,
+              date: new Date(input_data[p].globalQuotes[j].date),
               close: input_data[p].globalQuotes[j].close,
               is_null: false
             };
@@ -95,7 +103,7 @@ const CubismGraph = ({ data, period, width }) => {
         }
         if (uneq) {
           c_el.globalQuotes.push({
-            date: dateRange[i],
+            date: new Date(dateRange[i]),
             close: prv_data.close,
             is_null: true
           });
@@ -109,7 +117,7 @@ const CubismGraph = ({ data, period, width }) => {
     return Object.assign({}, d, { globalQuotes: d.globalQuotes.sort((x, y) => d3.ascending(x.date, y.date)) });
   });
   let c_data = getConvertData(data2);
-
+  // console.log(c_data, 'converted data')
   useEffect(() => {
     let showStep = dateLen / width;
     var c = context()
@@ -202,7 +210,7 @@ const CubismGraph = ({ data, period, width }) => {
 
       return c.metric(function(start, stop, step, callback) {
         (start = +start), (stop = +stop);
-
+        // console.log(datum, 'datum')
         let initValue = datum.globalQuotes[0].close == 0 ? getNearest(datum.globalQuotes) : datum.globalQuotes[0].close,
           showValue;
         datum.globalQuotes[0].close = initValue;
@@ -216,12 +224,14 @@ const CubismGraph = ({ data, period, width }) => {
         }
 
         if (isNaN(last)) last = start;
-        let revision;
+        let revision, focusDate;
         while (last < stop) {
           if (i > datum.globalQuotes.length - 1) break;
           revision = new Date(last).toISOString().slice(0, 10);
-
-          if (revision == datum.globalQuotes[i].date) {
+          focusDate = (datum.globalQuotes[i].date).toISOString().slice(0, 10);
+          // if(i < 20)
+          //   console.log(new Date(revision), new Date(focusDate), 'revision')
+          if (new Date(revision) <= new Date(focusDate)) {
             value = datum.globalQuotes[i].close;
             showValue = ((value - initValue) / initValue).toFixed(2);
             values.push(showValue);

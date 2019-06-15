@@ -1,45 +1,44 @@
 import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import ResponsiveWrapper from './ResponsiveWrapper';
 import * as d3 from 'd3';
 
-const RoundGraph = props => {
-  const { params, idx } = props;
-
-  let dataUpdated = [
-    {
-      index: 0.7,
-      text: 'Dividend',
-      value: params.Dividend ? params.Dividend / 100 : 0
-    },
-    {
-      index: 0.6,
-      text: 'Balance',
-      value: params.Balance ? params.Balance / 100 : 0
-    },
-    {
-      index: 0.5,
-      text: 'Growth',
-      value: params.Growth ? params.Growth / 100 : 0
-    },
-    {
-      index: 0.4,
-      text: 'Value',
-      value: params.Value ? params.Value / 100 : 0
-    }
-  ];
-  let width = props.parentWidth, /* eslint-disable-line */
-      height = props.parentWidth; /* eslint-disable-line */
-
+const SmallRoundGraph = props => {
+  const { params, idx, width } = props;
+  let height = width * 0.8;
+  
   const roundRef = useRef();
+  const lineRef = useRef();
 
   useEffect(() => {
     const drawRound = () => {
+      let dataUpdated = [
+        {
+          index: 0.7,
+          text: 'Dividend',
+          value: params.Dividend ? params.Dividend / 100 : 0
+        },
+        {
+          index: 0.6,
+          text: 'Balance',
+          value: params.Balance ? params.Balance / 100 : 0
+        },
+        {
+          index: 0.5,
+          text: 'Growth',
+          value: params.Growth ? params.Growth / 100 : 0
+        },
+        {
+          index: 0.4,
+          text: 'Value',
+          value: params.Value ? params.Value / 100 : 0
+        }
+      ];
       let colors = { red: '#f45b63', orange: '#f49d73', green: '#72c14a' };
       const setColor = total => (total <= 50 ? colors.red : total >= 70 ? colors.green : colors.orange);
+      const setFontSize = radius => (radius <= 10 ? 11 : radius >= 50 ? 14 : 12);
 
-      let radius = Math.min(width, height) / 2,
-        spacing = 0.09;
+      let radius = Math.min(width, height) / 1.6,
+        spacing = 0.05;
 
       d3.select(roundRef.current)
         .selectAll('*')
@@ -65,9 +64,9 @@ const RoundGraph = props => {
       field
         .append('text')
         .style('font-weight', 'bold')
-        .style('font-size', '8pt')
+        .style('font-size', '6pt')
         .attr('text-anchor', 'middle')
-        .attr('dy', '0.3em')
+        .attr('dy', '0.4em')
         .attr('fill', setColor(total))
         .text(total);
       var arcs = field
@@ -76,22 +75,9 @@ const RoundGraph = props => {
         .style('fill', () => setColor(total));
 
       arcs
-        // .style('stroke', '#fff')
-        // .style('stroke-width', 2)
-        // .style('cursor', 'pointer')
         .transition()
         .duration(750)
         .attrTween('d', arcTween(arcBody));
-
-      // field
-      //   .append('text')
-      //   .attr('dy', '-.15em')
-      //   .attr('dx', '-0.75em')
-      //   .style('text-anchor', 'middle')
-      //   .attr('transform', d => 'translate(' + [0, -d.index * radius] + ')')
-      //   .style('font-size', '8pt')
-      //   .style('fill', setColor(total))
-      //   .text(d => d.text.split('')[0]);
 
       function arcTween(arc) {
         return function(d) {
@@ -104,18 +90,18 @@ const RoundGraph = props => {
       }
     };
     drawRound();
-  }, [params.Dividend, params.Balance, params.Growth, params.Value]);//eslint-disable-line
+  }, [JSON.stringify(params), width]); //eslint-disable-line
 
   return (
     <>
-      <svg className={'smallroundChart' + idx} width={width} height={height}>
-        <g className={'smallround' + idx} ref={roundRef} transform={`translate(${width / 2}, ${height / 2})`} />
+      <svg className={'roundChart' + idx} width={width} height={height}>
+        <g className={'round' + idx} ref={roundRef} transform={`translate(${width / 2}, ${height / 2})`} />
+        <g className={'line' + idx} ref={lineRef} transform={`translate(${width / 2}, ${height / 2})`} />
       </svg>
     </>
   );
 };
-
-RoundGraph.propTypes = {
+SmallRoundGraph.propTypes = {
   params: PropTypes.shape({
     Year: PropTypes.number.isRequired,
     Total: PropTypes.number.isRequired,
@@ -125,7 +111,8 @@ RoundGraph.propTypes = {
     Value: PropTypes.number.isRequired
   }).isRequired,
   idx: PropTypes.string.isRequired,
-  filterCondition: PropTypes.array
+  filterCondition: PropTypes.array,
+  width: PropTypes.number
 };
 
-export default ResponsiveWrapper(RoundGraph);
+export default SmallRoundGraph;

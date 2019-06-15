@@ -6,7 +6,8 @@ import Link from 'next/link';
 import UserMenu from '../Layout/UserMenu';
 
 const LeftNavbar = ({ session }) => (
-  <div className="column is-full-mobile is-full-tablet" style={{ backgroundColor: '#888', width: '180px' }}>
+  // <div className="column is-full-mobile is-full-tablet is-2" style={{ backgroundColor: '#888'}}>
+  <div>
     <div style={{ textAlign: 'center', margin: '20px' }}>
       <img src="../../static/logo.png" />
     </div>
@@ -41,7 +42,7 @@ const LeftNavbar = ({ session }) => (
         </Link>
       </div>
       <div style={{ padding: '3px' }}>
-        <Link href="/security-search">
+        <Link href="/">
           <a>Securities</a>
         </Link>
       </div>

@@ -17,7 +17,7 @@ const SecuritiesSection = ({ securities, loadMoreSecurities, subscribeToSecuriti
     <section style={{ paddingTop: '20px' }}>
       <div
         className="columns is-mobile"
-        style={{ display: 'flex', flexFlow: 'wrap', justifyContent: 'space-around' }}
+        style={{ display: 'flex', flexFlow: 'wrap', justifyContent: 'space-around', padding:'40px' }}
         data-testid="filtered-securities"
       >
         {securities.map(s => (

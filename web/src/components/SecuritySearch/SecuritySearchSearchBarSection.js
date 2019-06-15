@@ -37,11 +37,16 @@ const SecuritySearchSearchBarSection = () => {
             onChange={() => asyncDispatchDebounced()}
             ref={inputEl}
             placeholder="Search a specific security... "
+            defaultValue={store.securityFilterText}
           />
         </p>
-        <button className="button" style={{ backgroundColor: '#b9b9b9', color: 'white', fontStyle: 'italic' }}>
+        <a
+          className="button"
+          style={{ backgroundColor: '#b9b9b9', color: 'white', fontStyle: 'italic' }}
+          href={'https://stockscreener.app.veb.net/'}
+        >
           Use VEB-filter
-        </button>
+        </a>
       </div>
     </div>
   );

@@ -1,83 +1,64 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import gql from 'graphql-tag';
+import { includes } from 'lodash';
+
+import { usePortfolio } from '../../lib/custom-hooks';
+
 import { Query } from 'react-apollo';
+import gql from 'graphql-tag';
 
 import ErrorMessage from '../ErrorMessage';
 import Loading from '../Loading';
 
-import { usePortfolio } from '../../lib/custom-hooks';
-import Portfolio from './Portfolio';
+import SecuritiesContainer from '../SecuritySearch/SecuritiesContainer';
 
-export const PORTFOLIO_QUERY = gql`
-  query PortfolioQuery($filter: SecurityFilterInput) {
-    securities(filter: $filter) @connection(key: "security", filter: ["filter"]) {
+export const INSTRUMENT_SUGGESTIONS_QUERY = gql`
+  query InstrumentSuggestions {
+    instrumentSuggestions {
       id
       name
       sector
-      currency
-      liveData {
-        last
-        changePercent
-      }
-    }
-  }
-`;
-
-export const SECURITIES_SUBSCRIPTION = gql`
-  subscription SecuritiesSearchSubscription($securityIds: [String]!) {
-    securityUpdated(securityIds: $securityIds) {
-      id
-      liveData {
-        dayHigh
-        dayLow
-        last
-        cumulativeVolume
-        netChange
-        changePercent
-      }
+      countryCode
+      marketSize
     }
   }
 `;
 
 const PortfolioContainer = () => {
   const { portfolio } = usePortfolio({});
+  const defaultPortfolio = portfolio['default'];
+  const portfolioIds = Object.values(defaultPortfolio).filter(p=>p.inPortfolio).map(p=>p.id);
 
-  if (portfolio['default'] === undefined) {
-    return null;
-  }
-  const portfolioKeys = Object.values(portfolio['default'])
-    .filter(p => p.inPortfolio)
-    .map(p => p.id);
 
   return (
-    <Query
-      query={PORTFOLIO_QUERY}
-      variables={{
-        filter: {
-          ids: portfolioKeys
-        }
-      }}
-    >
-      {({ loading, error, data, subscribeToMore }) => {
-        if (error) return <ErrorMessage message="Error loading securities." />;
-        if (loading) return <Loading />;
+    <div>
+      <div className="columns is-mobile">
+        <div className="column">
+          <h3 className="subtitle is-6 has-text-centered" style={{ height: '20px', color: '#a9a9a9' }}>
+            All stocks show an average rating score based on Dividend, Balance, Growth and Value.
+          </h3>
+        </div>
+      </div>
+      <Query query={INSTRUMENT_SUGGESTIONS_QUERY}>
+        {({ loading, error, data }) => {
+          if (error) return <ErrorMessage message="Error loading securities." />;
+          if (loading) return <Loading />;
 
-        if (data.securities === undefined) {
-          return <p>Undefined securites</p>;
-        }
+          const filteredInstrumentSuggestions = data.instrumentSuggestions.filter(
+            s => includes(portfolioIds, s.id)
+          );
 
-        const subscribeToSecurities = () => {
-          subscribeToMore({
-            document: SECURITIES_SUBSCRIPTION,
-            variables: { securityIds: portfolioKeys }
-          });
-        };
-
-        return <Portfolio securities={data.securities} subscribeToSecurities={subscribeToSecurities} />;
-      }}
-    </Query>
+          return (
+            <div>
+              <SecuritiesContainer suggestions={filteredInstrumentSuggestions} />
+              <hr/>
+              <pre>{JSON.stringify(portfolio['default'], null, 2)}</pre>
+            </div>
+          );
+        }}
+      </Query>
+    </div>
   );
 };
 
@@ -86,3 +67,16 @@ PortfolioContainer.propTypes = {
 };
 
 export default PortfolioContainer;
+
+//
+// <ul>
+//   {portfolioIds.map(k => (
+//     <li key={k}>
+//       <button className={'button'} onClick={() => togglePortfolio(defaultPortfolio[k].id)}>
+//         {portfolio['default'][k].id}
+//       </button>
+//     </li>
+//   ))}
+// </ul>
+// <hr />
+// <pre>{JSON.stringify(portfolio['default'], null, 2)}</pre>

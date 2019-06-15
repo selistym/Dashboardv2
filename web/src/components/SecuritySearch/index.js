@@ -1,3 +1,3 @@
-const SecuritySearch = require('./SecuritySearch');
+const SecuritySearchLayout = require('./SecuritySearchLayout');
 
-module.exports = SecuritySearch;
+module.exports = SecuritySearchLayout;

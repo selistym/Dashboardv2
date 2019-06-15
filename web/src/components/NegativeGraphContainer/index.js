@@ -1,15 +1,13 @@
-import React, {useEffect, useRef} from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import useDimensions from '../Dimensions';
 import * as d3 from 'd3';
 
 const margin = 20;
 
-const BarGroup = ({data, bandwidth, xScale, step_data, identy}) => {
-
+const BarGroup = ({ data, bandwidth, xScale, step_data, identy, sector }) => {
   const graphRef = useRef();
   const drawBarGroup = () => {
-    console.log('re-effect negative')
     const durate = 1000;
     const yScale = d3
       .scaleBand()
@@ -143,23 +141,23 @@ const BarGroup = ({data, bandwidth, xScale, step_data, identy}) => {
         }
       });
     // // //add EBITDA
-    d3.select(graphRef.current)
-      .selectAll('path_ebita')
-      .data(ebitdas)
-      .enter()
-      .append('path')
-      .attr('d', d => 'M' + xScale(d.value) + ' -1 L' + xScale(d.value) + ' ' + (yScale.bandwidth() + 2) + ' Z')
-      .style('stroke', '#de0730')
-      .style('stroke-width', 3);
-    //.style("opacity", d =>  d.label.includes("bitda")==true ? 0 : 1);
+    if(sector != 'Finance')
+      d3.select(graphRef.current)
+        .selectAll('path_ebita')
+        .data(ebitdas)
+        .enter()
+        .append('path')
+        .attr('d', d => 'M' + xScale(d.value) + ' -1 L' + xScale(d.value) + ' ' + (yScale.bandwidth() + 2) + ' Z')
+        .style('stroke', '#de0730')
+        .style('stroke-width', 3);
 
-    // //add percent
+    // //add percent text
     d3.select(graphRef.current)
       .selectAll('text')
       .data(bar_data)
       .enter()
       .append('text')
-      .attr('x', d => (d.value > 0 ? xScale(d.value) : xScale(d.value)))
+      .attr('x', d => xScale(d.value))
       .attr('y', d => (d.label.includes('Ebitda') == false ? yScale(d.label) + yScale.bandwidth() / 2 : 0))
       .attr('dx', d => (d.value > 0 ? 5 : -5))
       .text(d => (d.value == 0 ? '' : d.value.toFixed(0) + ''))
@@ -167,24 +165,25 @@ const BarGroup = ({data, bandwidth, xScale, step_data, identy}) => {
       .attr('alignment-baseline', 'central')
       .style('font-size', '10pt')
       .style('fill', 'black');
-  }
-  useEffect(() => drawBarGroup(), [data, bandwidth, xScale]);//eslint-disable-line
-  return (
-    <g ref={graphRef} />
-  );
-}
+  };
+  useEffect(() => drawBarGroup(), [JSON.stringify(data), xScale]); //eslint-disable-line
+  return <g ref={graphRef} />;
+};
 
-const NegativeGraph = ({width, height, data}) => {
+const NegativeGraph = ({ width, height, data, sector }) => {
   const xAxisRef = useRef();
   const yAxisRef = useRef();
 
   const getRange = data => {
-    let arr = [];    
+    let arr = [];
+    let cnv_data = data.map(d => {
+      return d;
+    });
 
-    for (let i = 0; i < data.length; i++) {
-      for (let j = 0; j < data[i].values.length; j++) {
-        if (!data[i].values[j].value) data[i].values[j].value = 0;
-        arr.push(Math.abs(data[i].values[j].value));
+    for (let i = 0; i < cnv_data.length; i++) {
+      for (let j = 0; j < cnv_data[i].values.length; j++) {
+        if (!cnv_data[i].values[j].value) cnv_data[i].values[j].value = 0;
+        arr.push(Math.abs(cnv_data[i].values[j].value));
       }
     }
 
@@ -192,21 +191,21 @@ const NegativeGraph = ({width, height, data}) => {
       max = d3.max(d3.values(arr)) * 1.2,
       range = max * 2;
     return { min: min, max: max, range: range };
-  }
+  };
   const step_data = getRange(data);
 
   const xScale = d3
-      .scaleLinear()
-      .range([margin, width - margin * 2])
-      .domain([-step_data.max, step_data.max]);
+    .scaleLinear()
+    .range([0, width - margin * 3])
+    .domain([-step_data.max, step_data.max]);
 
   const y0Scale = d3
-      .scaleBand()
-      .rangeRound([height - margin, 0])
-      .padding(0.3)
-      .domain(data.map(d => d.year));
+    .scaleBand()
+    .rangeRound([height - margin, 0])
+    .padding(0.3)
+    .domain(data.map(d => d.year));
 
-  const drawGraph = () => {    
+  const drawGraph = () => {
     const xAxis = d3
       .axisBottom(xScale)
       .tickSize(height - margin)
@@ -240,28 +239,32 @@ const NegativeGraph = ({width, height, data}) => {
 
     d3.select(yAxisRef.current)
       .selectAll('text')
+      .attr('x', -10)
       .style('text-anchor', 'middle')
       .attr('fill', 'grey')
       .style('font-size', '10pt');
-  }
-  useEffect(() => drawGraph(), [width, height, data]); //eslint-disable-line
+  };
+  useEffect(() => drawGraph(), [width, height, JSON.stringify(data)]); //eslint-disable-line
+  const barGroups = useMemo(
+    () =>
+      data.map((d, i) => (
+        <g key={i} className={`bar-group${d.year}`} transform={`translate(0, ${y0Scale(d.year)})`}>
+          <BarGroup key={i} identy={i} data={d} xScale={xScale} bandwidth={y0Scale.bandwidth()} step_data={step_data} sector={sector}/>
+        </g>
+      )),
+    [width, JSON.stringify(data)]//eslint-disable-line
+  ); 
   return (
     <svg width={width} height={height}>
-      <g transform={`translate(${margin}, 0)`}>
+      <g transform={`translate(${margin * 2}, 0)`}>
         <g ref={xAxisRef} />
         <g ref={yAxisRef} />
-        {
-          data.map((d, i) => 
-            <g key={i} className={`bar-group${d.year}`} transform={`translate(0, ${y0Scale(d.year)})`}>
-              <BarGroup key={i} identy={i} data={d} xScale={xScale} bandwidth={y0Scale.bandwidth()} step_data={step_data} />
-            </g>
-          )
-        }
+        {barGroups}
       </g>
     </svg>
   );
-}
-const NegativeGraphContainer = ({data}) => {
+};
+const NegativeGraphContainer = ({ data , sector}) => {
   const [svgContainerRef, svgSize] = useDimensions();
   const cap_data = [
     {
@@ -351,19 +354,20 @@ const NegativeGraphContainer = ({data}) => {
       ]
     }
   ];
-  return(
+  return (
     <>
-      {!data ? <span>No Data</span>
-      :  <div ref={svgContainerRef}>
-          {svgSize.width && (
-            <NegativeGraph data={cap_data} width={svgSize.width} height={400} />
-          )}
+      {!data ? (
+        <span>No Data</span>
+      ) : (
+        <div ref={svgContainerRef}>          
+          {svgSize.width && <NegativeGraph data={cap_data} width={svgSize.width} height={400} sector={sector}/>}
         </div>
-      }
+      )}
     </>
   );
-}
+};
 BarGroup.propTypes = {
+  sector: PropTypes.string,
   data: PropTypes.shape({
     year: PropTypes.number.isRequired,
     values: PropTypes.arrayOf(
@@ -380,6 +384,7 @@ BarGroup.propTypes = {
 };
 
 NegativeGraph.propTypes = {
+  sector: PropTypes.string,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   data: PropTypes.arrayOf(
@@ -395,7 +400,8 @@ NegativeGraph.propTypes = {
   ).isRequired
 };
 
-NegativeGraphContainer.propTypes = {  
+NegativeGraphContainer.propTypes = {
+  sector: PropTypes.string,
   data: PropTypes.shape({
     DividendPayOutLY: PropTypes.number,
     DividendPayOutLYMin1: PropTypes.number,

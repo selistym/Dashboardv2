@@ -1,14 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import ResponsiveWrapper from './ResponsiveWrapper';
 import * as d3 from 'd3';
 
-const RoundGraph = props => {
-  const { params, idx, filterCondition, parentWidth } = props;
-  let strFilter = filterCondition ? filterCondition.sort().toString() : '';
+const RoundGraphContainer = props => {
+  const { params, idx, filterCondition, width } = props;
+  let strFilter = filterCondition ? filterCondition.sort().toString() : '',
+      height = width * 0.8;
   
-  let width = parentWidth, height = parentWidth * 0.8;
-
   const roundRef = useRef();
   const lineRef = useRef();
 
@@ -151,18 +149,7 @@ const RoundGraph = props => {
       }
     };
     drawRound();
-  }, [
-    params.Dividend,
-    params.Balance,
-    params.Growth,
-    params.Value,
-    params.Total,
-    strFilter,    
-    filterCondition,
-    height,
-    idx,    
-    width
-  ]);
+  }, [JSON.stringify(params), strFilter, width]); //eslint-disable-line
 
   return (
     <>
@@ -173,7 +160,7 @@ const RoundGraph = props => {
     </>
   );
 };
-RoundGraph.propTypes = {
+RoundGraphContainer.propTypes = {
   params: PropTypes.shape({
     Year: PropTypes.number.isRequired,
     Total: PropTypes.number.isRequired,
@@ -184,7 +171,7 @@ RoundGraph.propTypes = {
   }).isRequired,
   idx: PropTypes.string.isRequired,
   filterCondition: PropTypes.array,
-  parentWidth: PropTypes.number
+  width: PropTypes.number
 };
 
-export default ResponsiveWrapper(RoundGraph);
+export default RoundGraphContainer;

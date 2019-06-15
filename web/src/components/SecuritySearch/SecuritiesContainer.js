@@ -11,7 +11,7 @@ import { usePortfolio } from '../../lib/custom-hooks';
 
 import { filter, includes } from 'lodash';
 
-const SECURITIES_PER_PAGE = 5;
+const SECURITIES_PER_PAGE = 15;
 
 const FILTERED_SECURITIES_QUERY = gql`
   query FilteredSecurities($filter: SecurityFilterInput, $offset: Int, $limit: Int) {
@@ -64,23 +64,25 @@ const SecuritiesContainer = ({ suggestions }) => {
 
   let filteredSuggestions = suggestions;
 
+  // text always overrules all other filters (requirement dd. 2019-06-13)
   if (securityFilterText && securityFilterText !== '') {
     filteredSuggestions = filter(suggestions, s => {
       return s.name.toLowerCase().indexOf(securityFilterText.toLowerCase()) > -1;
     });
+  } else {
+    if (securityFilterCountry && securityFilterCountry.length > 0) {
+      filteredSuggestions = filter(filteredSuggestions, s => includes(securityFilterCountry, s.countryCode));
+    }
+
+    if (securityFilterMarketSize && securityFilterMarketSize.length > 0) {
+      filteredSuggestions = filter(filteredSuggestions, s => includes(securityFilterMarketSize, s.marketSize));
+    }
+
+    if (securityFilterSector && securityFilterSector.length > 0) {
+      filteredSuggestions = filter(filteredSuggestions, s => includes(securityFilterSector, s.sector));
+    }
   }
 
-  if (securityFilterCountry && securityFilterCountry.length > 0) {
-    filteredSuggestions = filter(filteredSuggestions, s => includes(securityFilterCountry, s.countryCode));
-  }
-
-  if (securityFilterMarketSize && securityFilterMarketSize.length > 0) {
-    filteredSuggestions = filter(filteredSuggestions, s => includes(securityFilterMarketSize, s.marketSize));
-  }
-
-  if (securityFilterSector && securityFilterSector.length > 0) {
-    filteredSuggestions = filter(filteredSuggestions, s => includes(securityFilterSector, s.sector));
-  }
 
   return (
     <Query

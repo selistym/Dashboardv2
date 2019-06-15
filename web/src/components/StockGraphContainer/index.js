@@ -1,14 +1,13 @@
-import React, {useRef, useEffect} from 'react';
+import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import useDimensions from '../Dimensions';
 import * as d3 from 'd3';
 
 const margin = 20;
 
-const StockGraph = ({data, width, height}) => {  
+const StockGraph = ({ data, width, height }) => {
   const graphRef = useRef();
-  const drawGraph = (w, h, param) =>  {
-    console.log('re-effecting !', w, h, param)
+  const drawGraph = (w, h, param) => {
     const formatTime = d3.timeFormat('%Y');
     let max = d3.max(param.map(d => d.ConsolidatedNetIncome)),
       min = d3.min(param.map(d => d.ConsolidatedNetIncome)),
@@ -45,9 +44,7 @@ const StockGraph = ({data, width, height}) => {
         .scaleLinear()
         .domain([domain_min, domain_max])
         .rangeRound([h - margin, margin]),
-      xAxis = d3
-        .axisBottom(x)
-        .tickSize(0),
+      xAxis = d3.axisBottom(x).tickSize(0),
       yAxis = d3
         .axisLeft(y)
         .tickSize(10)
@@ -57,8 +54,9 @@ const StockGraph = ({data, width, height}) => {
       .selectAll('*')
       .remove();
 
-    const xAxisArea = d3.select(graphRef.current)
-      .append("g")
+    const xAxisArea = d3
+      .select(graphRef.current)
+      .append('g')
       .attr('class', 'x-axis-stock')
       .attr('transform', `translate(${margin * 2}, ${y(0)})`)
       .attr('stroke-width', 2)
@@ -71,14 +69,15 @@ const StockGraph = ({data, width, height}) => {
       .style('font-size', '10pt');
 
     d3.select(graphRef.current)
-      .append("g")
+      .append('g')
       .attr('class', 'y-axis-stock')
       .attr('transform', `translate(${margin * 2}, 0)`)
       .attr('stroke-width', 1.5)
       .call(yAxis);
 
-    const stock = d3.select(graphRef.current)
-      .append("g")
+    const stock = d3
+      .select(graphRef.current)
+      .append('g')
       .attr('transform', `translate(${margin * 2}, ${y(0)})`);
 
     stock
@@ -328,19 +327,18 @@ const StockGraph = ({data, width, height}) => {
           h = Math.abs(y((d.ConsolidatedNetIncome * ratio) / 100) - y(0));
         return d.ConsolidatedNetIncome < 0 ? h : -h;
       });
-  }
-  useEffect(() => drawGraph(width - margin, height, data), [width, height, JSON.stringify(data)]);//eslint-disable-line
+  };
+  useEffect(() => drawGraph(width - margin, height, data), [width, height, JSON.stringify(data)]); //eslint-disable-line
   return (
     <svg width={width} height={height}>
-      <g className="graphArea" ref={graphRef} transform={`translate(${margin / 2}, 0)`}/>
+      <g className="graphArea" ref={graphRef} transform={`translate(${margin / 2}, 0)`} />
     </svg>
   );
-}
+};
 
-const StockGraphContainer = ({data}) => {
-
+const StockGraphContainer = ({ data }) => {
   const [svgContainerRef, svgSize] = useDimensions();
-  
+
   const preCorrection = params => {
     return params.map(d => {
       d.ConsolidatedNetIncome = d.ConsolidatedNetIncome ? d.ConsolidatedNetIncome : 0;
@@ -352,52 +350,58 @@ const StockGraphContainer = ({data}) => {
       d.RetainedEarningsEUR = d.RetainedEarningsEUR ? d.RetainedEarningsEUR : 0;
       return d;
     });
-  }
-  
+  };
+
   return (
-      <>
-        {!data || data.length == 0 ? <span>No data</span>
-        : <>
-            <div className="columns">
-              <div className="column" style={{padding: 0, textAlign:'center', fontSize: '18pt'}}>
-                <strong style={{color: '#df072c'}}>*</strong>
-                <strong>Net Income</strong>
+    <>
+      {!data || data.length == 0 ? (
+        <span>No data</span>
+      ) : (
+        <>
+          <div className="columns">
+            <div className="column" style={{ padding: 0, textAlign: 'center', fontSize: '18pt' }}>
+              <strong style={{ color: '#df072c' }}>*</strong>
+              <strong>Net Income</strong>
+            </div>
+          </div>
+          <div className="columns">
+            <div className="column" style={{ width: '100%', justifyContent: 'center' }}>
+              <div ref={svgContainerRef}>
+                {svgSize.width && <StockGraph data={preCorrection(data)} width={svgSize.width} height={265} />}
               </div>
             </div>
-            <div className="columns">
-              <div className="column" style={{ width: '100%', justifyContent: 'center' }}>
-                <div ref={svgContainerRef}>
-                  {svgSize.width && <StockGraph
-                      data={preCorrection(data)}
-                      width={svgSize.width}
-                      height={300}
-                    />}
-                </div>
-              </div>
+          </div>
+          <div className="columns" style={{ textAlign: 'center', fontSize: '11pt' }}>
+            <div className="column" style={{ padding: '0px 0px 0.75rem 0px' }}>
+              <span style={{ color: '#df072c', fontSize: '14pt' }}>●</span>
+              <span>Dividend</span>
             </div>
-            <div className="columns" style={{textAlign:'center', fontSize: '11pt'}}>
-              <div className="column" style={{padding: '0px 0px 0.75rem 0px'}}>
-                <span style={{color: '#df072c', fontSize:'14pt'}}>●</span>
-                <span>Dividend</span>
-              </div>
-              <div className="column" style={{padding: '0px 0px 0.75rem 0px'}}>
-                <span style={{color: '#a2a2a2', fontSize:'14pt'}}>●</span>
-                <span>Retained<br/>&nbsp;&nbsp;&nbsp;Earnings</span>
-              </div>
-              <div className="column" style={{padding: '0px 0px 0.75rem 0px'}}>
-                <span>%&nbsp;</span>
-                <span>Pay-out<br/>Ratio</span>
-              </div>
+            <div className="column" style={{ padding: '0px 0px 0.75rem 0px' }}>
+              <span style={{ color: '#a2a2a2', fontSize: '14pt' }}>●</span>
+              <span>
+                Retained
+                <br />
+                &nbsp;&nbsp;&nbsp;Earnings
+              </span>
             </div>
-          </>
-        }
-      </>
+            <div className="column" style={{ padding: '0px 0px 0.75rem 0px' }}>
+              <span>%&nbsp;</span>
+              <span>
+                Pay-out
+                <br />
+                Ratio
+              </span>
+            </div>
+          </div>
+        </>
+      )}
+    </>
   );
-}
+};
 
 StockGraph.propTypes = {
   width: PropTypes.number.isRequired,
-  height: PropTypes.number.isRequired, 
+  height: PropTypes.number.isRequired,
   data: PropTypes.arrayOf(
     PropTypes.shape({
       ConsolidatedNetIncome: PropTypes.number,
@@ -422,6 +426,6 @@ StockGraphContainer.propTypes = {
       RetainedEarningsEUR: PropTypes.number
     })
   ).isRequired
-}
+};
 
 export default StockGraphContainer;

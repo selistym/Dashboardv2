@@ -327,7 +327,7 @@ const initialSecurityState = {
   allCountries,
   securityFilterText: '',
   securityFilterYear: 2018,
-  securityFilterMarketSize: ['LARGE'],
+  securityFilterMarketSize: ['LARGE', 'MEDIUM', 'SMALL'],
   securityFilterCountry: ['NL'],
   securityFilterArea: ['Dividend', 'Growth', 'Balance', 'Value'],
   securityFilterSector: allSectors.map(s => s.code),

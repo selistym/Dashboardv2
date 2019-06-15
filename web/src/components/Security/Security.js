@@ -2,14 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-import * as d3 from 'd3';
 import AreaGraphContainer from '../AreaGraphContainer';
 import CubismGraphContainer from '../CubismGraphContainer';
-import GaugeGraph from '../GaugeGraph';
-import StockGraphContainer from '../StockGraphContainer';
 import NegativeGraphContainer from '../NegativeGraphContainer';
-import BalanceGraph from '../BalanceGraph';
-import RoundGraph from '../RoundGraph';
+import BalanceGraphContainer from '../BalanceGraphContainer';
+import RoundGraphContainer from '../RoundGraphContainer';
+import StockGraphContainer from '../StockGraphContainer';
+import GaugeGraphContainer from '../GaugeGraph';
 
 import { formatIntl, formatTime, formatDate, formatVolume } from '../../lib/format-intl';
 import { useHighlight } from '../../lib/custom-hooks';
@@ -21,29 +20,7 @@ const Security = props => {
   let changeClass = '';
   if (security && security.liveData && security.liveData.netChange < 0) changeClass = 'has-text-danger';
   if (security && security.liveData && security.liveData.netChange > 0) changeClass = 'has-text-success';
-
-  const getGaugeArray = data => {
-    if (data) {
-      const gaugedata = d3.entries(data);
-      let arr = [],
-        datas = [];
-      for (let i = 0; i < gaugedata.length; i += 3) {
-        arr = [];
-        gaugedata[i] = gaugedata[i] ? gaugedata[i] : 0;
-        gaugedata[i + 1] = gaugedata[i + 1] ? gaugedata[i + 1] : 0;
-        gaugedata[i + 2] = gaugedata[i + 2] ? gaugedata[i + 2] : 0;
-        if (gaugedata[i].value == null) gaugedata[i].value = 0;
-        arr.push(gaugedata[i]);
-        arr.push(gaugedata[i + 1]);
-        arr.push(gaugedata[i + 2]);
-        datas.push(arr);
-      }
-      return datas;
-    } else {
-      return null;
-    }
-  };
-  let gauges = getGaugeArray(security.calculated);
+  
   console.log(security); // eslint-disable-line no-console
   return (
     <div>
@@ -57,27 +34,29 @@ const Security = props => {
               />
             </div>
             <div className="column is-two-thirds-mobile is-three-quarters-tablet is-three-quarters-desktop is-three-quarters-widescreen is-four-fifths-fullhd">
-              <div className="content">
-                <h3
-                  className="subtitle is-5 has-text-weight-bold has-text-grey"
-                  style={{ height: '10px' }}
-                >{`Key figures ${security.name} (${security.ticker})`}</h3>
-
-                <hr />
+              <div className="columns" style={{marginBottom:'10px'}}>
+                <div className="column is-8">
+                  <h3
+                    className="subtitle is-5 has-text-weight-bold has-text-grey"
+                    style={{ height: '10px' }}
+                  >{`Key figures ${security.name} (${security.ticker})`}</h3>
+                </div>
+                <div className="column is-4" style={{textAlign:'right'}}>
+                  {isInPortfolio ? (
+                        <button className="button is-small is-danger" onClick={() => togglePortfolio()}>
+                          - Remove from portfolio
+                        </button>
+                      ) : (
+                        <button className="button is-small is-danger" onClick={() => togglePortfolio()}>
+                          + Add to portfolio
+                        </button>
+                  )}
+                </div>
               </div>
-
+              <hr style={{marginTop: '5px'}}/>
               <div className="columns is-desktop">
                 <div className="column is-full-mobile is-full-tablet is-two-thirds-desktop is-two-thirds-widescreen is-two-thirds-fullhd">
-                  <div className="content" style={{ height: '360px', overflowY: 'scroll' }}>
-                    {isInPortfolio ? (
-                      <button className="button is-small" onClick={() => togglePortfolio()}>
-                        - Remove from portfolio
-                      </button>
-                    ) : (
-                      <button className="button is-small" onClick={() => togglePortfolio()}>
-                        + Add to portfolio
-                      </button>
-                    )}
+                  <div className="content" style={{ height: '360px', overflowY: 'scroll' }}>                    
                     <p style={{ paddingTop: '10px' }}>{security.longBusinessDescription}</p>
                   </div>
                 </div>
@@ -86,11 +65,12 @@ const Security = props => {
                   style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
                 >
                   <div className={'RoundGraph' + security.id} style={{ width: '220px', height: '230px' }}>
-                    {security.calculatedCircular[0] != null ? (
-                      <RoundGraph
+                    {security.calculatedCircular[0] != null ? (                      
+                      <RoundGraphContainer
                         key={security.id}
                         idx={security.id}
                         params={security.calculatedCircular[security.calculatedCircular.length - 1]}
+                        width={220}
                       />
                     ) : (
                       <p>No data</p>
@@ -269,7 +249,7 @@ const Security = props => {
             </table>
           </div>
           <div className="column is-8">
-            <AreaGraphContainer data={security && security.historyPrice100} companyName={security && security.name} />
+            <AreaGraphContainer data={security && security.historyPrice100} companyName={security && security.name} currency={security.currency}/>
           </div>
         </div>
       </div>
@@ -279,45 +259,10 @@ const Security = props => {
           Price basics {security && security.name}
         </h3>
         <hr />
-        <div className="columns is-desktop">
-          <div className="column">
-            <div className="columns">
-              <div className="column is-6">{gauges ? <GaugeGraph data={gauges[0]} kind="0" /> : <p>No Data</p>}</div>
-              <div className="column is-6">{gauges ? <GaugeGraph data={gauges[1]} kind="1" /> : <p>No Data</p>}</div>
-            </div>
-          </div>
-          <div className="column">
-            <div className="columns">
-              <div className="column is-6">{gauges ? <GaugeGraph data={gauges[2]} kind="2" /> : <p>No Data</p>}</div>
-              <div className="column is-6">{gauges ? <GaugeGraph data={gauges[3]} kind="3" /> : <p>No Data</p>}</div>
-            </div>
-          </div>
-        </div>
-        <div className="columns is-desktop is-full-widescreen">
-          <div className="column">
-            <div className="columns">
-              <div className="column is-6">{gauges ? <GaugeGraph data={gauges[4]} kind="4" /> : <p>No Data</p>}</div>
-              <div className="column is-6">{gauges ? <GaugeGraph data={gauges[5]} kind="5" /> : <p>No Data</p>}</div>
-            </div>
-          </div>
-          <div className="column">
-            <div className="content">
-              <p>
-                <span className="200">
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci aperiam, consequuntur dolor dolorum
-                  eveniet ipsum molestiae nobis nostrum nulla numquam optio pariatur quae quisquam reiciendis tempore
-                  velit voluptas. Aliquid, ullam.
-                </span>
-              </p>
-              <p>
-                <span className="150">
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam animi architecto aspernatur at
-                  dolores, mollitia necessitatibus numquam officiis perspiciatis quasi repellat sequi, tempore tenetur?
-                  At consectetur deserunt dolorum error ipsam!
-                </span>
-              </p>
-            </div>
-          </div>
+        <div className="columns">
+          {security.calculated ? 
+            <GaugeGraphContainer data={security.calculated} />
+            : <p>No Data</p>}
         </div>
       </div>
       <div className="box  has-text-grey" style={{ height: '460px' }}>
@@ -345,103 +290,103 @@ const Security = props => {
             <div className="columns">
               <div className="column is-6">
                 <p style={{ fontStyle: 'italic' }}>In millions &euro;</p>
-                <table style={{ verticalAlign: 'middle' }}>
-                    <tbody>
-                      <tr>
-                        <td />
-                        <td>
-                          <strong>2016</strong>
-                        </td>
-                        <td>
-                          <strong>2017</strong>
-                        </td>
-                        <td>
-                          <strong>2018</strong>
-                        </td>
-                      </tr>
-                      <tr style={{ backgroundColor: 'gainsboro' }}>
-                        <td>
-                          <strong>Revenue</strong>
-                        </td>
-                        <td>
-                          {security.calculated3Y && security.calculated3Y.SalesOrRevenueLYMin2
-                            ? security.calculated3Y.SalesOrRevenueLYMin2.toFixed(0)
-                            : 0}
-                        </td>
-                        <td>
-                          {security.calculated3Y && security.calculated3Y.SalesOrRevenueLYMin1
-                            ? security.calculated3Y.SalesOrRevenueLYMin1.toFixed(0)
-                            : 0}
-                        </td>
-                        <td>
-                          {security.calculated3Y && security.calculated3Y.SalesOrRevenueLY
-                            ? security.calculated3Y.SalesOrRevenueLY.toFixed(0)
-                            : 0}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <strong>Gross profit</strong>
-                        </td>
-                        <td style={{ verticalAlign: 'middle' }}>
-                          {security.calculated3Y && security.calculated3Y.GrossIncomeLYMin2
-                            ? security.calculated3Y.GrossIncomeLYMin2.toFixed(0)
-                            : 0}
-                        </td>
-                        <td style={{ verticalAlign: 'middle' }}>
-                          {security.calculated3Y && security.calculated3Y.GrossIncomeLYMin1
-                            ? security.calculated3Y.GrossIncomeLYMin1.toFixed(0)
-                            : 0}
-                        </td>
-                        <td style={{ verticalAlign: 'middle' }}>
-                          {security.calculated3Y && security.calculated3Y.GrossIncomeLY
-                            ? security.calculated3Y.GrossIncomeLY.toFixed(0)
-                            : 0}
-                        </td>
-                      </tr>
-                      <tr style={{ backgroundColor: 'gainsboro' }}>
-                        <td>
-                          <strong>Operating income</strong>
-                        </td>
-                        <td style={{ verticalAlign: 'middle' }}>
-                          {security.calculated3Y && security.calculated3Y.OperatingIncomeLYMin2
-                            ? security.calculated3Y.OperatingIncomeLYMin2.toFixed(0)
-                            : 0}
-                        </td>
-                        <td style={{ verticalAlign: 'middle' }}>
-                          {security.calculated3Y && security.calculated3Y.OperatingIncomeLYMin1
-                            ? security.calculated3Y.OperatingIncomeLYMin1.toFixed(0)
-                            : 0}
-                        </td>
-                        <td style={{ verticalAlign: 'middle' }}>
-                          {security.calculated3Y && security.calculated3Y.OperatingIncomeLY
-                            ? security.calculated3Y.OperatingIncomeLY.toFixed(0)
-                            : 0}
-                        </td>
-                      </tr>
-                      <tr className="has-text-weight-bold">
-                        <td>
-                          <strong>Net income</strong>
-                          <strong className="has-text-danger">*</strong>
-                        </td>
-                        <td style={{ verticalAlign: 'middle' }}>
-                          {security.calculated3Y && security.calculated3Y.ConsolidatedNetIncomeLYMin2
-                            ? security.calculated3Y.ConsolidatedNetIncomeLYMin2.toFixed(0)
-                            : 0}
-                        </td>
-                        <td style={{ verticalAlign: 'middle' }}>
-                          {security.calculated3Y && security.calculated3Y.ConsolidatedNetIncomeLYMin1
-                            ? security.calculated3Y.ConsolidatedNetIncomeLYMin1.toFixed(0)
-                            : 0}
-                        </td>
-                        <td style={{ verticalAlign: 'middle' }}>
-                          {security.calculated3Y && security.calculated3Y.ConsolidatedNetIncomeLY
-                            ? security.calculated3Y.ConsolidatedNetIncomeLY.toFixed(0)
-                            : 0}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                <table style={{ verticalAlign: 'middle', width: '100%' }}>
+                  <tbody style={{ lineHeight: 2 }}>
+                    <tr>
+                      <td />
+                      <td>
+                        <strong>2016</strong>
+                      </td>
+                      <td>
+                        <strong>2017</strong>
+                      </td>
+                      <td>
+                        <strong>2018</strong>
+                      </td>
+                    </tr>
+                    <tr style={{ backgroundColor: 'gainsboro' }}>
+                      <td>
+                        <strong>Revenue</strong>
+                      </td>
+                      <td>
+                        {security.calculated3Y && security.calculated3Y.SalesOrRevenueLYMin2
+                          ? security.calculated3Y.SalesOrRevenueLYMin2.toFixed(0)
+                          : 0}
+                      </td>
+                      <td>
+                        {security.calculated3Y && security.calculated3Y.SalesOrRevenueLYMin1
+                          ? security.calculated3Y.SalesOrRevenueLYMin1.toFixed(0)
+                          : 0}
+                      </td>
+                      <td>
+                        {security.calculated3Y && security.calculated3Y.SalesOrRevenueLY
+                          ? security.calculated3Y.SalesOrRevenueLY.toFixed(0)
+                          : 0}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>Gross profit</strong>
+                      </td>
+                      <td style={{ verticalAlign: 'middle' }}>
+                        {security.calculated3Y && security.calculated3Y.GrossIncomeLYMin2
+                          ? security.calculated3Y.GrossIncomeLYMin2.toFixed(0)
+                          : 0}
+                      </td>
+                      <td style={{ verticalAlign: 'middle' }}>
+                        {security.calculated3Y && security.calculated3Y.GrossIncomeLYMin1
+                          ? security.calculated3Y.GrossIncomeLYMin1.toFixed(0)
+                          : 0}
+                      </td>
+                      <td style={{ verticalAlign: 'middle' }}>
+                        {security.calculated3Y && security.calculated3Y.GrossIncomeLY
+                          ? security.calculated3Y.GrossIncomeLY.toFixed(0)
+                          : 0}
+                      </td>
+                    </tr>
+                    <tr style={{ backgroundColor: 'gainsboro' }}>
+                      <td>
+                        <strong>Operating income</strong>
+                      </td>
+                      <td style={{ verticalAlign: 'middle' }}>
+                        {security.calculated3Y && security.calculated3Y.OperatingIncomeLYMin2
+                          ? security.calculated3Y.OperatingIncomeLYMin2.toFixed(0)
+                          : 0}
+                      </td>
+                      <td style={{ verticalAlign: 'middle' }}>
+                        {security.calculated3Y && security.calculated3Y.OperatingIncomeLYMin1
+                          ? security.calculated3Y.OperatingIncomeLYMin1.toFixed(0)
+                          : 0}
+                      </td>
+                      <td style={{ verticalAlign: 'middle' }}>
+                        {security.calculated3Y && security.calculated3Y.OperatingIncomeLY
+                          ? security.calculated3Y.OperatingIncomeLY.toFixed(0)
+                          : 0}
+                      </td>
+                    </tr>
+                    <tr className="has-text-weight-bold">
+                      <td>
+                        <strong>Net income</strong>
+                        <strong className="has-text-danger">*</strong>
+                      </td>
+                      <td style={{ verticalAlign: 'middle' }}>
+                        {security.calculated3Y && security.calculated3Y.ConsolidatedNetIncomeLYMin2
+                          ? security.calculated3Y.ConsolidatedNetIncomeLYMin2.toFixed(0)
+                          : 0}
+                      </td>
+                      <td style={{ verticalAlign: 'middle' }}>
+                        {security.calculated3Y && security.calculated3Y.ConsolidatedNetIncomeLYMin1
+                          ? security.calculated3Y.ConsolidatedNetIncomeLYMin1.toFixed(0)
+                          : 0}
+                      </td>
+                      <td style={{ verticalAlign: 'middle' }}>
+                        {security.calculated3Y && security.calculated3Y.ConsolidatedNetIncomeLY
+                          ? security.calculated3Y.ConsolidatedNetIncomeLY.toFixed(0)
+                          : 0}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
               <div className="column is-6">
                 <StockGraphContainer data={security.last3YearsDividend} />
@@ -499,10 +444,12 @@ const Security = props => {
         <hr />
         <div className="columns">
           <div className="column is-1" />
-          <div className="column is-2">
-            <span style={{ color: 'red', fontWeight: '600', fontSize: '15pt' }}>|&nbsp;</span>
-            <span>EBITDA</span>
-          </div>
+          {security.sector != 'Finance' ?
+            <div className="column is-2">
+                <span style={{ color: 'red', fontWeight: '600', fontSize: '15pt' }}>|&nbsp;</span>
+                <span>EBITDA</span>
+            </div> : <></>
+          }
           <div className="column is-2">
             <span style={{ color: 'LimeGreen', fontWeight: '600', fontSize: '15pt' }}>●&nbsp;</span>
             <span>Cashflow from Operating activities</span>
@@ -522,10 +469,10 @@ const Security = props => {
           <div className="column is-1" />
         </div>
         <div className="columns">
-          <div className="column is-mobile is-one-two-tablet is-one-two-desktop is-one-two-widescreen is-one-two-fullhd">
-            <NegativeGraphContainer data={security.calculated5Y} />
+          <div className="column is-6">
+            <NegativeGraphContainer data={security.calculated5Y} sector={security.sector}/>
           </div>
-          <div className="column is-mobile is-one-two-tablet is-one-two-desktop is-one-two-widescreen is-one-two-fullhd">
+          <div className="column is-6">
             <div className="content" style={{ height: '380px', overflowY: 'scroll' }}>
               <p>
                 <strong className="has-text-danger">Important!: </strong> Lorem ipsum dolor sit amet, consectetur
@@ -577,10 +524,10 @@ const Security = props => {
 
         <hr />
         <div className="columns">
-          <div className="column is-mobile is-one-two-tablet is-one-two-desktop is-one-two-widescreen is-one-two-fullhd">
-            <BalanceGraph data={security.last5AnnualTotals} />
+          <div className="column is-6">
+            <BalanceGraphContainer data={security.last5AnnualTotals} />
           </div>
-          <div className="column is-mobile is-one-two-tablet is-one-two-desktop is-one-two-widescreen is-one-two-fullhd">
+          <div className="column is-6">
             <div className="content" style={{ height: '400px', overflowY: 'scroll' }}>
               <p>
                 <strong className="has-text-danger">Important!: </strong> Lorem ipsum dolor sit amet, consectetur

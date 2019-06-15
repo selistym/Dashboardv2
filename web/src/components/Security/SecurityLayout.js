@@ -7,10 +7,12 @@ import Footer from '../Layout/Footer';
 const SecurityLayout = ({ children, security, session }) => (
   <div>
     <div className="columns is-desktop" style={{ marginBottom: '0px' }}>
-      <LeftNavbar security={security} session={session}/>
-      <div>
+      <div className="column is-2" style={{ backgroundColor: '#fff' }}>
+        <LeftNavbar security={security} session={session} />
+      </div>
+      <div className="column is-10">
         <div
-          className="column is-full-mobile is-full-tablet is-four-fifths-desktop is-12-widescreen is-10-fullhd"
+          className="column is-full-mobile is-full-tablet is-12-desktop is-12-widescreen is-12-fullhd"
           style={{ padding: '50px' }}
         >
           {children}

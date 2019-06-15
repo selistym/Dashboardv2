@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 
-import RoundGraph from '../RoundGraph';
+import RoundGraphContainer from '../RoundGraphContainer';
 import { AppContext } from '../AppContext';
 
 import { useHighlight, usePortfolio } from '../../lib/custom-hooks';
@@ -24,7 +24,7 @@ const LocalPortfolio = ({ security, index }) => {
     <div
       className="box has-text-grey"
       key={security.id}
-      style={{ borderRadius: '1px', height: '320px', padding: '10px' }}
+      style={{ borderRadius: '1px', height: '320px', padding: '10px', margin: '10px' }}
     >
       <div className="columns" style={{ minWidth: '250px', height: '28px', display: 'flex' }}>
         <div className="column is-7">
@@ -72,11 +72,12 @@ const LocalPortfolio = ({ security, index }) => {
       <hr />
       <div className={'RoundGraph' + security.id} style={{ width: '230px', height: '200px' }}>
         {curData != null ? (
-          <RoundGraph
+          <RoundGraphContainer
             key={security.id}
             idx={security.id + index}
             params={curData}
             filterCondition={store.securityFilterArea}
+            width={230}
           />
         ) : (
           <p>No data</p>

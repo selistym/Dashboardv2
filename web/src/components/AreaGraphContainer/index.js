@@ -1,13 +1,27 @@
 import React, { useRef, useReducer, useEffect, useContext, createContext, Fragment } from 'react';
 import useDimensions from '../Dimensions';
 import PropTypes from 'prop-types';
+
 import * as d3 from 'd3';
 
 const AreaContext = createContext(null);
 const margins = 30;
 const parseTime = d3.timeParse('%Y-%m-%d');
 
-const AreaGraph = ({ data, column, width, height }) => {
+const currencySign = currency => {
+  switch(currency){
+    case 'EUR':
+      return '€';
+    case 'USD':
+      return '$';
+    case 'LBS':
+      return '£';
+    default:
+      return currency;
+  }
+}
+
+const AreaGraph = ({ data, currency,  column, width, height }) => {
   const { areaStore } = useContext(AreaContext);
   const chartRef = useRef();
   const barRef = useRef();
@@ -152,8 +166,8 @@ const AreaGraph = ({ data, column, width, height }) => {
         .data([null])
         .join('path')
         .attr('fill', 'grey');
-      // .attr("stroke", "white");
-
+      // .attr("stroke", "white");      
+      
       const text = g
         .selectAll('text')
         .data([null])
@@ -167,7 +181,7 @@ const AreaGraph = ({ data, column, width, height }) => {
             .style('font-weight', 'bold')
             .style('font-size', 14)
             .style('fill', 'white')
-            .text(d => '€ ' + d)
+            .text(d => currencySign(currency) + ' ' + Number(d).toFixed(2))
         );
 
       const { y, width: tw, height: th } = text.node().getBBox();
@@ -324,7 +338,7 @@ const AreaGraph = ({ data, column, width, height }) => {
 };
 
 const AreaGraphContainer = props => {
-  const { data, companyName } = props;
+  const { data, companyName, currency} = props;
   const [svgContainerRef, svgSize] = useDimensions();
 
   const btRefs = useRef([
@@ -487,7 +501,7 @@ const AreaGraphContainer = props => {
             </div>
             <div className="columns" style={{ width: '100%', justifyContent: 'center' }} ref={svgContainerRef}>
               {svgSize.width && (
-                <AreaGraph data={sorted_data} column={getColumn(sorted_data)} width={svgSize.width} height={400} />
+                <AreaGraph data={sorted_data} currency={currency} column={getColumn(sorted_data)} width={svgSize.width} height={400} />
               )}
             </div>
           </div>
@@ -506,6 +520,7 @@ AreaGraph.propTypes = {
       __typename: PropTypes.string.isRequired
     }).isRequired
   ).isRequired,
+  currency: PropTypes.string,
   column: PropTypes.arrayOf(PropTypes.string).isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired
@@ -519,6 +534,7 @@ AreaGraphContainer.propTypes = {
       __typename: PropTypes.string.isRequired
     }).isRequired
   ).isRequired,
+  currency: PropTypes.string,
   companyName: PropTypes.string.isRequired
 };
 export default AreaGraphContainer;

@@ -9,22 +9,22 @@ const DropdownItem = props => {
   const onChangeHandler = () => onDropDownItemChange(actions[parent_index], item.code);
 
   return (
-    <div className="dropdown-item columns" style={{ width: '190px', padding: '0.2rem', margin: '0px' }}>
+    <div className="dropdown-item columns" style={{ width: '250px', padding: '0.2rem', margin: '0px' }}>
       {useMemo(
         () => (
           <>
-            <div className="column is-7">
+            <div className="column is-7" style={{alignItems:'center'}}>
               <p>{item.name}</p>
             </div>
             <div className="column is-right">
-              <div className="field" style={{ paddingTop: '0.5em' }}>
+              <div className="field" style={{ paddingTop: '0.1em', paddingLeft: '1.5em' }}>
                 {checked ? (
                   <input
                     className="is-checkradio is-rtl has-background-color is-danger"
                     id={'checkbox' + parent_index + index}
                     type="checkbox"
                     onChange={() => onChangeHandler()}
-                    checked={true}
+                    checked={true}                    
                   />
                 ) : (
                   <input
@@ -32,10 +32,10 @@ const DropdownItem = props => {
                     id={'checkbox' + parent_index + index}
                     type="checkbox"
                     onChange={() => onChangeHandler()}
-                    checked={false}
+                    checked={false}                    
                   />
                 )}
-                <label htmlFor={'checkbox' + parent_index + index} />
+                <label htmlFor={'checkbox' + parent_index + index}/>
               </div>
             </div>
           </>
@@ -60,18 +60,18 @@ const CustomDropdown = props => {
   };
 
   return (
-    <div className="dropdown">
-      <div className="navbar-item has-dropdown is-hoverable" style={{ width: '190px', margin: '1px' }}>
+    <div className="dropdown" style={{width: '100%'}}>
+      <div className="navbar-item has-dropdown is-hoverable" style={{margin: '1px', width: '250px'}}>
         <a
           className="box navbar-link has-text-centered has-text-weight-bold has-text-grey"
-          style={{ width: '190px', marginBottom: '0.3rem' }}
+          style={{ width: '250px', marginBottom: '0.3rem' }}
         >
           {title}
         </a>
         <div className="navbar-dropdown is-boxed" id="dropdown-menu" role="menu" style={{ padding: '0px' }}>
           <div
             className="dropdown-content"
-            style={{ width: '190px', height: '280px', overflowY: 'scroll', overflowX: 'hidden' }}
+            style={{ width: '250px', height: '250px', overflowY: 'scroll', overflowX: 'hidden', paddingTop:'20px' }}
           >
             <button className="button is-small pull-right has-margin-right-xs" onClick={() => onViewAll()}>
               {JSON.stringify(initial.sort()) == JSON.stringify(items.map(d => d.code).sort())

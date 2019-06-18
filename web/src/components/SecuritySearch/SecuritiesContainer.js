@@ -101,7 +101,6 @@ const SecuritiesContainer = ({ suggestions }) => {
         if (data.securities === undefined) {
           return <p>Undefined securities</p>;
         }
-
         const loadMoreSecurities = () => {
           fetchMore({
             variables: {

@@ -163,11 +163,11 @@ const RoundGraphContainer = props => {
 RoundGraphContainer.propTypes = {
   params: PropTypes.shape({
     Year: PropTypes.number.isRequired,
-    Total: PropTypes.number.isRequired,
-    Dividend: PropTypes.number.isRequired,
-    Balance: PropTypes.number.isRequired,
-    Growth: PropTypes.number.isRequired,
-    Value: PropTypes.number.isRequired
+    Total: PropTypes.number,
+    Dividend: PropTypes.number,
+    Balance: PropTypes.number,
+    Growth: PropTypes.number,
+    Value: PropTypes.number
   }).isRequired,
   idx: PropTypes.string.isRequired,
   filterCondition: PropTypes.array,

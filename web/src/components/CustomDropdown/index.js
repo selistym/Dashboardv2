@@ -49,14 +49,12 @@ const DropdownItem = props => {
 const CustomDropdown = props => {
   const { title, items, index, initial, hasSlider, onDropDownChange } = props;
 
-  const onViewAll = () => {
-    let t_items = items.map(d => d.code);
-    if (JSON.stringify(initial.sort()) == JSON.stringify(t_items.sort())) {
-      //deselect all
-      onDropDownChange(actions[index], []);
-    } else {
-      onDropDownChange(actions[index], t_items);
-    }
+  const onSelectAll = () => {
+    
+    onDropDownChange(actions[index], items.map(d => d.code))
+  };
+  const onDeselectAll = () => {
+    onDropDownChange(actions[index], [])
   };
 
   return (
@@ -73,11 +71,8 @@ const CustomDropdown = props => {
             className="dropdown-content"
             style={{ width: '250px', height: '250px', overflowY: 'scroll', overflowX: 'hidden', paddingTop:'20px' }}
           >
-            <button className="button is-small pull-right has-margin-right-xs" onClick={() => onViewAll()}>
-              {JSON.stringify(initial.sort()) == JSON.stringify(items.map(d => d.code).sort())
-                ? 'Deselect all'
-                : 'Select all'}
-            </button>
+            <button className="button is-small pull-left has-margin-left-xs" style={{marginLeft: '20px'}} onClick={() => onSelectAll()}>Select all</button>
+            <button className="button is-small pull-right has-margin-right-xs" style={{marginRight: '20px'}} onClick={() => onDeselectAll()}>Deselect all</button>
             {items.map((item, i) => (
               <DropdownItem
                 key={i}

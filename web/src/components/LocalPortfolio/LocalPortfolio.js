@@ -19,7 +19,7 @@ const LocalPortfolio = ({ security, index }) => {
   let curData = security.calculatedCircular
     ? security.calculatedCircular.filter(e => e.Year === store.securityFilterYear)[0]
     : null;
-
+  
   return (
     <div
       className="box has-text-grey"
@@ -92,12 +92,12 @@ LocalPortfolio.propTypes = {
   security: PropTypes.shape({
     calculatedCircular: PropTypes.arrayOf(
       PropTypes.shape({
-        Balance: PropTypes.number.isRequired,
-        Dividend: PropTypes.number.isRequired,
-        Growth: PropTypes.number.isRequired,
-        Total: PropTypes.number.isRequired,
-        Value: PropTypes.number.isRequired,
-        Year: PropTypes.number.isRequired
+        Balance: PropTypes.number,
+        Dividend: PropTypes.number,
+        Growth: PropTypes.number,
+        Total: PropTypes.number,
+        Value: PropTypes.number,
+        Year: PropTypes.number
       })
     ),
     liveData: PropTypes.shape({

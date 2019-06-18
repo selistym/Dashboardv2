@@ -342,7 +342,7 @@ const securityReducer = (state, action) => {
     case 'CHANGE_FILTER_YEAR':
       return state.securityFilterYear !== action.year ? { ...state, securityFilterYear: action.year } : state;
     case 'CHANGE_FILTER_MARKETSIZE':
-      replaces = state.securityFilterMarketSize;
+      replaces = [...state.securityFilterMarketSize];
       if (typeof action.filter === 'object') {
         replaces = action.filter;
       } else {
@@ -355,7 +355,7 @@ const securityReducer = (state, action) => {
       replaces.sort();
       return { ...state, securityFilterMarketSize: replaces };
     case 'CHANGE_FILTER_COUNTRY':
-      replaces = state.securityFilterCountry;
+      replaces = [...state.securityFilterCountry];
       if (typeof action.filter === 'object') {
         replaces = action.filter;
       } else {
@@ -364,11 +364,11 @@ const securityReducer = (state, action) => {
         } else {
           replaces.push(action.filter);
         }
-      }
+      }      
       replaces.sort();
       return { ...state, securityFilterCountry: replaces };
     case 'CHANGE_FILTER_AREA':
-      replaces = state.securityFilterArea;
+      replaces = [...state.securityFilterArea];
       if (typeof action.filter === 'object') {
         replaces = action.filter;
       } else {
@@ -381,7 +381,7 @@ const securityReducer = (state, action) => {
       replaces.sort();
       return { ...state, securityFilterArea: replaces };
     case 'CHANGE_FILTER_SECTOR':
-      replaces = state.securityFilterSector;
+      replaces = [...state.securityFilterSector];
       if (typeof action.filter === 'object') {
         replaces = action.filter;
       } else {

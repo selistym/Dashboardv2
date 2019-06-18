@@ -24,9 +24,7 @@ const SecuritySearchDropdownSection = () => {
   // const handleFilterYearChange = async year => {
   //   await dispatch({ type: 'CHANGE_FILTER_YEAR', year: year });
   // };
-  const handleDropDownItemChange = (filterAction, checkedItem) => {
-    dispatch({ type: filterAction, filter: checkedItem });
-  };
+  const handleDropDownItemChange = (filterAction, checkedItem) => dispatch({ type: filterAction, filter: checkedItem });
 
   return (
     <div className="columns is-mobile" style={{ display: 'flex', flexFlow: 'wrap', justifyContent: 'space-around' }}>

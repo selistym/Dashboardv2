@@ -15,7 +15,6 @@ class SecuritySearchPage extends AuthenticatedPage {
         session={session}
         title={'VEB - Overview'}
         description={'Overview'}
-        navMenu={true}
         signInBtn={true}
         footer={true}
       >

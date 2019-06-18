@@ -12,7 +12,7 @@ const SecurityLayout = ({ children, security, session }) => (
       </div>
       <div className="column is-10">
         <div
-          className="column is-full-mobile is-full-tablet is-12-desktop is-12-widescreen is-11-fullhd"
+          className="column is-full-mobile is-full-tablet is-12-desktop is-12-widescreen is-12-fullhd"
           style={{ padding: '50px' }}
         >
           {children}

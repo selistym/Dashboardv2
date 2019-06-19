@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import RangeSlider from './RangeSlider';
 
 const actions = ['CHANGE_FILTER_MARKETSIZE', 'CHANGE_FILTER_COUNTRY', 'CHANGE_FILTER_AREA', 'CHANGE_FILTER_SECTOR'];
 
@@ -47,10 +46,10 @@ const DropdownItem = props => {
 };
 
 const CustomDropdown = props => {
-  const { title, items, index, initial, hasSlider, onDropDownChange } = props;
+  const { title, items, index, initial, onDropDownChange } = props;
 
   const onSelectAll = () => {
-    
+
     onDropDownChange(actions[index], items.map(d => d.code))
   };
   const onDeselectAll = () => {
@@ -83,11 +82,6 @@ const CustomDropdown = props => {
                 onDropDownItemChange={onDropDownChange}
               />
             ))}
-            {hasSlider && (
-              <div className="dropdown-item" style={{ padding: '0', paddingTop: '1.2em' }}>
-                <RangeSlider width={170} height={40} index={index} />
-              </div>
-            )}
           </div>
         </div>
       </div>

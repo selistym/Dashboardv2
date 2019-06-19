@@ -33,8 +33,7 @@ const SecuritySearchDropdownSection = () => {
           key={0}
           title={titles[0]}
           items={securityFilterCheckboxes[0]}
-          index={0}
-          hasSlider={false}
+          index={0}          
           initial={store.securityFilterMarketSize}
           onDropDownChange={(e, b) => handleDropDownItemChange(e, b)}
         />
@@ -44,8 +43,7 @@ const SecuritySearchDropdownSection = () => {
           key={1}
           title={titles[1]}
           items={securityFilterCheckboxes[1]}
-          index={1}
-          hasSlider={false}
+          index={1}          
           initial={store.securityFilterCountry}
           onDropDownChange={(e, b) => handleDropDownItemChange(e, b)}
         />
@@ -55,8 +53,7 @@ const SecuritySearchDropdownSection = () => {
           key={2}
           title={titles[2]}
           items={securityFilterCheckboxes[2]}
-          index={2}
-          hasSlider={true}
+          index={2}          
           initial={store.securityFilterArea}
           onDropDownChange={(e, b) => handleDropDownItemChange(e, b)}
         />
@@ -66,8 +63,7 @@ const SecuritySearchDropdownSection = () => {
           key={3}
           title={titles[3]}
           items={securityFilterCheckboxes[3]}
-          index={3}
-          hasSlider={false}
+          index={3}          
           initial={store.securityFilterSector}
           onDropDownChange={handleDropDownItemChange}
         />

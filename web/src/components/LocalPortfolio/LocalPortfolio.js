@@ -70,18 +70,19 @@ const LocalPortfolio = ({ security, index }) => {
       </div>
       <div style={{ height: '2px', fontSize: '11pt' }}>{security.sector}</div>
       <hr />
-      <div className={'RoundGraph' + security.id} style={{ width: '230px', height: '200px' }}>
-        {curData != null ? (
-          <RoundGraphContainer
-            key={security.id}
-            idx={security.id + index}
-            params={curData}
-            filterCondition={store.securityFilterArea}
-            width={230}
-          />
-        ) : (
-          <p>No data</p>
-        )}
+      <div className={'RoundGraph' + security.id} style={{textAlign:'center'}}>
+          {curData != null ? (
+            <RoundGraphContainer
+              key={security.id}
+              idx={security.id + index}
+              params={curData}
+              filterCondition={store.securityFilterArea}
+              width={220}
+              height={190}
+            />
+          ) : (
+            <p>No data</p>
+          )}
       </div>
     </div>
   );

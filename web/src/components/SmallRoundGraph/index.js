@@ -45,8 +45,8 @@ const SmallRoundGraph = props => {
 
       let arcBody = d3
         .arc()
-        .startAngle(0)
-        .endAngle(d => d.value * 2 * Math.PI)
+        .startAngle(0.1)
+        .endAngle(d => 0.1 + d.value * 1.93 * Math.PI)
         .innerRadius(d => d.index * radius)
         .outerRadius(d => (d.index + spacing) * radius)
         .cornerRadius(2);

@@ -495,8 +495,6 @@ const AreaGraphContainer = props => {
               >
                 <span style={{ color: '#de0730', fontWeight: '600', fontSize: '15pt' }}>●&nbsp;</span>
                 <span style={{ marginRight: '15px' }}>{companyName}</span>
-                <span style={{ color: 'grey', fontWeight: '600', fontSize: '15pt' }}>●&nbsp;</span>
-                <span>Industry</span>
               </div>
             </div>
             <div className="columns" style={{ width: '100%', justifyContent: 'center' }} ref={svgContainerRef}>

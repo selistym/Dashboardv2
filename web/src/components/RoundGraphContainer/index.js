@@ -3,9 +3,8 @@ import PropTypes from 'prop-types';
 import * as d3 from 'd3';
 
 const RoundGraphContainer = props => {
-  const { params, idx, filterCondition, width } = props;
-  let strFilter = filterCondition ? filterCondition.sort().toString() : '',
-      height = width * 0.8;
+  const { params, idx, filterCondition, width, height } = props;
+  let strFilter = filterCondition ? filterCondition.sort().toString() : '';      
   
   const roundRef = useRef();
   const lineRef = useRef();
@@ -38,7 +37,7 @@ const RoundGraphContainer = props => {
       const setColor = total => (total <= 50 ? colors.red : total >= 70 ? colors.green : colors.orange);
       const setFontSize = radius => (radius <= 120 ? 11 : radius >= 180 ? 14 : 12);
 
-      let radius = Math.min(width, height) / 1.6,
+      let radius = Math.min(width, height) / 1.75,
         spacing = 0.09;
 
       d3.select(roundRef.current)
@@ -47,11 +46,11 @@ const RoundGraphContainer = props => {
 
       let arcBody = d3
         .arc()
-        .startAngle(0)
-        .endAngle(d => d.value * 2 * Math.PI)
+        .startAngle(0.1)
+        .endAngle(d => 0.1 + d.value * 1.935 * Math.PI)
         .innerRadius(d => d.index * radius)
         .outerRadius(d => (d.index + spacing) * radius)
-        .cornerRadius(2);
+        .cornerRadius(5);
 
       let field = d3
         .select(roundRef.current)
@@ -61,6 +60,15 @@ const RoundGraphContainer = props => {
         .append('g');
 
       let total = params.Total ? params.Total : 0;
+      //add indicator
+      const indicator = d3.select(roundRef.current)
+        .append('text')
+        .attr('transform', `translate(${-radius * 0.9}, ${-radius * 0.75})`)
+        .style('font-weight', 'bold')
+        .style('text-anchor', 'start')
+        .style('font-size', 14)
+        .style('fill', setColor(total))
+        .text('Total')
       //add score
       let txt_score = field
         .append('text')
@@ -74,34 +82,42 @@ const RoundGraphContainer = props => {
         .append('path')
         .attr('class', 'arc-body')
         .style('fill', () => setColor(total));
-
+      let clicked = false;
       arcs
         .attr('opacity', d => (filterCondition ? (filterCondition.indexOf(d.text) != -1 ? 1 : 0) : 1))
         .style('stroke', '#fff')
         .style('stroke-width', 2)
         .style('cursor', 'pointer')
-        .on('click', function() {
+        .on('click', function(d) {
+          clicked = true;
           arcs.style('fill', 'grey');
           d3.select(this).style('fill', setColor(total));
           d3.select('.text-all' + idx).attr('opacity', 1);
+          indicator.text(d.text).style('fill', setColor(d.value * 100));
         })
         .on('mouseover', function(d) {
           if (d3.select(this).attr('opacity') == 0) return;
           if (d.value == 0) return;
           d3.select(this).style('stroke-width', 0);
-          txt_score
-            .attr('dy', '0.3em')
-            .attr('fill', setColor(d.value * 100))
-            .text(Math.floor(d.value * 100));
+          if(!clicked){            
+            txt_score
+              .attr('dy', '0.3em')
+              .attr('fill', setColor(d.value * 100))
+              .text(Math.floor(d.value * 100));
+            indicator.text(d.text).style('fill', setColor(d.value * 100));
+          }
         })
         .on('mouseout', function(d) {
           if (d3.select(this).attr('opacity') == 0) return;
           if (d.value == 0) return;
           d3.select(this).style('stroke-width', 2);
-          txt_score
-            .attr('dy', '0.3em')
-            .attr('fill', setColor(total))
-            .text(total);
+          if(!clicked){
+            indicator.text("Total").style('fill', setColor(total));
+            txt_score
+              .attr('dy', '0.3em')
+              .attr('fill', setColor(total))
+              .text(total);
+          }
         })
         .transition()
         .duration(750)
@@ -126,11 +142,13 @@ const RoundGraphContainer = props => {
             .attr('dy', '0.3em')
             .attr('fill', setColor(total))
             .text(total);
+          indicator.text("Total").style('fill', setColor(total));
+          clicked = false;
         });
+      
       field
         .append('text')
         .attr('dy', '-.15em')
-        .attr('dx', '-0.75em')
         .style('text-anchor', 'middle')
         .attr('transform', d => 'translate(' + [0, -d.index * radius] + ')')
         .style('font-size', setFontSize(radius))
@@ -152,12 +170,10 @@ const RoundGraphContainer = props => {
   }, [JSON.stringify(params), strFilter, width]); //eslint-disable-line
 
   return (
-    <>
       <svg className={'roundChart' + idx} width={width} height={height}>
         <g className={'round' + idx} ref={roundRef} transform={`translate(${width / 2}, ${height / 2})`} />
-        <g className={'line' + idx} ref={lineRef} transform={`translate(${width / 2}, ${height / 2})`} />
+        {/* <g className={'line' + idx} ref={lineRef} transform={`translate(${width / 2}, ${height })`} /> */}
       </svg>
-    </>
   );
 };
 RoundGraphContainer.propTypes = {
@@ -171,7 +187,8 @@ RoundGraphContainer.propTypes = {
   }).isRequired,
   idx: PropTypes.string.isRequired,
   filterCondition: PropTypes.array,
-  width: PropTypes.number
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
 };
 
 export default RoundGraphContainer;

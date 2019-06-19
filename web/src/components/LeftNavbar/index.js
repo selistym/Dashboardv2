@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import Link from 'next/link';
-
 import UserMenu from '../Layout/UserMenu';
 
 const LeftNavbar = ({ session }) => (
@@ -36,17 +34,22 @@ const LeftNavbar = ({ session }) => (
         color: 'gainsboro'
       }}
     >
-      <div style={{ padding: '3px', paddingTop: '10px' }}>
-        <Link href={'/portfolio'}>
-          <a>My Portfolio</a>
-        </Link>
-      </div>
       <div style={{ padding: '3px' }}>
         <Link href="/">
           <a>Securities</a>
         </Link>
       </div>
-      <div style={{ padding: '3px' }}>Scenarios</div>
+      <div style={{ padding: '3px', paddingTop: '10px' }}>
+        <Link href={'/portfolio'}>
+          <a>My Portfolio</a>
+        </Link>
+      </div>
+      <div style={{ padding: '3px', paddingTop: '10px' }}>
+        <Link href={'https://stockscreener.app.veb.net/'}>
+          <a>StockScreener</a>
+        </Link>
+      </div>
+      <div style={{ padding: '5px' }}>Scenarios</div>
     </div>
   </div>
 );

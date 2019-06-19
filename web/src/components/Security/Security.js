@@ -70,7 +70,8 @@ const Security = props => {
                         key={security.id}
                         idx={security.id}
                         params={security.calculatedCircular[security.calculatedCircular.length - 1]}
-                        width={220}
+                        width={230}
+                        height={220}
                       />
                     ) : (
                       <p>No data</p>

@@ -221,15 +221,15 @@ const NegativeGraph = ({ width, height, data, sector }) => {
       .remove();
 
     d3.select(xAxisRef.current)
-      .attr('class', 'x axis')
+      .attr('class', 'x axis')      
       .call(xAxis)
       .select('.domain')
       .remove();
-
+    
     d3.select(xAxisRef.current)
       .selectAll('.tick line')
       .attr('stroke', '#777')
-      .attr('stroke-dasharray', '2,2');
+      .attr('stroke-dasharray', '2, 2');
 
     d3.select(yAxisRef.current)
       .attr('class', 'y axis')
@@ -239,7 +239,7 @@ const NegativeGraph = ({ width, height, data, sector }) => {
 
     d3.select(yAxisRef.current)
       .selectAll('text')
-      .attr('x', -10)
+      .attr('x', -20)
       .style('text-anchor', 'middle')
       .attr('fill', 'grey')
       .style('font-size', '10pt');

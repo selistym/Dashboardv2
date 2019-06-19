@@ -367,7 +367,7 @@ const StockGraphContainer = ({ data }) => {
           <div className="columns">
             <div className="column" style={{ width: '100%', justifyContent: 'center' }}>
               <div ref={svgContainerRef}>
-                {svgSize.width && <StockGraph data={preCorrection(data)} width={svgSize.width} height={265} />}
+                {svgSize.width && <StockGraph data={preCorrection(data).reverse()} width={svgSize.width} height={265} />}
               </div>
             </div>
           </div>

@@ -75,7 +75,7 @@ const GaugeGraph = ({data, width, height, kind}) => {
             .range(['#e2062a', '#ee7e00', '#66ad2b'])
             .domain([0, range / 2, range]);
       
-      if (data.direction == 1) {
+      if (data.dir == 1) {
         linearColor = d3
           .scaleLinear()
           .range(['#dc143c', '#ffa500', '#008000'])

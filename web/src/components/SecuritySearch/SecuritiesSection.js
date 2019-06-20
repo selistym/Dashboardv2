@@ -14,9 +14,9 @@ const SecuritiesSection = ({ securities, loadMoreSecurities, subscribeToSecuriti
     return null;
   }
   // console.log(securities[0].calculatedCircular[0])
-  const availableForArea = sc => {
+  const availableForArea = sc => {    
     let canBeShow = [false, false, false, false];
-    if(sc.calculatedCircular == null) return false;    
+    if(sc == null || sc.calculatedCircular == null || sc.calculatedCircular[0].Year != store.securityFilterYear) return false;    
     
     if(store.securityFilterArea.length == 0) return true;
     

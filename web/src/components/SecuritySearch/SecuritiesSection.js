@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import LocalPortfolio from '../LocalPortfolio';
+import { AppContext } from '../AppContext';
 import PropTypes from 'prop-types';
 
 const SecuritiesSection = ({ securities, loadMoreSecurities, subscribeToSecurities }) => {
   // initialize subscriptions
-  
+  const { store } = useContext(AppContext);
   useEffect(() => {
     subscribeToSecurities();
   });
@@ -12,7 +13,27 @@ const SecuritiesSection = ({ securities, loadMoreSecurities, subscribeToSecuriti
   if (securities === undefined) {
     return null;
   }
-
+  // console.log(securities[0].calculatedCircular[0])
+  const availableForArea = sc => {
+    let canBeShow = [false, false, false, false];
+    if(sc.calculatedCircular == null) return false;    
+    
+    if(store.securityFilterArea.length == 0) return true;
+    
+    if(store.securityFilterArea.indexOf("Balance") != -1 && sc.calculatedCircular[0].Balance >= 75){
+      canBeShow[0] = true;
+    }
+    if(store.securityFilterArea.indexOf("Dividend") != -1 && sc.calculatedCircular[0].Dividend >= 75){
+      canBeShow[1] = true;
+    }
+    if(store.securityFilterArea.indexOf("Growth") != -1 && sc.calculatedCircular[0].Growth >= 75){
+      canBeShow[2] = true;
+    }
+    if(store.securityFilterArea.indexOf("Value") != -1 && sc.calculatedCircular[0].Value >= 75){
+      canBeShow[3] = true;
+    }    
+    return canBeShow.filter(show => show == true).length > 0;
+  }
   return (
     <section style={{ paddingTop: '20px' }}>
       <div
@@ -21,6 +42,7 @@ const SecuritiesSection = ({ securities, loadMoreSecurities, subscribeToSecuriti
         data-testid="filtered-securities"
       >
         {securities.map(s => (
+          availableForArea(s) &&
           <LocalPortfolio key={s.id} index={s.id} security={s} />
         ))}
       </div>

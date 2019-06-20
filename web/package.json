@@ -44,6 +44,7 @@
     "i18n-iso-countries": "^3.7.8",
     "intl": "^1.2.5",
     "isomorphic-unfetch": "^3.0.0",
+    "jshint": "^2.10.2",
     "lodash": "^4.17.11",
     "lusca": "^1.6.1",
     "next": "^8.1.0",

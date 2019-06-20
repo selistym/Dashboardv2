@@ -341,7 +341,7 @@ const CubismGraphContainer = ({ data }) => {
   ]);
 
   const btLabels = ['1 M', '6 M', '1 Y', '3 Y', '5 Y', 'All'];
-  const [period, setPeriod] = useState(btLabels[5]);
+  const [period, setPeriod] = useState(btLabels[3]);
 
   const onRangeButtonHandler = type_index => {
     setPeriod(btLabels[type_index]);
@@ -364,7 +364,7 @@ const CubismGraphContainer = ({ data }) => {
             style={{ margin: '10px', padding: '0px', justifyContent: 'center', textAlign: 'center' }}
           >
             {btLabels.map((e, i) =>
-              i == 5 ? (
+              i == 3 ? (
                 <span
                   key={i}
                   className="button"

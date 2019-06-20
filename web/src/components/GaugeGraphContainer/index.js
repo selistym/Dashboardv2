@@ -1,13 +1,14 @@
-import React,  {useRef, useEffect} from 'react';
+import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import useDimensions from '../Dimensions';
 import * as d3 from 'd3';
 
-const GaugeGraph = ({data, width, height, kind}) => {  
+const GaugeGraph = ({ data, width, height, kind }) => {
   const graphRef = useRef();
-  const w = Math.min(width, height), h = Math.min(width, height);
+  const w = Math.min(width, height),
+    h = Math.min(width, height);
 
-  if(kind == 0 || kind > 3){
+  if (kind == 0 || kind > 3) {
     data.company = data.company > data.max ? data.max : data.company;
     data.company = data.company < data.min ? data.min : data.company;
   }
@@ -20,16 +21,18 @@ const GaugeGraph = ({data, width, height, kind}) => {
     data.company = data.company * 100;
   }
   useEffect(() => {
-    
     const drawGraph = () => {
       let radius = w * 0.3,
-          needleRad = radius - (radius * 2) / 5,
-          needleCenterRad = radius * 0.15,
-          pi = Math.PI,
-          halfPi = pi / 2,
-          endAngle = pi / 2,
-          startAngle = -endAngle,
-          n, rmin, rmax, diff;
+        needleRad = radius - (radius * 2) / 5,
+        needleCenterRad = radius * 0.15,
+        pi = Math.PI,
+        halfPi = pi / 2,
+        endAngle = pi / 2,
+        startAngle = -endAngle,
+        n,
+        rmin,
+        rmax,
+        diff;
 
       switch (Number(kind)) {
         case 1:
@@ -56,25 +59,25 @@ const GaugeGraph = ({data, width, height, kind}) => {
         default:
           n = 100;
           rmin = 0;
-          rmax = 100;            
+          rmax = 100;
           break;
       }
       let scale = d3
         .scaleLinear()
         .domain([rmin, rmax])
         .range([startAngle, endAngle]);
-      
+
       let field = d3.range(startAngle, endAngle, pi / n);
       let range = Math.abs(data.max - data.min),
-          step = n / range,
-          preStep1 = data.company > rmax ? rmax : data.company,
-          preStep = preStep1 < rmin ? rmin : preStep1,
-          step1 = (range / n) * preStep,
-          linearColor = d3
-            .scaleLinear()
-            .range(['#e2062a', '#ee7e00', '#66ad2b'])
-            .domain([0, range / 2, range]);
-      
+        step = n / range,
+        preStep1 = data.company > rmax ? rmax : data.company,
+        preStep = preStep1 < rmin ? rmin : preStep1,
+        step1 = (range / n) * preStep,
+        linearColor = d3
+          .scaleLinear()
+          .range(['#e2062a', '#ee7e00', '#66ad2b'])
+          .domain([0, range / 2, range]);
+
       if (data.dir == 1) {
         linearColor = d3
           .scaleLinear()
@@ -90,7 +93,7 @@ const GaugeGraph = ({data, width, height, kind}) => {
         linearColor = d3
           .scaleLinear()
           .range(['#008000', '#32cd32', '#ffa500', '#dc143c'])
-          .domain([0, range * 0.3, range * 0.31,  range]);        
+          .domain([0, range * 0.3, range * 0.31, range]);
       }
       if (kind == 3) {
         if (data.company > 0) {
@@ -106,16 +109,16 @@ const GaugeGraph = ({data, width, height, kind}) => {
         }
       }
       if (kind == 5) {
-          linearColor = d3
-            .scaleLinear()
-            .range(['#008000', '#32cd32', '#ffa500',  '#dc143c'])
-            .domain([0, range * 5/6, range * 5/6 + range * 0.01,  range]);          
+        linearColor = d3
+          .scaleLinear()
+          .range(['#008000', '#32cd32', '#ffa500', '#dc143c'])
+          .domain([0, (range * 5) / 6, (range * 5) / 6 + range * 0.01, range]);
       }
 
       d3.select(graphRef.current)
         .selectAll('*')
         .remove();
-      
+
       let arc = d3
         .arc()
         .innerRadius(radius - radius / 5)
@@ -159,13 +162,11 @@ const GaugeGraph = ({data, width, height, kind}) => {
         .attr('class', 'needle')
         .attr(
           'fill',
-          kind == 0 || kind == 4 || kind == 5
-            ? linearColor(Math.abs(data.min) + data.company)
-            : linearColor(step1)
+          kind == 0 || kind == 4 || kind == 5 ? linearColor(Math.abs(data.min) + data.company) : linearColor(step1)
         );
-      
+
       let ticks = scale.ticks(n);
-      
+
       // add marker
       d3.select(graphRef.current)
         .append('g')
@@ -176,10 +177,10 @@ const GaugeGraph = ({data, width, height, kind}) => {
         .append('path')
         .style('stroke', '#929292')
         .style('stroke-width', function(d) {
-          if (d === Math.floor((Math.abs(data.min) + data.branch) * step)) {              
+          if (d === Math.floor((Math.abs(data.min) + data.branch) * step)) {
             return 3;
           }
-          if (d === Math.floor((Math.abs(data.min) + data.market) * step)) {              
+          if (d === Math.floor((Math.abs(data.min) + data.market) * step)) {
             return 3;
           }
           return 0;
@@ -207,14 +208,14 @@ const GaugeGraph = ({data, width, height, kind}) => {
             topY = (radius + 5) * Math.sin(_in);
           return 'translate(' + topX + ',' + topY + ')';
         })
-        .style('text-anchor', d => d < (rmax + rmin) / 2 ? 'end' : 'start')
+        .style('text-anchor', d => (d < (rmax + rmin) / 2 ? 'end' : 'start'))
         .style('font-size', '8pt')
         .style('font-weight', '600')
         .attr('fill', 'black')
-        .text(d => { 
-            if (d === Math.floor((Math.abs(data.min) + data.branch) * step)) {
-              return 'Branche';
-            }              
+        .text(d => {
+          if (d === Math.floor((Math.abs(data.min) + data.branch) * step)) {
+            return 'Branche';
+          }
           return '';
         });
       d3.select(graphRef.current)
@@ -232,37 +233,36 @@ const GaugeGraph = ({data, width, height, kind}) => {
         })
         .attr('dy', () => {
           let branch = Math.floor((Math.abs(data.min) + data.branch) * step),
-              market = Math.floor((Math.abs(data.min) + data.market) * step);
-          if(Math.abs(branch - market) <= diff){
-            if(branch < market ){
-              if(branch < (rmax + rmin) / 2 && market < (rmax + rmin) / 2){
+            market = Math.floor((Math.abs(data.min) + data.market) * step);
+          if (Math.abs(branch - market) <= diff) {
+            if (branch < market) {
+              if (branch < (rmax + rmin) / 2 && market < (rmax + rmin) / 2) {
                 return -10;
-              }else{
+              } else {
                 return 10;
               }
-            }else{
-              if(branch < (rmax + rmin) / 2 && market < (rmax + rmin) / 2){
+            } else {
+              if (branch < (rmax + rmin) / 2 && market < (rmax + rmin) / 2) {
                 return 10;
-              }else{
+              } else {
                 return -10;
               }
             }
-          }else return 0;
-          
+          } else return 0;
         })
-        .style('text-anchor', d => d < (rmax + rmin) / 2 ? 'end' : 'start')
+        .style('text-anchor', d => (d < (rmax + rmin) / 2 ? 'end' : 'start'))
         .style('font-size', '8pt')
         .style('font-weight', '600')
         .attr('fill', 'black')
         .text(d => {
-            if(kind == 0 || kind == 1 || kind == 2 || kind == 5){
-              if (d === Math.floor((Math.abs(data.min) + data.market) * step)) {
-                return 'Market';
-              }
+          if (kind == 0 || kind == 1 || kind == 2 || kind == 5) {
+            if (d === Math.floor((Math.abs(data.min) + data.market) * step)) {
+              return 'Market';
             }
+          }
           return '';
         });
-      
+
       function updateNeedle(oldValue, newValue) {
         needle
           .datum({ oldValue: oldValue })
@@ -305,37 +305,60 @@ const GaugeGraph = ({data, width, height, kind}) => {
             var rightX = needleCenterRad * Math.cos(_ip),
               rightY = needleCenterRad * Math.sin(_ip);
 
-            return ('M' +topX +',' +topY +'L' +leftX +',' +leftY +'A' +leftX +',' +leftX +',1,0,0,' +rightX +',' +rightY + 'z');
+            return (
+              'M' +
+              topX +
+              ',' +
+              topY +
+              'L' +
+              leftX +
+              ',' +
+              leftY +
+              'A' +
+              leftX +
+              ',' +
+              leftX +
+              ',1,0,0,' +
+              rightX +
+              ',' +
+              rightY +
+              'z'
+            );
           };
         };
       }
-      updateNeedle(scale(0), scale(kind == 0 || kind == 4 || kind == 5 ? (Math.abs(data.min) + data.company) * step : preStep) + 0.01
+      updateNeedle(
+        scale(0),
+        scale(kind == 0 || kind == 4 || kind == 5 ? (Math.abs(data.min) + data.company) * step : preStep) + 0.01
       );
       updatePercent(0, data.company);
-    }
+    };
     drawGraph();
   }, [data, width]); //eslint-disable-line
-  
+
   return (
     <div>
       <svg width={w} height={h * 0.5}>
         <g transform={`translate(${w / 2}, ${h * 0.4})`} ref={graphRef} />
       </svg>
-      <div className="columns" style={{padding: 0, fontSize: '22pt', fontWeight:'bold', color: 'grey', textAlign:'center'}}>
-        <div className="column" style={{padding: 0}}>
+      <div
+        className="columns"
+        style={{ padding: 0, fontSize: '22pt', fontWeight: 'bold', color: 'grey', textAlign: 'center' }}
+      >
+        <div className="column" style={{ padding: 0 }}>
           <span>{data.company == Math.floor(data.company) ? data.company.toFixed(0) : data.company.toFixed(1)}</span>
           <span>{kind == 1 || kind == 2 || kind == 3 ? '%' : ''}</span>
         </div>
       </div>
-      <div className="columns" style={{padding: 0, fontSize: '12pt', color: '#bdbbbc', textAlign:'center'}}>
-        <div className="column" style={{padding: 0}}>
+      <div className="columns" style={{ padding: 0, fontSize: '12pt', color: '#bdbbbc', textAlign: 'center' }}>
+        <div className="column" style={{ padding: 0 }}>
           <span>{data.title}</span>
         </div>
       </div>
     </div>
   );
-}
-const GaugeGraphContainer = ({data}) => {
+};
+const GaugeGraphContainer = ({ data }) => {
   const [svgContainerRef, svgSize] = useDimensions();
   const preCorrection = param => {
     param.DebtRatioBranche = param.DebtRatioBranche ? param.DebtRatioBranche : 0;
@@ -355,91 +378,154 @@ const GaugeGraphContainer = ({data}) => {
     param.ROICMarket = param.ROICMarket ? param.ROICMarket : 0;
     param.RevenueGrowthBranche = param.RevenueGrowthBranche ? param.RevenueGrowthBranche : 0;
     param.RevenueGrowthCompany = param.RevenueGrowthCompany ? param.RevenueGrowthCompany : 0;
-    param.RevenueGrowthMarket = param.RevenueGrowthMarket ? param.RevenueGrowthMarket : 0;        
-    return param;    
-  }
+    param.RevenueGrowthMarket = param.RevenueGrowthMarket ? param.RevenueGrowthMarket : 0;
+    return param;
+  };
   const c_data = preCorrection(data);
   const i_data = [
-    {company: c_data.PERatioCompany, branch: c_data.PERatioBranche, market: c_data.PERatioMarket, title: 'PE-ratio', min: 0, max: 40, dir: 0},
-    {company: c_data.ROICCompany, branch: c_data.ROICBranche, market: c_data.ROICMarket, title: 'ROIC', min: 0, max: 0.2, dir: 1},
-    {company: c_data.ROECompany, branch: c_data.ROEBranche, market: c_data.ROEMarket, title: 'Return on equity', min: 0, max: 0.2, dir: 1 },
-    {company: c_data.RevenueGrowthCompany, branch: c_data.RevenueGrowthBranche, market: c_data.RevenueGrowthMarket, title: 'Revenue Growth per Share', min: -30, max: 60, dir: 1},
-    {company: c_data.DebtRatioCompany, branch: c_data.DebtRatioBranche, market: c_data.DebtRatioMarket, title: 'Debt-ratio', min: 0, max: 4, dir: 0},
-    {company: c_data.NettDEBTEBITDACompany, branch: c_data.NettDEBTEBITDABranche, market: c_data.NettDEBTEBITDAMarket, title: 'Nett-Debt / EBITDA', min: -3, max: 3, dir: 0}
+    {
+      company: c_data.PERatioCompany,
+      branch: c_data.PERatioBranche,
+      market: c_data.PERatioMarket,
+      title: 'PE-ratio',
+      min: 0,
+      max: 40,
+      dir: 0
+    },
+    {
+      company: c_data.ROICCompany,
+      branch: c_data.ROICBranche,
+      market: c_data.ROICMarket,
+      title: 'ROIC',
+      min: 0,
+      max: 0.2,
+      dir: 1
+    },
+    {
+      company: c_data.ROECompany,
+      branch: c_data.ROEBranche,
+      market: c_data.ROEMarket,
+      title: 'Return on equity',
+      min: 0,
+      max: 0.2,
+      dir: 1
+    },
+    {
+      company: c_data.RevenueGrowthCompany,
+      branch: c_data.RevenueGrowthBranche,
+      market: c_data.RevenueGrowthMarket,
+      title: 'Revenue Growth per Share',
+      min: -30,
+      max: 60,
+      dir: 1
+    },
+    {
+      company: c_data.DebtRatioCompany,
+      branch: c_data.DebtRatioBranche,
+      market: c_data.DebtRatioMarket,
+      title: 'Debt-ratio',
+      min: 0,
+      max: 4,
+      dir: 0
+    },
+    {
+      company: c_data.NettDEBTEBITDACompany,
+      branch: c_data.NettDEBTEBITDABranche,
+      market: c_data.NettDEBTEBITDAMarket,
+      title: 'Nett-Debt / EBITDA',
+      min: -3,
+      max: 3,
+      dir: 0
+    }
   ];
 
   return (
     <div className="column">
       <div className="columns">
-        <div className="column" style={{textAlign:'center'}}>
-          <div style={{width: '100%'}} ref={svgContainerRef}>
-          {svgSize.width && <GaugeGraph key={0} kind={0} data={i_data[0]} width={svgSize.width} height={270} />}
+        <div className="column" style={{ textAlign: 'center' }}>
+          <div style={{ width: '100%' }} ref={svgContainerRef}>
+            {svgSize.width && <GaugeGraph key={0} kind={0} data={i_data[0]} width={svgSize.width} height={270} />}
           </div>
         </div>
-        <div className="column" style={{textAlign:'center'}}>
-          <div style={{width: '100%'}}>
+        <div className="column" style={{ textAlign: 'center' }}>
+          <div style={{ width: '100%' }}>
             {svgSize.width && <GaugeGraph key={1} kind={1} data={i_data[1]} width={svgSize.width} height={270} />}
           </div>
         </div>
-        <div className="column" style={{textAlign:'center'}}>
-          <div style={{width: '100%'}}>
+        <div className="column" style={{ textAlign: 'center' }}>
+          <div style={{ width: '100%' }}>
             {svgSize.width && <GaugeGraph key={2} kind={2} data={i_data[2]} width={svgSize.width} height={270} />}
           </div>
         </div>
-        <div className="column" style={{textAlign:'center'}}>
-          <div style={{width: '100%'}}>
+        <div className="column" style={{ textAlign: 'center' }}>
+          <div style={{ width: '100%' }}>
             {svgSize.width && <GaugeGraph key={3} kind={3} data={i_data[3]} width={svgSize.width} height={270} />}
           </div>
         </div>
-      </div>              
-      <div className="columns">              
+      </div>
+      <div className="columns">
         <div className="column">
           <div className="columns">
-            <div className="column" style={{textAlign:'center'}}>
-              <div style={{width: '100%'}}>
+            <div className="column" style={{ textAlign: 'center' }}>
+              <div style={{ width: '100%' }}>
                 {svgSize.width && <GaugeGraph key={4} kind={4} data={i_data[4]} width={svgSize.width} height={270} />}
               </div>
             </div>
-            <div className="column" style={{textAlign:'center'}}>
-              <div style={{width: '100%'}}>
+            <div className="column" style={{ textAlign: 'center' }}>
+              <div style={{ width: '100%' }}>
                 {svgSize.width && <GaugeGraph key={5} kind={5} data={i_data[5]} width={svgSize.width} height={270} />}
               </div>
             </div>
           </div>
         </div>
-        <div className="column" style={{height: '300px', overflowY: 'scroll' }}>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci aperiam, consequuntur dolor dolorum
-            eveniet ipsum molestiae nobis nostrum nulla numquam optio pariatur quae quisquam reiciendis tempore
-            velit voluptas. Aliquid, ullam.
-          </p>
-          <br/>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam animi architecto aspernatur at
-            dolores, mollitia necessitatibus numquam officiis perspiciatis quasi repellat sequi, tempore tenetur?
-            At consectetur deserunt dolorum error ipsam!
-          </p>
+        <div className="column" style={{ height: '300px', overflowY: 'scroll' }}>
+          <strong>PE ratio </strong>
+          is a measure that gives an indication on how expensive a share is. It is calculated as the share price divided
+          by the profits per share. A high PE ratio means that the share is expensive.
+          <p />
+          <strong>ROIC </strong>
+          gives the Rate On Invested Capital. It shows how well the company is able to generate a return on all the
+          invested assets, like buildings, machinery etc.
+          <p />
+          <strong>ROE </strong>
+          gives the Rate On Equity. It shows how well the company is able to generate profits on the amount invested by
+          shareholders. It’s therefore a measure on how efficient the company is in deploying capital.
+          <p />
+          <strong>Revenue Growth Per Share </strong>
+          shows the annual revenue growth (or decline) divided by all outstanding shares. By taking into account the
+          number of shares, effects of (possible) new shares that were issued or effects of acquisitions are reflected
+          in this number.
+          <p />
+          <strong>Debt Ratio </strong>
+          shows the ratio of shareholders Equity to Debt. The higher this ratio is, the more debt the company has
+          relative to its equity. Therefore it becomes more risky.
+          <p />
+          <strong>Nett-Debt / EBITDA </strong>
+           is another way to give an indication of the level of debt of a company. In this measure, a correction
+          is made to the debt position by subtracting the amount of cash a company has on it’s balance sheet. The result
+          is then compared to the EBITDA, which is a common indicator of the operating result of a company.
+          <p />
         </div>
       </div>
     </div>
   );
-}
+};
 
 GaugeGraph.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   kind: PropTypes.number.isRequired,
   data: PropTypes.shape({
-      company: PropTypes.number.isRequired,
-      branch: PropTypes.number.isRequired,
-      market: PropTypes.number.isRequired,
-      title: PropTypes.string.isRequired,
-      min: PropTypes.number.isRequired,
-      max: PropTypes.number.isRequired,
-      dir: PropTypes.number.isRequired,
+    company: PropTypes.number.isRequired,
+    branch: PropTypes.number.isRequired,
+    market: PropTypes.number.isRequired,
+    title: PropTypes.string.isRequired,
+    min: PropTypes.number.isRequired,
+    max: PropTypes.number.isRequired,
+    dir: PropTypes.number.isRequired
   }).isRequired
 };
-GaugeGraphContainer.propTypes = {  
+GaugeGraphContainer.propTypes = {
   data: PropTypes.shape({
     DebtRatioBranche: PropTypes.number,
     DebtRatioCompany: PropTypes.number,
@@ -459,7 +545,7 @@ GaugeGraphContainer.propTypes = {
     RevenueGrowthBranche: PropTypes.number,
     RevenueGrowthCompany: PropTypes.number,
     RevenueGrowthMarket: PropTypes.number
-    })  
+  })
 };
 
 export default GaugeGraphContainer;

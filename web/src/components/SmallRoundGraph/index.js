@@ -5,7 +5,7 @@ import * as d3 from 'd3';
 const SmallRoundGraph = props => {
   const { params, idx, width } = props;
   let height = width * 0.8;
-  
+
   const roundRef = useRef();
   const lineRef = useRef();
 
@@ -15,26 +15,26 @@ const SmallRoundGraph = props => {
         {
           index: 0.7,
           text: 'Dividend',
-          value: params.Dividend ? params.Dividend / 100 : 0
+          value: params.dividend ? params.dividend / 100 : 0
         },
         {
           index: 0.6,
           text: 'Balance',
-          value: params.Balance ? params.Balance / 100 : 0
+          value: params.balance ? params.balance / 100 : 0
         },
         {
           index: 0.5,
           text: 'Growth',
-          value: params.Growth ? params.Growth / 100 : 0
+          value: params.growth ? params.growth / 100 : 0
         },
         {
           index: 0.4,
           text: 'Value',
-          value: params.Value ? params.Value / 100 : 0
+          value: params.value ? params.value / 100 : 0
         }
       ];
       let colors = { red: '#f45b63', orange: '#f49d73', green: '#72c14a' };
-      const setColor = total => (total <= 50 ? colors.red : total >= 70 ? colors.green : colors.orange);      
+      const setColor = total => (total <= 50 ? colors.red : total >= 70 ? colors.green : colors.orange);
 
       let radius = Math.min(width, height) / 1.6,
         spacing = 0.05;
@@ -45,8 +45,8 @@ const SmallRoundGraph = props => {
 
       let arcBody = d3
         .arc()
-        .startAngle(0.1)
-        .endAngle(d => 0.1 + d.value * 1.93 * Math.PI)
+        .startAngle(0)
+        .endAngle(d => d.value * 2 * Math.PI)
         .innerRadius(d => d.index * radius)
         .outerRadius(d => (d.index + spacing) * radius)
         .cornerRadius(2);
@@ -58,7 +58,7 @@ const SmallRoundGraph = props => {
         .enter()
         .append('g');
 
-      let total = params.Total ? params.Total : 0;
+      let total = params.total ? params.total : 0;
       //add score
       field
         .append('text')
@@ -102,16 +102,15 @@ const SmallRoundGraph = props => {
 };
 SmallRoundGraph.propTypes = {
   params: PropTypes.shape({
-    Year: PropTypes.number.isRequired,
-    Total: PropTypes.number.isRequired,
-    Dividend: PropTypes.number.isRequired,
-    Balance: PropTypes.number.isRequired,
-    Growth: PropTypes.number.isRequired,
-    Value: PropTypes.number.isRequired
+    year: PropTypes.number.isRequired,
+    total: PropTypes.number.isRequired,
+    dividend: PropTypes.number.isRequired,
+    balance: PropTypes.number.isRequired,
+    growth: PropTypes.number.isRequired,
+    value: PropTypes.number.isRequired
   }).isRequired,
   idx: PropTypes.string.isRequired,
-  filterCondition: PropTypes.array,
-  width: PropTypes.number
+  width: PropTypes.number.isRequired
 };
 
 export default SmallRoundGraph;

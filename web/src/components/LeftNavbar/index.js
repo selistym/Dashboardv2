@@ -6,9 +6,11 @@ import UserMenu from '../Layout/UserMenu';
 const LeftNavbar = ({ session }) => (
   // <div className="column is-full-mobile is-full-tablet is-2" style={{ backgroundColor: '#888'}}>
   <div>
+    <Link href="/">
     <div style={{ textAlign: 'center', margin: '20px' }}>
-      <img src="../../static/logo.png" />
+      <img src="../../static/logo.png" style={{cursor:'pointer'}} />
     </div>
+    </Link>
     {session && session.user && (
       <div style={{ textAlign: 'center', margin: '20px' }}>
         <img style={{ borderRadius: '50%', width: '110px', height: '100px' }} src="../../static/man.png" />

@@ -52,8 +52,12 @@ const PortfolioContainer = () => {
           return (
             <div>
               <SecuritiesContainer suggestions={filteredInstrumentSuggestions} />
-              <hr/>
-              <pre>{JSON.stringify(portfolio['default'], null, 2)}</pre>
+              {
+                //<hr/>
+                //<pre>{JSON.stringify(portfolio['default'], null, 2)}
+                //</pre>
+              }
+
             </div>
           );
         }}

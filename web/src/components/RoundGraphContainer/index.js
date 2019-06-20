@@ -34,7 +34,7 @@ const RoundGraphContainer = props => {
         }
       ];
       let colors = { red: '#f45b63', orange: '#f49d73', green: '#72c14a' };
-      const setColor = total => (total <= 50 ? colors.red : total >= 70 ? colors.green : colors.orange);
+      const setColor = total => (total <= 40 ? colors.red : total >= 60 ? colors.green : colors.orange);
       const setFontSize = radius => (radius <= 120 ? 11 : radius >= 180 ? 14 : 12);
 
       let radius = Math.min(width, height) / 1.75,
@@ -68,7 +68,7 @@ const RoundGraphContainer = props => {
         .style('text-anchor', 'start')
         .style('font-size', 14)
         .style('fill', setColor(total))
-        .text('Total')
+        
       //add score
       let txt_score = field
         .append('text')
@@ -112,7 +112,7 @@ const RoundGraphContainer = props => {
           if (d.value == 0) return;
           d3.select(this).style('stroke-width', 2);
           if(!clicked){
-            indicator.text("Total").style('fill', setColor(total));
+            indicator.text("")
             txt_score
               .attr('dy', '0.3em')
               .attr('fill', setColor(total))
@@ -142,7 +142,7 @@ const RoundGraphContainer = props => {
             .attr('dy', '0.3em')
             .attr('fill', setColor(total))
             .text(total);
-          indicator.text("Total").style('fill', setColor(total));
+          indicator.text("")
           clicked = false;
         });
       

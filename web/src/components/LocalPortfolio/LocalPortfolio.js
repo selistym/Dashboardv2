@@ -76,7 +76,6 @@ const LocalPortfolio = ({ security, index }) => {
               key={security.id}
               idx={security.id + index}
               params={curData}
-              filterCondition={store.securityFilterArea}
               width={220}
               height={190}
             />

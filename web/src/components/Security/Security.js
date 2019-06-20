@@ -20,7 +20,7 @@ const Security = props => {
   let changeClass = '';
   if (security && security.liveData && security.liveData.netChange < 0) changeClass = 'has-text-danger';
   if (security && security.liveData && security.liveData.netChange > 0) changeClass = 'has-text-success';
-  
+
   console.log(security); // eslint-disable-line no-console
   return (
     <div>
@@ -34,29 +34,29 @@ const Security = props => {
               />
             </div>
             <div className="column is-two-thirds-mobile is-three-quarters-tablet is-three-quarters-desktop is-three-quarters-widescreen is-four-fifths-fullhd">
-              <div className="columns" style={{marginBottom:'10px'}}>
+              <div className="columns" style={{ marginBottom: '10px' }}>
                 <div className="column is-8">
                   <h3
                     className="subtitle is-5 has-text-weight-bold has-text-grey"
                     style={{ height: '10px' }}
                   >{`Key figures ${security.name} (${security.ticker})`}</h3>
                 </div>
-                <div className="column is-4" style={{textAlign:'right'}}>
+                <div className="column is-4" style={{ textAlign: 'right' }}>
                   {isInPortfolio ? (
-                        <button className="button is-small is-danger" onClick={() => togglePortfolio()}>
-                          - Remove from portfolio
-                        </button>
-                      ) : (
-                        <button className="button is-small is-danger" onClick={() => togglePortfolio()}>
-                          + Add to portfolio
-                        </button>
+                    <button className="button is-small is-danger" onClick={() => togglePortfolio()}>
+                      - Remove from portfolio
+                    </button>
+                  ) : (
+                    <button className="button is-small is-danger" onClick={() => togglePortfolio()}>
+                      + Add to portfolio
+                    </button>
                   )}
                 </div>
               </div>
-              <hr style={{marginTop: '5px'}}/>
+              <hr style={{ marginTop: '5px' }} />
               <div className="columns is-desktop">
                 <div className="column is-full-mobile is-full-tablet is-two-thirds-desktop is-two-thirds-widescreen is-two-thirds-fullhd">
-                  <div className="content" style={{ height: '360px', overflowY: 'scroll' }}>                    
+                  <div className="content" style={{ height: '360px', overflowY: 'scroll' }}>
                     <p style={{ paddingTop: '10px' }}>{security.longBusinessDescription}</p>
                   </div>
                 </div>
@@ -65,7 +65,7 @@ const Security = props => {
                   style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
                 >
                   <div className={'RoundGraph' + security.id} style={{ width: '220px', height: '230px' }}>
-                    {security.calculatedCircular[0] != null ? (                      
+                    {security.calculatedCircular[0] != null ? (
                       <RoundGraphContainer
                         key={security.id}
                         idx={security.id}
@@ -250,7 +250,11 @@ const Security = props => {
             </table>
           </div>
           <div className="column is-8">
-            <AreaGraphContainer data={security && security.historyPrice100} companyName={security && security.name} currency={security.currency}/>
+            <AreaGraphContainer
+              data={security && security.historyPrice100}
+              companyName={security && security.name}
+              currency={security.currency}
+            />
           </div>
         </div>
       </div>
@@ -261,9 +265,7 @@ const Security = props => {
         </h3>
         <hr />
         <div className="columns">
-          {security.calculated ? 
-            <GaugeGraphContainer data={security.calculated} />
-            : <p>No Data</p>}
+          {security.calculated ? <GaugeGraphContainer data={security.calculated} /> : <p>No Data</p>}
         </div>
       </div>
       <div className="box  has-text-grey" style={{ height: '460px' }}>
@@ -417,20 +419,15 @@ const Security = props => {
                 <div className="column is-one-two-mobile is-one-two-tablet has-text-centered">Dividend Yield</div>
               </div>
               <div style={{ height: '285px', overflowY: 'scroll' }}>
-                <strong>Explanation</strong>
+           
                 <ul>
                   <li>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ratione, reiciendis, voluptates? Earum ex,
-                    harum laudantium maxime molestias odio ratione ut! Dolore earum fugiat pariatur repudiandae
-                    veritatis. Culpa debitis pariatur vel.50
+                    The Dividend Yield is the percentual income you get from dividend, based on the current share price.
                   </li>
                   <li>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cumque expedita libero magnam minima
-                    perspiciatis suscipit tempore? Ab atque iste optio!
-                  </li>
-                  <li>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corporis excepturi minima molestias neque
-                    perspiciatis, quas?
+                    The graph shows the total income of the last three book years, along with the percentage that has
+                    been payed out to shareholders, the pay-out ratio. Higher values of this ratio correspond to a
+                    higher risk whether this level of dividend can be maintained.
                   </li>
                 </ul>
               </div>
@@ -445,12 +442,14 @@ const Security = props => {
         <hr />
         <div className="columns">
           <div className="column is-1" />
-          {security.sector != 'Finance' ?
+          {security.sector != 'Finance' ? (
             <div className="column is-2">
-                <span style={{ color: 'red', fontWeight: '600', fontSize: '15pt' }}>|&nbsp;</span>
-                <span>EBITDA</span>
-            </div> : <></>
-          }
+              <span style={{ color: 'red', fontWeight: '600', fontSize: '15pt' }}>|&nbsp;</span>
+              <span>EBITDA</span>
+            </div>
+          ) : (
+            <></>
+          )}
           <div className="column is-2">
             <span style={{ color: 'LimeGreen', fontWeight: '600', fontSize: '15pt' }}>●&nbsp;</span>
             <span>Cashflow from Operating activities</span>
@@ -471,49 +470,37 @@ const Security = props => {
         </div>
         <div className="columns">
           <div className="column is-6">
-            <NegativeGraphContainer data={security.calculated5Y} sector={security.sector}/>
+            <NegativeGraphContainer data={security.calculated5Y} sector={security.sector} />
           </div>
           <div className="column is-6">
             <div className="content" style={{ height: '380px', overflowY: 'scroll' }}>
               <p>
-                <strong className="has-text-danger">Important!: </strong> Lorem ipsum dolor sit amet, consectetur
-                adipisicing elit. Animi at delectus dolor doloremque facilis iste non quam sapiente tempora totam! A
-                accusantium, aliquid architecto consequuntur dolore ducimus, esse est ex explicabo facilis fugit id
-                illum nisi nulla odio quidem quisquam, repellendus ut vel voluptatum! Assumenda dolorum eaque iste
-                neque! Dicta esse facere, laudantium, minus nam nihil non nostrum officia perspiciatis, praesentium quos
-                repudiandae. Aspernatur dolorum eum harum odio perspiciatis porro provident quasi recusandae repellendus
-                reprehenderit! Blanditiis cupiditate dolorum iusto repellat tenetur! Ab eaque et facere maiores mollitia
-                neque quod repellat reprehenderit similique? Ad aliquam autem beatae cupiditate doloribus, dolorum eius
-                ipsa laboriosam modi nulla odit, quasi temporibus unde! Ab cum dolore maxime optio quae quo, suscipit
-                totam! Beatae delectus deleniti doloremque eaque eius esse explicabo facere harum.
+                Cashflow is the nett amount of cash that flows in or out the company during a period. This number
+                differs from the profit (or loss) that a company makes because the moments costs and revenues are booked
+                are different from the moments incoming and outgoing bills are payed.
               </p>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium debitis delectus facere fugiat hic
-                mollitia neque nihil numquam praesentium suscipit! Ab amet atque cupiditate, eveniet hic in inventore
-                natus necessitatibus odio officia optio quae quidem quod recusandae sit tempore totam voluptatum? Autem
-                debitis ipsam iure non possimus sapiente temporibus unde!
+                The cashflow statement is usually broken down in three components. The sum of these components is the
+                change in cash during a specific period.
               </p>
+              <strong>Cashflow from Operating Activities</strong>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium debitis delectus facere fugiat hic
-                mollitia neque nihil numquam praesentium suscipit! Ab amet atque cupiditate, eveniet hic in inventore
-                natus necessitatibus odio officia optio quae quidem quod recusandae sit tempore totam voluptatum? Autem
-                debitis ipsam iure non possimus sapiente temporibus unde!
+                This is the amount of cash generated by the normal business activity. A positive number shows that the
+                company is able to maintain its operations. However, keep in mind that this number does not take into
+                account the costs that are associated with depreciation. Also, other factors like changes in working
+                capital make this number deviate from income.
               </p>
-              <strong>Explanation</strong>
-              <ul>
-                <li>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur dolorem eligendi, explicabo
-                  impedit iure laboriosam magni modi neque nihil optio quasi sed sunt, voluptate voluptatibus!
-                </li>
-                <li>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur dolorem eligendi, explicabo
-                  impedit iure laboriosam magni modi neque nihil optio quasi sed sunt, voluptate voluptatibus!
-                </li>
-                <li>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur dolorem eligendi, explicabo
-                  impedit iure laboriosam magni modi neque nihil optio quasi sed sunt, voluptate voluptatibus!
-                </li>
-              </ul>
+              <strong>Cashflow from Investing Activities</strong>
+              <p>
+                This number represents the change in cash resulting from investments and disinvestments. Examples are
+                buying machinery, plants and vehicles that are required for a manufacturer.
+              </p>
+              <strong>Cashflow from Financing Activities</strong>
+              <p>
+                Cashflow from financing activities shows the net flows of cash that are used to fund the company. This
+                means new debt that has been issued, bank lending and changes in equity. Also, paid dividends fall in
+                this category.
+              </p>
             </div>
           </div>
         </div>
@@ -531,44 +518,29 @@ const Security = props => {
           <div className="column is-6">
             <div className="content" style={{ height: '400px', overflowY: 'scroll' }}>
               <p>
-                <strong className="has-text-danger">Important!: </strong> Lorem ipsum dolor sit amet, consectetur
-                adipisicing elit. Animi at delectus dolor doloremque facilis iste non quam sapiente tempora totam! A
-                accusantium, aliquid architecto consequuntur dolore ducimus, esse est ex explicabo facilis fugit id
-                illum nisi nulla odio quidem quisquam, repellendus ut vel voluptatum! Assumenda dolorum eaque iste
-                neque! Dicta esse facere, laudantium, minus nam nihil non nostrum officia perspiciatis, praesentium quos
-                repudiandae. Aspernatur dolorum eum harum odio perspiciatis porro provident quasi recusandae repellendus
-                reprehenderit! Blanditiis cupiditate dolorum iusto repellat tenetur! Ab eaque et facere maiores mollitia
-                neque quod repellat reprehenderit similique? Ad aliquam autem beatae cupiditate doloribus, dolorum eius
-                ipsa laboriosam modi nulla odit, quasi temporibus unde! Ab cum dolore maxime optio quae quo, suscipit
-                totam! Beatae delectus deleniti doloremque eaque eius esse explicabo facere harum.
+                The balance diagram consists of two sides, assets and liabilities. At both sides the total of the
+                categories amounts to the same number, the balance total.
+              </p>
+
+              <strong>Asset</strong>
+              <p>
+                At the right side of the diagram, you will find the value of the assets of a company, divided in several
+                categories. Assets are the resources the company has a future economic benefit of. For example, this can
+                be in the form of buildings, machinery, inventory or cash. But also, intellectual property, like patents
+                and licences are assets.
+              </p>
+              <p>Human capital, like the skills that employees of the company have, are no part of the balance.</p>
+              <strong>Liabilities</strong>
+              <p>
+                The right side of the balance diagram gives a simplified overview on the capital structure of the
+                company. This consists of equity and debt. Equity is the amount of capital shareholders provided to the
+                company, along with earnings that have not been payed out to shareholders.
               </p>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium debitis delectus facere fugiat hic
-                mollitia neque nihil numquam praesentium suscipit! Ab amet atque cupiditate, eveniet hic in inventore
-                natus necessitatibus odio officia optio quae quidem quod recusandae sit tempore totam voluptatum? Autem
-                debitis ipsam iure non possimus sapiente temporibus unde!
+                Debt is the total value of all long and short term obligations to creditors and lenders. A higher
+                debt-to-equity ratio means more risk for the company as a whole, as there is not much room to cover
+                setbacks.
               </p>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium debitis delectus facere fugiat hic
-                mollitia neque nihil numquam praesentium suscipit! Ab amet atque cupiditate, eveniet hic in inventore
-                natus necessitatibus odio officia optio quae quidem quod recusandae sit tempore totam voluptatum? Autem
-                debitis ipsam iure non possimus sapiente temporibus unde!
-              </p>
-              <strong>Explanation</strong>
-              <ul>
-                <li>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur dolorem eligendi, explicabo
-                  impedit iure laboriosam magni modi neque nihil optio quasi sed sunt, voluptate voluptatibus!
-                </li>
-                <li>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur dolorem eligendi, explicabo
-                  impedit iure laboriosam magni modi neque nihil optio quasi sed sunt, voluptate voluptatibus!
-                </li>
-                <li>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur dolorem eligendi, explicabo
-                  impedit iure laboriosam magni modi neque nihil optio quasi sed sunt, voluptate voluptatibus!
-                </li>
-              </ul>
             </div>
           </div>
         </div>

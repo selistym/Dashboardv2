@@ -34,7 +34,7 @@ const SmallRoundGraph = props => {
         }
       ];
       let colors = { red: '#f45b63', orange: '#f49d73', green: '#72c14a' };
-      const setColor = total => (total <= 50 ? colors.red : total >= 70 ? colors.green : colors.orange);
+      const setColor = total => (total <= 40 ? colors.red : total >= 60 ? colors.green : colors.orange);
 
       let radius = Math.min(width, height) / 1.6,
         spacing = 0.05;

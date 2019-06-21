@@ -19,9 +19,19 @@ const FILTERED_SECURITIES_QUERY = gql`
       id
       name
       sector
+      ticker
+      longBusinessDescription
       currency
       country {
         code
+      }
+      factsetData {
+        BookValue
+        CEO
+        CompanyFoundedDate
+        Daily_DividendYieldDaily
+        EarningsGrowth
+        MarketCapitalization
       }
       liveData {
         last

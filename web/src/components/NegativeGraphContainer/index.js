@@ -355,15 +355,9 @@ const NegativeGraphContainer = ({ data , sector}) => {
     }
   ];
   return (
-    <>
-      {!data ? (
-        <span>No Data</span>
-      ) : (
-        <div ref={svgContainerRef}>          
-          {svgSize.width && <NegativeGraph data={cap_data} width={svgSize.width} height={400} sector={sector}/>}
-        </div>
-      )}
-    </>
+    <div ref={svgContainerRef}>          
+      {svgSize.width && <NegativeGraph data={cap_data} width={svgSize.width} height={400} sector={sector}/>}
+    </div>
   );
 };
 BarGroup.propTypes = {

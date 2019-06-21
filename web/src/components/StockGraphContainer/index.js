@@ -354,48 +354,43 @@ const StockGraphContainer = ({ data }) => {
 
   return (
     <>
-      {!data || data.length == 0 ? (
-        <span>No data</span>
-      ) : (
-        <>
-          <div className="columns">
-            <div className="column" style={{ padding: 0, textAlign: 'center', fontSize: '18pt' }}>
-              <strong style={{ color: '#df072c' }}>*</strong>
-              <strong>Net Income</strong>
-            </div>
+      <div className="columns">
+        <div className="column" style={{ padding: 0, textAlign: 'center', fontSize: '18pt' }}>
+          <strong style={{ color: '#df072c' }}>*</strong>
+          <strong>Net Income</strong>
+        </div>
+      </div>
+      <div className="columns">
+        <div className="column" style={{ width: '100%', justifyContent: 'center' }}>
+          <div ref={svgContainerRef}>
+            {svgSize.width && <StockGraph data={preCorrection(data).reverse()} width={svgSize.width} height={265} />}
           </div>
-          <div className="columns">
-            <div className="column" style={{ width: '100%', justifyContent: 'center' }}>
-              <div ref={svgContainerRef}>
-                {svgSize.width && <StockGraph data={preCorrection(data).reverse()} width={svgSize.width} height={265} />}
-              </div>
-            </div>
-          </div>
-          <div className="columns" style={{ textAlign: 'center', fontSize: '11pt' }}>
-            <div className="column" style={{ padding: '0px 0px 0.75rem 0px' }}>
-              <span style={{ color: '#df072c', fontSize: '14pt' }}>●</span>
-              <span>Dividend</span>
-            </div>
-            <div className="column" style={{ padding: '0px 0px 0.75rem 0px' }}>
-              <span style={{ color: '#a2a2a2', fontSize: '14pt' }}>●</span>
-              <span>
-                Retained
-                <br />
-                &nbsp;&nbsp;&nbsp;Earnings
-              </span>
-            </div>
-            <div className="column" style={{ padding: '0px 0px 0.75rem 0px' }}>
-              <span>%&nbsp;</span>
-              <span>
-                Pay-out
-                <br />
-                Ratio
-              </span>
-            </div>
-          </div>
-        </>
-      )}
+        </div>
+      </div>
+      <div className="columns" style={{ textAlign: 'center', fontSize: '11pt' }}>
+        <div className="column" style={{ padding: '0px 0px 0.75rem 0px' }}>
+          <span style={{ color: '#df072c', fontSize: '14pt' }}>●</span>
+          <span>Dividend</span>
+        </div>
+        <div className="column" style={{ padding: '0px 0px 0.75rem 0px' }}>
+          <span style={{ color: '#a2a2a2', fontSize: '14pt' }}>●</span>
+          <span>
+            Retained
+            <br />
+            &nbsp;&nbsp;&nbsp;Earnings
+          </span>
+        </div>
+        <div className="column" style={{ padding: '0px 0px 0.75rem 0px' }}>
+          <span>%&nbsp;</span>
+          <span>
+            Pay-out
+            <br />
+            Ratio
+          </span>
+        </div>
+      </div>
     </>
+      
   );
 };
 

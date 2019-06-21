@@ -28,7 +28,7 @@ const LocalPortfolio = ({ security, index }) => {
     >
       <div className="columns" style={{ minWidth: '250px', height: '28px', display: 'flex' }}>
         <div className="column is-7">
-          <Link key={security.id} href={`/security?id=${security.id}&leak_security=${JSON.stringify(security)}`} as={`/security/${security.id}`}>
+          <Link key={security.id} href={`/security?id=${security.id}&short_security=${JSON.stringify(security)}`} as={`/security/${security.id}`}>
             <h3
               className="subtitle is-5 has-text-weight-bold has-text-grey"
               style={{
@@ -54,7 +54,7 @@ const LocalPortfolio = ({ security, index }) => {
           </a>
         </div>
         <div className="column is-1">
-          <Link key={security.id} href={`/security?id=${security.id}&leak_security=${JSON.stringify(security)}`} as={`/security/${security.id}`}>
+          <Link key={security.id} href={`/security?id=${security.id}&short_security=${JSON.stringify(security)}`} as={`/security/${security.id}`}>
             <a className="button is-dark is-small has-text-weight-bold" style={{ backgroundColor: '#7d7d7d' }}>
               ...
             </a>

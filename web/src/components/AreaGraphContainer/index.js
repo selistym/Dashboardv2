@@ -357,7 +357,7 @@ const AreaGraphContainer = props => {
     }
     return column;
   };
-  const isEmpty = origin => (!origin || origin.length == 0 ? true : false);
+  
   const preCorrection = origin =>
     origin.map(d => {
       d.Date = d.Date ? d.Date : '';
@@ -366,9 +366,8 @@ const AreaGraphContainer = props => {
       return d;
     });
 
-  const sorted_data = !isEmpty(data)
-    ? preCorrection(data).sort((x, y) => d3.ascending(parseTime(x.Date), parseTime(y.Date)))
-    : [];
+  const sorted_data = preCorrection(data).sort((x, y) => d3.ascending(parseTime(x.Date), parseTime(y.Date)));
+
   //initial State
   const getPartial = (start, end) => {
     if (sorted_data.length == 0) return [];
@@ -386,7 +385,7 @@ const AreaGraphContainer = props => {
     return { partial: partial };
   };
   const initStore = {
-    partial: !isEmpty(data) ? sorted_data : []
+    partial: sorted_data
   };
   //use reducer
   const areaReducer = (state, action) => {
@@ -454,58 +453,52 @@ const AreaGraphContainer = props => {
   };
 
   return (
-    <Fragment>
-      {isEmpty(data) ? (
-        <> No data </>
-      ) : (
-        <AreaContext.Provider value={{ areaStore, areaDispatch }}>
-          <div>
-            <div className="columns">
-              <div
-                className="column is-desktop is-7"
-                style={{ margin: '0px', padding: '0px', justifyContent: 'center', textAlign: 'center' }}
-              >
-                {btLabels.map((e, i) =>
-                  i == 5 ? (
-                    <span
-                      key={i}
-                      className="button"
-                      ref={btRefs.current[i]}
-                      onClick={() => onRangeButtonHandler(i)}
-                      style={select_btStyle}
-                    >
-                      {e}
-                    </span>
-                  ) : (
-                    <span
-                      key={i}
-                      className="button"
-                      ref={btRefs.current[i]}
-                      onClick={() => onRangeButtonHandler(i)}
-                      style={deselect_btStyle}
-                    >
-                      {e}
-                    </span>
-                  )
-                )}
-              </div>
-              <div
-                className="column is-desktop is-5"
-                style={{ margin: '0px', padding: '0px', justifyContent: 'center', textAlign: 'center' }}
-              >
-                <span style={{ color: '#de0730', fontWeight: '600', fontSize: '15pt' }}>●&nbsp;</span>
-                <span style={{ marginRight: '15px' }}>{companyName}</span>
-              </div>
-            </div>
-            <div className="columns" style={{ width: '100%', justifyContent: 'center' }} ref={svgContainerRef}>
-              {svgSize.width && (
-                <AreaGraph data={sorted_data} currency={currency} column={getColumn(sorted_data)} width={svgSize.width} height={400} />
-              )}
-            </div>
+    <AreaContext.Provider value={{ areaStore, areaDispatch }}>
+      <div>
+        <div className="columns">
+          <div
+            className="column is-desktop is-7"
+            style={{ margin: '0px', padding: '0px', justifyContent: 'center', textAlign: 'center' }}
+          >
+            {btLabels.map((e, i) =>
+              i == 5 ? (
+                <span
+                  key={i}
+                  className="button"
+                  ref={btRefs.current[i]}
+                  onClick={() => onRangeButtonHandler(i)}
+                  style={select_btStyle}
+                >
+                  {e}
+                </span>
+              ) : (
+                <span
+                  key={i}
+                  className="button"
+                  ref={btRefs.current[i]}
+                  onClick={() => onRangeButtonHandler(i)}
+                  style={deselect_btStyle}
+                >
+                  {e}
+                </span>
+              )
+            )}
           </div>
-        </AreaContext.Provider>
-      )}
-    </Fragment>
+          <div
+            className="column is-desktop is-5"
+            style={{ margin: '0px', padding: '0px', justifyContent: 'center', textAlign: 'center' }}
+          >
+            <span style={{ color: '#de0730', fontWeight: '600', fontSize: '15pt' }}>●&nbsp;</span>
+            <span style={{ marginRight: '15px' }}>{companyName}</span>
+          </div>
+        </div>
+        <div className="columns" style={{ width: '100%', justifyContent: 'center' }} ref={svgContainerRef}>
+          {svgSize.width && (
+            <AreaGraph data={sorted_data} currency={currency} column={getColumn(sorted_data)} width={svgSize.width} height={400} />
+          )}
+        </div>
+      </div>
+    </AreaContext.Provider>      
   );
 };
 

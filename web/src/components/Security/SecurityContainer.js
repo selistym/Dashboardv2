@@ -191,20 +191,26 @@ export const SECURITY_SUBSCRIPTION = gql`
   }
 `;
 
-const SecurityContainer = ({ securityId, session, leak_security}) => {
+const SecurityContainer = ({ securityId, session, short_security}) => {
   const { togglePortfolio, isInPortfolio } = usePortfolio({});
-  console.log(leak_security, 'from selected')
+  
   return (
     <Query query={SECURITY_QUERY} variables={{ id: securityId }}>
       {({ loading, error, data, subscribeToMore }) => {
         if (error) return `Error! ${error}`;
-        if (loading) return <Loading marginTop={'20%'}/>;
-        const security = data.security;
 
-        subscribeToMore({
-          document: SECURITY_SUBSCRIPTION,
-          variables: { securityIds: [security.id] }
-        });
+        let security;
+
+        if (loading) {
+          {/* return <Loading marginTop={'20%'}/>; */}
+          security = short_security;
+        }else{//full loading
+          security = data.security;
+          subscribeToMore({
+            document: SECURITY_SUBSCRIPTION,
+            variables: { securityIds: [security.id] }
+          });
+        }
 
         return (
           <SecurityLayout security={security} session={session}>
@@ -221,6 +227,7 @@ const SecurityContainer = ({ securityId, session, leak_security}) => {
 };
 
 SecurityContainer.propTypes = {
+  short_security: PropTypes.object.isRequired,
   session: PropTypes.object.isRequired,
   securityId: PropTypes.string.isRequired
 };

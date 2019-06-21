@@ -103,7 +103,7 @@ const BalanceGraphContainer = ({data}) => {
       return d;
     });
   }
-  const c_data = data && data.length > 0 ? preCorrection(data).reverse() : []
+  const c_data = preCorrection(data).reverse();
   const years = c_data.map(d => d.Date.split("-")[0])
   const [curData, setCurData] = useState(c_data[c_data.length - 1]);
 

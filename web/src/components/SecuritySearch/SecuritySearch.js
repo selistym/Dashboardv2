@@ -11,7 +11,7 @@ import SecuritySearchDropdownSection from './SecuritySearchDropdownSection';
 import SuggestionsContainer from './SuggestionsContainer';
 
 const SecuritySearchLayout = () => {
-  return (
+  return ( 
     <div>
       <SecuritySearchSearchBarSection />
       <SecuritySearchDropdownSection />

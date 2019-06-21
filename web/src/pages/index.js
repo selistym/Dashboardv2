@@ -7,8 +7,7 @@ import AuthenticatedPage from '../components/Layout/AuthenticatedPage';
 
 class SecuritySearchPage extends AuthenticatedPage {
   render() {
-    const { session } = this.props;
-
+    const { session } = this.props;    
     return (
       <Layout
         {...this.props}

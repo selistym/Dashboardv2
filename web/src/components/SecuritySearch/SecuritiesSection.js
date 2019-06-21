@@ -13,10 +13,10 @@ const SecuritiesSection = ({ securities, loadMoreSecurities, subscribeToSecuriti
   if (securities === undefined) {
     return null;
   }
-  // console.log(securities[0].calculatedCircular[0])
+  
   const availableForArea = sc => {    
     let canBeShow = [false, false, false, false];
-    if(sc == null || sc.calculatedCircular == null || sc.calculatedCircular[0].Year != store.securityFilterYear) return false;    
+    if(sc == null || sc.calculatedCircular == null || sc.calculatedCircular[0].Year != store.securityFilterYear) return false;
     
     if(store.securityFilterArea.length == 0) return true;
     

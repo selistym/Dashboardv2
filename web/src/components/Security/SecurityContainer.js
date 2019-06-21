@@ -191,14 +191,14 @@ export const SECURITY_SUBSCRIPTION = gql`
   }
 `;
 
-const SecurityContainer = ({ securityId, session }) => {
+const SecurityContainer = ({ securityId, session, leak_security}) => {
   const { togglePortfolio, isInPortfolio } = usePortfolio({});
-
+  console.log(leak_security, 'from selected')
   return (
     <Query query={SECURITY_QUERY} variables={{ id: securityId }}>
       {({ loading, error, data, subscribeToMore }) => {
-        if (loading) return <Loading marginTop={'20%'}/>;
         if (error) return `Error! ${error}`;
+        if (loading) return <Loading marginTop={'20%'}/>;
         const security = data.security;
 
         subscribeToMore({

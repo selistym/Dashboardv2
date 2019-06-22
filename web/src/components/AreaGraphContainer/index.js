@@ -138,12 +138,16 @@ const AreaGraph = ({ data, currency,  column, width, height }) => {
       .attr('height', h)
       .style('opacity', 0)
       .on('mousemove', function() {
-        let x0 = x.invert(d3.mouse(this)[0]),
-          i = bisectDate(area_data, x0, 0),
-          d0 = area_data[i - 1],
-          d1 = area_data[i],
-          d = x0 - d0.date > d1.date - x0 ? d1 : d0;
-        tooltip.attr('transform', `translate(${x(d.date)},${y(d.value)})`).call(callout, d.value);
+        try{
+          let x0 = x.invert(d3.mouse(this)[0]),
+            i = bisectDate(area_data, x0, 0),
+            d0 = area_data[i - 1],
+            d1 = area_data[i],
+            d = x0 - d0.date > d1.date - x0 ? d1 : d0;
+          tooltip.attr('transform', `translate(${x(d.date)},${y(d.value)})`).call(callout, d.value);
+        }catch(e){
+          console.log('less data length!') //eslint-disable-line
+        }
       });
     chart.on('mouseleave', () => tooltip.call(callout, null));
     const callout = (g, value) => {

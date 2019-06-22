@@ -20,7 +20,7 @@ const FILTERED_SECURITIES_QUERY = gql`
       name
       sector
       ticker
-      longBusinessDescription
+      
       currency
       country {
         code

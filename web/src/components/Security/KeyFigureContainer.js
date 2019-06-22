@@ -4,6 +4,12 @@ import classNames from 'classnames';
 
 import { formatIntl } from '../../lib/format-intl';
 import RoundGraphContainer from '../RoundGraphContainer';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faAlignLeft, faChartPie } from '@fortawesome/free-solid-svg-icons';
+
+library.add(faAlignLeft);
+library.add(faChartPie);
 
 const KeyFigureContainer = ({security, isInPortfolio, togglePortfolio, lastPointed}) => 
     <div className="box has-text-grey">
@@ -37,8 +43,10 @@ const KeyFigureContainer = ({security, isInPortfolio, togglePortfolio, lastPoint
             <hr style={{ marginTop: '5px' }} />
             <div className="columns is-desktop">
                 <div className="column is-full-mobile is-full-tablet is-two-thirds-desktop is-two-thirds-widescreen is-two-thirds-fullhd">
-                    <div className="content" style={{ height: '360px', overflowY: 'scroll' }}>
-                    <p style={{ paddingTop: '10px' }}>{security.longBusinessDescription ? security.longBusinessDescription : 'N/A'}</p>
+                    <div className="content" style={{ height: '360px', textAlign: security.longBusinessDescription ? 'left' : 'center', overflowY: security.longBusinessDescription ? 'scroll' : 'no-scroll' }}>
+                    {security.longBusinessDescription ?
+                        <p style={{ paddingTop: '10px' }}>{security.longBusinessDescription}</p>
+                        : <FontAwesomeIcon icon={faAlignLeft} size={"10x"} style={{opacity: 0.1}}/>}
                     </div>
                 </div>
                 <div
@@ -46,17 +54,17 @@ const KeyFigureContainer = ({security, isInPortfolio, togglePortfolio, lastPoint
                     style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
                 >
                     <div className={'RoundGraph' + security.id} style={{ width: '220px', height: '230px' }}>
-                    {security && security.calculatedCircular && security.calculatedCircular[0] != null ? (
-                        <RoundGraphContainer
-                            key={security.id}
-                            idx={security.id}
-                            params={security.calculatedCircular[security.calculatedCircular.length - 1]}
-                            width={230}
-                            height={220}
-                        />
-                    ) : (
-                        <p>No data</p>
-                    )}
+                        {security && security.calculatedCircular && security.calculatedCircular[0] != null ? (
+                            <RoundGraphContainer
+                                key={security.id}
+                                idx={security.id}
+                                params={security.calculatedCircular[security.calculatedCircular.length - 1]}
+                                width={230}
+                                height={220}
+                            />
+                        ) : (
+                            <FontAwesomeIcon icon={faChartPie} size={"10x"} style={{opacity: 0.1}}/>
+                        )}
                     </div>
                 </div>
             </div>

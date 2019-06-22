@@ -4,6 +4,10 @@ import { useHighlight } from '../../lib/custom-hooks';
 import { formatIntl, formatTime, formatDate, formatVolume } from '../../lib/format-intl';
 
 import AreaGraphContainer from '../AreaGraphContainer';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faChartArea } from '@fortawesome/free-solid-svg-icons';
+library.add(faChartArea);
 
 const PriceContainer = ({security, lastPointed}) => {
     const highlightClass = useHighlight(lastPointed);
@@ -108,15 +112,15 @@ const PriceContainer = ({security, lastPointed}) => {
                     </tbody>
                 </table>
                 </div>
-                {security && security.historyPrice100 && security.historyPrice100.length > 0 ?
-                    <div className="column is-8">
+                <div className="column is-8" style={{textAlign: 'center'}}>
+                    {security && security.historyPrice100 && security.historyPrice100.length > 0 ?                    
                         <AreaGraphContainer
                             data={security.historyPrice100}
                             companyName={security.name}
                             currency={security.currency}
                         />
-                    </div>
-                : <span> No Data </span>}
+                        : <FontAwesomeIcon icon={faChartArea} size={"10x"} style={{opacity: 0.1}}/>}
+                </div>
             </div>
         </div>
     );

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Scrollbars } from 'react-custom-scrollbars';
 import PropTypes from 'prop-types';
 
 const DividendYieldContainer = ({security}) => 
@@ -23,18 +24,19 @@ const DividendYieldContainer = ({security}) =>
                 <div className="columns is-mobile" style={{ height: '42px' }}>
                 <div className="column is-one-two-mobile is-one-two-tablet has-text-centered">Dividend Yield</div>
                 </div>
-                <div style={{ height: '285px', overflowY: 'scroll' }}>
-            
-                <ul>
-                    <li>
-                    The Dividend Yield is the percentual income you get from dividend, based on the current share price.
-                    </li>
-                    <li>
-                    The graph shows the total income of the last three book years, along with the percentage that has
-                    been payed out to shareholders, the pay-out ratio. Higher values of this ratio correspond to a
-                    higher risk whether this level of dividend can be maintained.
-                    </li>
-                </ul>
+                <div>
+                    <Scrollbars style={{ width: '100%', height: 285 }}>
+                        <ul>
+                            <li>
+                            The Dividend Yield is the percentual income you get from dividend, based on the current share price.
+                            </li>
+                            <li>
+                            The graph shows the total income of the last three book years, along with the percentage that has
+                            been payed out to shareholders, the pay-out ratio. Higher values of this ratio correspond to a
+                            higher risk whether this level of dividend can be maintained.
+                            </li>
+                        </ul>
+                    </Scrollbars>
                 </div>
             </div>
         </div>

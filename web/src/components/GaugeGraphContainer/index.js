@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { Scrollbars } from 'react-custom-scrollbars';
 import useDimensions from '../Dimensions';
 import * as d3 from 'd3';
 
@@ -478,33 +479,35 @@ const GaugeGraphContainer = ({ data }) => {
             </div>
           </div>
         </div>
-        <div className="column" style={{ height: '300px', overflowY: 'scroll' }}>
-          <strong>PE ratio </strong>
-          is a measure that gives an indication on how expensive a share is. It is calculated as the share price divided
-          by the profits per share. A high PE ratio means that the share is expensive.
-          <p />
-          <strong>ROIC </strong>
-          gives the Rate On Invested Capital. It shows how well the company is able to generate a return on all the
-          invested assets, like buildings, machinery etc.
-          <p />
-          <strong>ROE </strong>
-          gives the Rate On Equity. It shows how well the company is able to generate profits on the amount invested by
-          shareholders. It’s therefore a measure on how efficient the company is in deploying capital.
-          <p />
-          <strong>Revenue Growth Per Share </strong>
-          shows the annual revenue growth (or decline) divided by all outstanding shares. By taking into account the
-          number of shares, effects of (possible) new shares that were issued or effects of acquisitions are reflected
-          in this number.
-          <p />
-          <strong>Debt Ratio </strong>
-          shows the ratio of shareholders Equity to Debt. The higher this ratio is, the more debt the company has
-          relative to its equity. Therefore it becomes more risky.
-          <p />
-          <strong>Nett-Debt / EBITDA </strong>
-           is another way to give an indication of the level of debt of a company. In this measure, a correction
-          is made to the debt position by subtracting the amount of cash a company has on it’s balance sheet. The result
-          is then compared to the EBITDA, which is a common indicator of the operating result of a company.
-          <p />
+        <div className="column">
+          <Scrollbars style={{ width: '100%', height: 230 }}>
+            <strong>PE ratio </strong>
+            is a measure that gives an indication on how expensive a share is. It is calculated as the share price divided
+            by the profits per share. A high PE ratio means that the share is expensive.
+            <p />
+            <strong>ROIC </strong>
+            gives the Rate On Invested Capital. It shows how well the company is able to generate a return on all the
+            invested assets, like buildings, machinery etc.
+            <p />
+            <strong>ROE </strong>
+            gives the Rate On Equity. It shows how well the company is able to generate profits on the amount invested by
+            shareholders. It’s therefore a measure on how efficient the company is in deploying capital.
+            <p />
+            <strong>Revenue Growth Per Share </strong>
+            shows the annual revenue growth (or decline) divided by all outstanding shares. By taking into account the
+            number of shares, effects of (possible) new shares that were issued or effects of acquisitions are reflected
+            in this number.
+            <p />
+            <strong>Debt Ratio </strong>
+            shows the ratio of shareholders Equity to Debt. The higher this ratio is, the more debt the company has
+            relative to its equity. Therefore it becomes more risky.
+            <p />
+            <strong>Nett-Debt / EBITDA </strong>
+            is another way to give an indication of the level of debt of a company. In this measure, a correction
+            is made to the debt position by subtracting the amount of cash a company has on it’s balance sheet. The result
+            is then compared to the EBITDA, which is a common indicator of the operating result of a company.
+            <p />
+          </Scrollbars>
         </div>
       </div>
     </div>

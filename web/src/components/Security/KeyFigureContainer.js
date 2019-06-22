@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-
+import { Scrollbars } from 'react-custom-scrollbars';
 import { formatIntl } from '../../lib/format-intl';
 import RoundGraphContainer from '../RoundGraphContainer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -41,13 +41,15 @@ const KeyFigureContainer = ({security, isInPortfolio, togglePortfolio, lastPoint
                 </div>
             </div>
             <hr style={{ marginTop: '5px' }} />
-            <div className="columns is-desktop">
-                <div className="column is-full-mobile is-full-tablet is-two-thirds-desktop is-two-thirds-widescreen is-two-thirds-fullhd">
-                    <div className="content" style={{ height: '360px', textAlign: security.longBusinessDescription ? 'left' : 'center', overflowY: security.longBusinessDescription ? 'scroll' : 'no-scroll' }}>
-                    {security.longBusinessDescription ?
-                        <p style={{ paddingTop: '10px' }}>{security.longBusinessDescription}</p>
-                        : <FontAwesomeIcon icon={faAlignLeft} size={"10x"} style={{opacity: 0.1}}/>}
-                    </div>
+            <div className="columns is-desktop" style={{height: 360}}>
+                <div className="column is-full-mobile is-full-tablet is-two-thirds-desktop is-two-thirds-widescreen is-two-thirds-fullhd" 
+                    style={{textAlign: 'center', height: 360}}
+                >                        
+                    <Scrollbars style={{ width: '100%'}}>
+                        {security.longBusinessDescription ?
+                            <p style={{textAlign: 'left'}}>{security.longBusinessDescription}</p>
+                            : <FontAwesomeIcon icon={faAlignLeft} size={"10x"} style={{opacity: 0.1, marginTop: 80}}/>}
+                    </Scrollbars>
                 </div>
                 <div
                     className="column is-full-mobile is-full-tablet is-one-third-desktop is-one-third-widescreen is-one-third-fullhd"

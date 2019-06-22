@@ -112,7 +112,7 @@ const PriceContainer = ({security, lastPointed}) => {
                     </tbody>
                 </table>
                 </div>
-                <div className="column is-8" style={{textAlign: 'center'}}>
+                <div className="column is-8" style={{textAlign: 'center', alignSelf: 'center'}}>
                     {security && security.historyPrice100 && security.historyPrice100.length > 0 ?                    
                         <AreaGraphContainer
                             data={security.historyPrice100}

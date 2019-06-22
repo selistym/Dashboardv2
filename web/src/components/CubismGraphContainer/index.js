@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, Fragment } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import useDimensions from '../Dimensions';
 import { context } from '../../lib/cubism-es.esm';
@@ -161,7 +161,7 @@ const CubismGraph = ({ data, period, width }) => {
     d.selectAll('.line')
       .style('margin-left', offset_left - 20 + 'px')
       .style('top', offset_top + 'px')
-      .style('height', 300 + 'px')
+      // .style('height', 100 + 'px')
       .style('width', '1px')
       .style('background', '#000')
       .style('zIndex', 2);
@@ -355,8 +355,7 @@ const CubismGraphContainer = ({ data }) => {
       }
     }
   };
-  return (
-    <Fragment>
+  return (    
       <div style={{ width: '100%', justifyContent: 'center' }}>
         <div className="columns">
           <div
@@ -391,8 +390,7 @@ const CubismGraphContainer = ({ data }) => {
         <div className="columns" style={{ width: '100%', justifyContent: 'center' }} ref={containerRef}>
           {containerSize.width && <CubismGraph data={data} width={containerSize.width} period={period} />}
         </div>
-      </div>
-    </Fragment>
+      </div>    
   );
 };
 CubismGraph.propTypes = {

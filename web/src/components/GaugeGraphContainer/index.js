@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import Scroll from 'react-awesome-scroll';
+import { Scrollbars } from 'react-custom-scrollbars';
 import useDimensions from '../Dimensions';
 import * as d3 from 'd3';
 
@@ -93,9 +93,8 @@ const GaugeGraph = ({ data, width, height, kind }) => {
       if (kind == 0) {
         linearColor = d3
           .scaleLinear()
-          .range(['#008000', '#32cd32', '#ffa500', '#dc143c'])
-          .domain([0, range * 0.3, range * 0.31, range]);
-          
+          .range(['#dc143c',  '#ffa500','#32cd32', '#008000' ])
+          .domain([0, range * 0.7, range * 0.71, range]);
       }
       if (kind == 3) {
         if (data.company > 0) {
@@ -110,11 +109,12 @@ const GaugeGraph = ({ data, width, height, kind }) => {
             .domain([-range / 2, 0]);
         }
       }
+      
       if (kind == 5) {
         linearColor = d3
           .scaleLinear()
-          .range(['#008000', '#32cd32', '#ffa500', '#dc143c'])
-          .domain([0, (range * 5) / 6, (range * 5) / 6 + range * 0.01, range]);
+          .range(['#dc143c', '#ffa500', '#32cd32',  '#008000'])
+          .domain([0, (range * 1) / 6, (range * 1) / 6 + range * 0.01, range]);
       }
 
       d3.select(graphRef.current)
@@ -257,11 +257,11 @@ const GaugeGraph = ({ data, width, height, kind }) => {
         .style('font-weight', '600')
         .attr('fill', 'black')
         .text(d => {
-          if (kind == 0 || kind == 1 || kind == 2 || kind == 5) {
+          
             if (d === Math.floor((Math.abs(data.min) + data.market) * step)) {
               return 'Market';
             }
-          }
+          
           return '';
         });
 
@@ -348,7 +348,10 @@ const GaugeGraph = ({ data, width, height, kind }) => {
         style={{ padding: 0, fontSize: '22pt', fontWeight: 'bold', color: 'grey', textAlign: 'center' }}
       >
         <div className="column" style={{ padding: 0 }}>
-          <span>{data.company == Math.floor(data.company) ? data.company.toFixed(0) : data.company.toFixed(1)}</span>
+          <span>{kind==0 || kind==4 || kind==5 ?
+                  data.company == Math.floor(data.company) ? -data.company.toFixed(0) : -data.company.toFixed(1)
+                  : data.company == Math.floor(data.company) ? data.company.toFixed(0) : data.company.toFixed(1)
+                }</span>
           <span>{kind == 1 || kind == 2 || kind == 3 ? '%' : ''}</span>
         </div>
       </div>
@@ -386,13 +389,13 @@ const GaugeGraphContainer = ({ data }) => {
   const c_data = preCorrection(data);
   const i_data = [
     {
-      company: c_data.PERatioCompany,
-      branch: c_data.PERatioBranche,
-      market: c_data.PERatioMarket,
+      company: -c_data.PERatioCompany,
+      branch: -c_data.PERatioBranche,
+      market: -c_data.PERatioMarket,
       title: 'PE-ratio',
-      min: 0,
-      max: 40,
-      dir: 0
+      min: -40,
+      max: 0,
+      dir: 1
     },
     {
       company: c_data.ROICCompany,
@@ -422,22 +425,22 @@ const GaugeGraphContainer = ({ data }) => {
       dir: 1
     },
     {
-      company: c_data.DebtRatioCompany,
-      branch: c_data.DebtRatioBranche,
-      market: c_data.DebtRatioMarket,
+      company: -c_data.DebtRatioCompany,
+      branch: -c_data.DebtRatioBranche,
+      market: -c_data.DebtRatioMarket,
       title: 'Debt-ratio',
-      min: 0,
-      max: 4,
-      dir: 0
+      min: -4,
+      max: 0,
+      dir: 1
     },
     {
-      company: c_data.NettDEBTEBITDACompany,
-      branch: c_data.NettDEBTEBITDABranche,
-      market: c_data.NettDEBTEBITDAMarket,
+      company: -c_data.NettDEBTEBITDACompany,
+      branch: -c_data.NettDEBTEBITDABranche,
+      market: -c_data.NettDEBTEBITDAMarket,
       title: 'Nett-Debt / EBITDA',
       min: -3,
       max: 3,
-      dir: 0
+      dir: 1
     }
   ];
 
@@ -480,8 +483,8 @@ const GaugeGraphContainer = ({ data }) => {
             </div>
           </div>
         </div>
-        <div className="column" style={{ width: '100%', height: 230, textAlign: 'left' }}>
-          <Scroll >
+        <div className="column">
+          <Scrollbars style={{ width: '100%', height: 230 }}>
             <strong>PE ratio </strong>
             is a measure that gives an indication on how expensive a share is. It is calculated as the share price divided
             by the profits per share. A high PE ratio means that the share is expensive.
@@ -508,7 +511,7 @@ const GaugeGraphContainer = ({ data }) => {
             is made to the debt position by subtracting the amount of cash a company has on it’s balance sheet. The result
             is then compared to the EBITDA, which is a common indicator of the operating result of a company.
             <p />
-          </Scroll>
+          </Scrollbars>
         </div>
       </div>
     </div>

@@ -21,6 +21,7 @@ const select_btStyle = {
 };
 
 const CubismGraph = ({ data, period, width }) => {
+  console.log(data, 'cubism data')
   const graphRef = useRef();
   let toDate, fromDate, dateLen;  
   const getDateArray = (_start, _end) => {
@@ -179,6 +180,7 @@ const CubismGraph = ({ data, period, width }) => {
       .render(d3.selectAll('.horizon'));
 
     d3.selectAll('.title').html((d, i) => `<a href="/security/${data[i].id}">${data[i].name}</a>`);
+    
     c.on('focus', i => {
       d3.selectAll('.value')
         .style('color', 'black')

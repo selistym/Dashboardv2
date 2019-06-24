@@ -199,11 +199,12 @@ const SecurityContainer = ({ securityId, session, short_security}) => {
       {({ loading, error, data, subscribeToMore }) => {
         if (error) return `Error! ${error}`;
 
-        let security;
+        let security = null;
 
         if (loading) {
-          {/* return <Loading marginTop={'20%'}/>; */}
-          security = short_security;
+          if(short_security){
+            security = short_security;
+          }
         }else{//full loading
           security = data.security;
           subscribeToMore({
@@ -227,7 +228,7 @@ const SecurityContainer = ({ securityId, session, short_security}) => {
 };
 
 SecurityContainer.propTypes = {
-  short_security: PropTypes.object.isRequired,
+  short_security: PropTypes.object,
   session: PropTypes.object.isRequired,
   securityId: PropTypes.string.isRequired
 };

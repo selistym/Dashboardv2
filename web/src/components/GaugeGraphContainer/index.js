@@ -480,7 +480,7 @@ const GaugeGraphContainer = ({ data }) => {
           </div>
         </div>
         <div className="column">
-          <Scrollbars style={{ width: '100%', height: 230 }}>
+          <Scrollbars style={{ width: '100%', height: 230, textAlign: 'left' }}>
             <strong>PE ratio </strong>
             is a measure that gives an indication on how expensive a share is. It is calculated as the share price divided
             by the profits per share. A high PE ratio means that the share is expensive.

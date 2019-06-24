@@ -55,7 +55,7 @@
     "prop-types": "^15.7.2",
     "react": "^16.8.2",
     "react-apollo": "^2.5.5",
-    "react-custom-scrollbars": "^4.2.1",
+    "react-awesome-scroll": "^0.1.4",    
     "react-dom": "^16.8.2",
     "react-intl": "^2.8.0",
     "react-transition-group": "^2.5.3",

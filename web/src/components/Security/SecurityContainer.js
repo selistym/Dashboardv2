@@ -205,7 +205,7 @@ const SecurityContainer = ({ securityId, session, short_security}) => {
           if(short_security){
             security = short_security;
           }
-
+          
         }else{//full loading
           security = data.security;
           subscribeToMore({

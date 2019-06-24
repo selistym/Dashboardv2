@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Scrollbars } from 'react-custom-scrollbars';
+import Scroll from 'react-awesome-scroll';
+
 import BalanceGraphContainer from '../BalanceGraphContainer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -22,8 +23,8 @@ const BalanceContainer = ({security}) =>
                 }
             </div>
             
-            <div className="column is-6">
-                <Scrollbars style={{ width: '100%', height: 400 }}>
+            <div className="column is-6" style={{height: 400}}>
+                <Scroll>
                     <p>
                         The balance diagram consists of two sides, assets and liabilities. At both sides the total of the
                         categories amounts to the same number, the balance total.
@@ -48,7 +49,7 @@ const BalanceContainer = ({security}) =>
                         debt-to-equity ratio means more risk for the company as a whole, as there is not much room to cover
                         setbacks.
                     </p>
-                </Scrollbars>
+                </Scroll>
             </div>
         </div>
     </div>

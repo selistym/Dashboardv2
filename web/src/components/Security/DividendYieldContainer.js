@@ -1,5 +1,5 @@
 import React from 'react';
-import { Scrollbars } from 'react-custom-scrollbars';
+import Scroll from 'react-awesome-scroll';
 import PropTypes from 'prop-types';
 
 const DividendYieldContainer = ({security}) => 
@@ -24,8 +24,8 @@ const DividendYieldContainer = ({security}) =>
                 <div className="columns is-mobile" style={{ height: '42px' }}>
                 <div className="column is-one-two-mobile is-one-two-tablet has-text-centered">Dividend Yield</div>
                 </div>
-                <div>
-                    <Scrollbars style={{ width: '100%', height: 285 }}>
+                <div style={{height: 285 }}>
+                    <Scroll>
                         <ul>
                             <li>
                             The Dividend Yield is the percentual income you get from dividend, based on the current share price.
@@ -36,7 +36,7 @@ const DividendYieldContainer = ({security}) =>
                             higher risk whether this level of dividend can be maintained.
                             </li>
                         </ul>
-                    </Scrollbars>
+                    </Scroll>
                 </div>
             </div>
         </div>

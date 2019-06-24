@@ -1,4 +1,4 @@
-import React, { useRef, useReducer, useEffect, useContext, createContext, Fragment } from 'react';
+import React, { useRef, useReducer, useEffect, useContext, createContext } from 'react';
 import useDimensions from '../Dimensions';
 import PropTypes from 'prop-types';
 

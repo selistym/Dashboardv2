@@ -1,4 +1,4 @@
-import { useState, useCallback, useLayoutEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 function getDimensionObject(node) {
     const rect = node.getBoundingClientRect();
@@ -27,20 +27,19 @@ function useDimensions() {
         setNode(node);
     }, []);
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         if (node) {
-            const measure = () =>
+            const measure = () => 
                 window.requestAnimationFrame(() =>
                     setDimensions(getDimensionObject(node))
                 );
+            
             measure();
 
             window.addEventListener("resize", measure);
-            // window.addEventListener("scroll", measure);
 
             return () => {
                 window.removeEventListener("resize", measure);
-                // window.removeEventListener("scroll", measure);
             };
         }
     }, [node]);

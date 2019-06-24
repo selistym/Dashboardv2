@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Scrollbars } from 'react-custom-scrollbars';
+import Scroll from 'react-awesome-scroll';
 import NegativeGraphContainer from '../NegativeGraphContainer';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -50,8 +50,8 @@ const CashFlowContainer = ({security}) =>
                     : <FontAwesomeIcon icon={faChartBar} size={"10x"} style={{opacity: 0.1, marginTop: 80}}/>
                 }
             </div>
-            <div className="column is-6">
-                <Scrollbars style={{ width: '100%', height: 380 }}>
+            <div className="column is-6" style={{ height: 380 }}>
+                <Scroll>
                     <p>
                     Cashflow is the nett amount of cash that flows in or out the company during a period. This number
                     differs from the profit (or loss) that a company makes because the moments costs and revenues are booked
@@ -79,7 +79,7 @@ const CashFlowContainer = ({security}) =>
                     means new debt that has been issued, bank lending and changes in equity. Also, paid dividends fall in
                     this category.
                     </p>                    
-                </Scrollbars>
+                </Scroll>
             </div>
         </div>
     </div>

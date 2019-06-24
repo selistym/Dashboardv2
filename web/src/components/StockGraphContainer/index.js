@@ -338,7 +338,7 @@ const StockGraph = ({ data, width, height }) => {
 
 const StockGraphContainer = ({ data }) => {
   const [svgContainerRef, svgSize] = useDimensions();
-
+  
   const preCorrection = params => {
     return params.map(d => {
       d.ConsolidatedNetIncome = d.ConsolidatedNetIncome ? d.ConsolidatedNetIncome : 0;

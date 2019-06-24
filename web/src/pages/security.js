@@ -8,12 +8,11 @@ import AuthenticatedPage from '../components/Layout/AuthenticatedPage';
 class SecurityPage extends AuthenticatedPage {
   static async getInitialProps({ req, query }) {    
     const props = await super.getInitialProps({ req, query });
-    let parsed = null;
-    try {
+    let parsed = {id: '', name: '', sector: '', ticker: '', liveData: [], factsetData: [], currency: '', country: {code: ''}, calculatedCircular: []};
+    
+    if(query.short_security){
       parsed = JSON.parse(query.short_security);
-    }catch (e){
-      console.log("refreshed page or cubism linked");//eslint-disable-line      
-    }
+    }    
     return { ...props, securityId: query.id, short_security: parsed};
   }
   render() {

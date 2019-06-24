@@ -116,7 +116,7 @@ const KeyFigureContainer = ({security, isInPortfolio, togglePortfolio, lastPoint
             </div>
         </div>
 
-        <div className="column is-2">
+        <div className="column is-3">
             <div className="columns">
             <h3 className="subtitle is-6 has-text-weight-bold has-text-grey" style={{ height: '25px' }}>
                 Market cap
@@ -124,13 +124,13 @@ const KeyFigureContainer = ({security, isInPortfolio, togglePortfolio, lastPoint
             </div>
             <div className="columns" style={{ height: '50px' }}>
             <h3 className="subtitle is-4 has-text-weight-bold has-text-grey">
-                {security && security.factsetData && security.factsetData.MarketCapitalizatino
+                {security && security.factsetData && security.factsetData.MarketCapitalization
                 ? `${security.factsetData.MarketCapitalization.toFixed(1)}B`
                 : 'N/A'}
             </h3>
             </div>
         </div>
-        <div className="column is-3">
+        <div className="column is-2">
             <div className="columns">
             <h3 className="subtitle is-6 has-text-weight-bold has-text-grey" style={{ height: '25px' }}>
                 CEO

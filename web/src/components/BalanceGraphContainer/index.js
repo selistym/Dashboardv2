@@ -76,8 +76,8 @@ const BalanceGraph = ({data, width, height}) => {
       </div>
       <div className="columns" style={{padding: 0}}>
         <div className="column" style={{width: '100%', textAlign:'center', padding: 0}}>
-          <span style={{fontSize: '16pt', color: 'black', fontWeight: 'bold'}}>
-            € {(data.TotalLiabilitiesStockholdersEquity / 100).toFixed(0)} mld
+          <span style={{fontSize: '14pt', color: 'black', fontWeight: 'bold'}}>
+            € {(data.TotalLiabilitiesStockholdersEquity / 1000).toFixed(1)} mld
           </span>
         </div>
       </div>
@@ -119,7 +119,7 @@ const BalanceGraphContainer = ({data}) => {
     <div style={{display:'flex'}}>
       <div style={{width:'15%'}}>
         <div className="columns" style={{height: 90}}></div>
-        <div className="columns">
+        <div className="columns" style={{textAlign: 'left'}}>
           <ul>
             <li>
               <span style={{ color: '#63ae2d', fontWeight: '600', fontSize: '15pt' }}>&nbsp;&nbsp;●&nbsp;</span>

@@ -10,7 +10,7 @@ library.add(faAlignJustify);
 const HistoricPerformanceContainer = ({security}) => 
     <div className="box has-text-grey">        
         <h3 className="subtitle is-5 has-text-weight-bold has-text-grey" style={{ height: '10px' }}>
-            Historic performance
+           Historical price performance in relation to Industry peers
         </h3>        
         <hr />
         <div className="columns" style={{ height: 400 }}>

@@ -95,6 +95,7 @@ const GaugeGraph = ({ data, width, height, kind }) => {
           .scaleLinear()
           .range(['#008000', '#32cd32', '#ffa500', '#dc143c'])
           .domain([0, range * 0.3, range * 0.31, range]);
+          
       }
       if (kind == 3) {
         if (data.company > 0) {

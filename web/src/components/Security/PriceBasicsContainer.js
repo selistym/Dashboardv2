@@ -10,7 +10,7 @@ library.add(faChartPie);
 const PriceBasicContainer = ({security}) => 
     <div className="box  has-text-grey">
         <h3 className="subtitle is-5 has-text-weight-bold has-text-grey" style={{ height: '10px' }}>
-            Price basics {security && security.name}
+        Key performance indicators {security && security.name}
         </h3>
         <hr />        
         <div className="columns" style={{height: security && security.calculated ? 'auto' : 400}}>

@@ -13,7 +13,7 @@ const SecuritySearchDropdownSection = () => {
       { code: 'Dividend', name: 'Dividend' },
       { code: 'Balance', name: 'Balance' },
       { code: 'Growth', name: 'Growth' },
-      { code: 'Value', name: 'Value' }
+      { code: 'Value', name: 'Valuation' }
     ],
     store.allSectors
   ];

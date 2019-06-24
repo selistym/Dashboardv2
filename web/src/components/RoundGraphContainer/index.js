@@ -29,7 +29,7 @@ const RoundGraphContainer = props => {
         },
         {
           index: 0.4,
-          text: 'Value',
+          text: 'Valuation',
           value: params.Value ? params.Value / 100 : 0
         }
       ];
@@ -93,6 +93,10 @@ const RoundGraphContainer = props => {
           arcs.style('fill', 'grey');
           d3.select(this).style('fill', setColor(total));
           d3.select('.text-all' + idx).attr('opacity', 1);
+          txt_score
+              .attr('dy', '0.3em')
+              .attr('fill', setColor(d.value * 100))
+              .text(Math.floor(d.value * 100));
           indicator.text(d.text).style('fill', setColor(d.value * 100));
         })
         .on('mouseover', function(d) {

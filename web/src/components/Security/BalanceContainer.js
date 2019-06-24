@@ -32,7 +32,7 @@ const BalanceContainer = ({security}) =>
 
                     <strong>Asset</strong>
                     <p>
-                        At the right side of the diagram, you will find the value of the assets of a company, divided in several
+                        At the left side of the diagram, you will find the value of the assets of a company, divided in several
                         categories. Assets are the resources the company has a future economic benefit of. For example, this can
                         be in the form of buildings, machinery, inventory or cash. But also, intellectual property, like patents
                         and licences are assets.

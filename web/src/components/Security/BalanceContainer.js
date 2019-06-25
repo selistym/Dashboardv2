@@ -3,11 +3,7 @@ import PropTypes from 'prop-types';
 import Scroll from 'react-awesome-scroll';
 
 import BalanceGraphContainer from '../BalanceGraphContainer';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faChartBar } from '@fortawesome/free-solid-svg-icons';
-
-library.add(faChartBar);
+import Loading from '../Loading';
 
 const BalanceContainer = ({security}) => 
     <div className="box  has-text-grey">
@@ -19,7 +15,7 @@ const BalanceContainer = ({security}) =>
             <div className="column is-6" style={{textAlign:'center'}}>
                 {security && security.last5AnnualTotals && security.last5AnnualTotals.length > 0 ?
                     <BalanceGraphContainer data={security.last5AnnualTotals} />            
-                    : <FontAwesomeIcon icon={faChartBar} size={"10x"} style={{opacity: 0.1, marginTop: 100}}/>
+                    : <Loading style={{height: 300}}/>
                 }
             </div>
             

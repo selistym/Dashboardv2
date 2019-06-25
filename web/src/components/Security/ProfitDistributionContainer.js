@@ -1,11 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import StockGraphContainer from '../StockGraphContainer';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faChartBar } from '@fortawesome/free-solid-svg-icons';
-
-library.add(faChartBar);
+import Loading from '../Loading';
 
 const ProfitDistributionContainer = ({security}) => 
     <div className="column is-mobile is-tablet is-two-thirds-desktop is-two-thirds-widescreen is-two-thirds-fullhd">
@@ -106,7 +102,7 @@ const ProfitDistributionContainer = ({security}) =>
                 <div className="column is-6" style={{textAlign: 'center'}}>
                     {security && security.last3YearsDividend && security.last3YearsDividend.length > 0 ?
                         <StockGraphContainer data={security.last3YearsDividend} />
-                        : <FontAwesomeIcon icon={faChartBar} size={"10x"} style={{opacity: 0.1}}/>}
+                        : <Loading style={{height: 300}}/>}
                 </div>
                 
             </div>

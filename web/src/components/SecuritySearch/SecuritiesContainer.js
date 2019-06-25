@@ -37,8 +37,24 @@ const FILTERED_SECURITIES_QUERY = gql`
         MarketCapitalization
       }
       liveData {
-        last
         changePercent
+        cumulativeVolume
+        dateTime
+        dayHigh
+        dayLow
+        last
+        netChange
+        open
+        previousActiveDate
+        previousChange
+        previousChangePercent
+        previousClose
+        previousCloseDate
+        previousDayHigh
+        previousDayLow
+        previousOpen
+        previousTotalVolume
+        totalTurnoverCurrency        
       }
       calculatedCircular {
         Year
@@ -110,7 +126,7 @@ const SecuritiesContainer = ({ suggestions }) => {
     >
       {({ loading, error, data, fetchMore, subscribeToMore }) => {
         if (error) return <ErrorMessage message={error} />;
-        if (loading) return <Loading />;
+        if (loading) return <Loading style={{height: 300}}/>;
         if (data.securities === undefined) {
           return <p>Undefined securities</p>;
         }

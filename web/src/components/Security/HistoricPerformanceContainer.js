@@ -1,11 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import CubismGraphContainer from '../CubismGraphContainer';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faAlignJustify } from '@fortawesome/free-solid-svg-icons';
-
-library.add(faAlignJustify);
+import Loading from '../Loading';
 
 const HistoricPerformanceContainer = ({security}) => 
     <div className="box has-text-grey">        
@@ -17,7 +13,7 @@ const HistoricPerformanceContainer = ({security}) =>
             <div className="column" style={{textAlign: 'center'}}>
                 {security && security.globalQuotes && security.top5IndustryHistory ? 
                     <CubismGraphContainer data={[security, ...security.top5IndustryHistory.map(t => t.security)]} />
-                : <FontAwesomeIcon icon={faAlignJustify} size={"10x"} style={{opacity: 0.1, marginTop: 70}}/>}
+                : <Loading style={{height: 300}}/>}
             </div>
         </div>
     </div>

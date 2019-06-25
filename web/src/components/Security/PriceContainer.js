@@ -4,16 +4,14 @@ import { useHighlight } from '../../lib/custom-hooks';
 import { formatIntl, formatTime, formatDate, formatVolume } from '../../lib/format-intl';
 
 import AreaGraphContainer from '../AreaGraphContainer';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faChartArea } from '@fortawesome/free-solid-svg-icons';
-library.add(faChartArea);
+import Loading from '../Loading';
 
 const PriceContainer = ({security, lastPointed}) => {
     const highlightClass = useHighlight(lastPointed);
     let changeClass = '';
     if (security && security.liveData && security.liveData.netChange < 0) changeClass = 'has-text-danger';
     if (security && security.liveData && security.liveData.netChange > 0) changeClass = 'has-text-success';
+
     return (
         <div className="box  has-text-grey">
             <h3 className="subtitle is-5 has-text-weight-bold has-text-grey" style={{ height: '10px' }}>
@@ -119,7 +117,7 @@ const PriceContainer = ({security, lastPointed}) => {
                             companyName={security.name}
                             currency={security.currency}
                         />
-                        : <FontAwesomeIcon icon={faChartArea} size={"10x"} style={{opacity: 0.1}}/>}
+                        : <Loading style={{height: 400}}/>}
                 </div>
             </div>
         </div>

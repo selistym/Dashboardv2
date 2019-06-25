@@ -1,11 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import GaugeGraphContainer from '../GaugeGraphContainer';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faChartPie } from '@fortawesome/free-solid-svg-icons';
-
-library.add(faChartPie);
+import Loading from '../Loading';
 
 const PriceBasicContainer = ({security}) => 
     <div className="box  has-text-grey">
@@ -17,7 +13,7 @@ const PriceBasicContainer = ({security}) =>
             <div className="column" style={{textAlign : 'center', alignSelf: 'center'}}>
                 {security && security.calculated ?
                     <GaugeGraphContainer data={security.calculated} />
-                    : <FontAwesomeIcon icon={faChartPie} size={"10x"} style={{opacity: 0.1}}/>}
+                    : <Loading style={{height: 300}}/>}
             </div>
         </div>
     </div>

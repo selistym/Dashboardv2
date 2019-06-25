@@ -6,17 +6,14 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 library.add(faSpinner);
 
-const Loading = ({ marginTop }) => (
-  <div
-    className="columns is-mobile"
-    style={{minHeight:'700px', justifyContent: 'center', marginTop: `${marginTop ? marginTop : '0px'}` }}
-  >
+const Loading = ({ style }) => (
+  <div style={{...style, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
     <FontAwesomeIcon icon="spinner" spin data-testid="spinner" />
   </div>
 );
 
 Loading.propTypes = {
-  marginTop: PropTypes.string
+  style: PropTypes.object
 };
 
 export default Loading;

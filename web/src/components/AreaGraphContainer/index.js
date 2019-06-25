@@ -20,40 +20,46 @@ const currencySign = currency => {
       return currency;
   }
 }
+const getPartial = (start, end, p_data) => {
+  if (p_data.length == 0) return [];
+  let partial = [];
+  let ys, ms, ds, ye, me, de;
+  ys = new Date(start).getFullYear();
+  ms = new Date(start).getMonth() + 1;
+  ds = new Date(start).getDate();
+  ye = new Date(end).getFullYear();
+  me = new Date(end).getMonth() + 1;
+  de = new Date(end).getDate();
+  start = parseTime(ys + '-' + ms + '-' + ds);
+  end = parseTime(ye + '-' + me + '-' + de);
+  for (let i = 0; i < p_data.length; i++) {
+    if (parseTime(p_data[i].Date) >= start && parseTime(p_data[i].Date) <= end) {
+      partial.push(p_data[i]);
+    }
+  }
+  return partial;
+};
 
 const AreaGraph = ({ data, currency,  column, width, height }) => {
   const { areaStore } = useContext(AreaContext);
   const chartRef = useRef();
   const barRef = useRef();
-
+  
   const g_w = width - margins * 2,
     g_h = (height * 5) / 6 - margins * 2,
     s_w = width - margins * 2,
     s_h = height / 6 - margins;
-
+  
   const dates = data.map(d => parseTime(d.Date));
-  const rangeStart = useRef(parseTime(areaStore.partial[0].Date)),
-        rangeEnd = useRef(parseTime(areaStore.partial[areaStore.partial.length - 1].Date));
+  let   rangeStart = parseTime(areaStore.partial[0].Date),
+        rangeEnd = parseTime(areaStore.partial[areaStore.partial.length - 1].Date);
+  
   const xScale = d3
     .scaleTime()
     .range([0, s_w]) //or g_w
     .domain([dates[0], dates[dates.length - 1]])
     .clamp(true);
-
-  const getPartial = (data, start, end) => {
-    let partial = [];
-    let y, m, d;
-    y = new Date(start).getFullYear();
-    m = new Date(start).getMonth() + 1;
-    d = new Date(start).getDate();
-    start = parseTime(y + '-' + m + '-' + d);
-    for (let i = 0; i < data.length; i++) {
-      if (parseTime(data[i].Date) >= start && parseTime(data[i].Date) <= end) {
-        partial.push(data[i]);
-      }
-    }
-    return partial;
-  };
+    
   const drawAreaGraph = (data, w, h) => {
     let c_data = column.slice(2, 3).map(id => ({
       id: id,
@@ -197,9 +203,13 @@ const AreaGraph = ({ data, currency,  column, width, height }) => {
   };
   useEffect(() => {
     drawAreaGraph(areaStore.partial, g_w, g_h);
-    d3.select('.leftHandler').attr('x', xScale(rangeStart.current) - 5);
-    d3.select('.rightHandler').attr('x', xScale(rangeEnd.current) - 5);
+    d3.select('.leftHandler').attr('x', xScale(rangeStart) - 5);
+    d3.select('.rightHandler').attr('x', xScale(rangeEnd) - 5);
+    d3.select('.rectFillBar').attr('x', xScale(rangeStart));
+    d3.select('.rectFillBar').attr('width', xScale(rangeEnd) - xScale(rangeStart));
   }, [areaStore.partial, g_w, g_h]); //eslint-disable-line
+
+  const getTrueMouseValue = mouseValue => xScale.invert(mouseValue)
 
   useEffect(() => {
     let trueMouseValue, drag, left_margin, rect_width, startPos, endPos, rectX;
@@ -227,28 +237,25 @@ const AreaGraph = ({ data, currency,  column, width, height }) => {
         endPos = 1.0 * startPos + 1.0 * rect_width;
         if (startPos <= 0 || endPos >= s_w) return;
         d3.select(this).attr('x', xScale(getTrueMouseValue(startPos)));
-        rangeStart.current = getTrueMouseValue(startPos);
-        rangeEnd.current = getTrueMouseValue(endPos);
-        d3.select('.leftHandler').attr('x', xScale(rangeStart.current) - 5);
-        d3.select('.rightHandler').attr('x', xScale(rangeEnd.current) - 5);
+        rangeStart = getTrueMouseValue(startPos);//eslint-disable-line
+        rangeEnd = getTrueMouseValue(endPos);//eslint-disable-line
+        d3.select('.leftHandler').attr('x', xScale(rangeStart) - 5);
+        d3.select('.rightHandler').attr('x', xScale(rangeEnd) - 5);
       } else {
         if (d3.select(this).attr('class') == 'leftHandler') {
-          rangeStart.current = trueMouseValue;
+          rangeStart = trueMouseValue;
         }
         if (d3.select(this).attr('class') == 'rightHandler') {
-          rangeEnd.current = trueMouseValue;
+          rangeEnd = trueMouseValue;
         }
-        if (rangeEnd.current - rangeStart.current <= 30 * 24 * 60 * 60 * 1000) return;
-        d3.select('.leftHandler').attr('x', xScale(rangeStart.current) - 5);
-        d3.select('.rightHandler').attr('x', xScale(rangeEnd.current) - 5);
-        d3.select('.rectFillBar').attr('x', xScale(rangeStart.current));
-        d3.select('.rectFillBar').attr('width', xScale(rangeEnd.current) - xScale(rangeStart.current));
+        if (rangeEnd - rangeStart <= 30 * 24 * 60 * 60 * 1000) return;
+        d3.select('.leftHandler').attr('x', xScale(rangeStart) - 5);
+        d3.select('.rightHandler').attr('x', xScale(rangeEnd) - 5);
+        d3.select('.rectFillBar').attr('x', xScale(rangeStart));
+        d3.select('.rectFillBar').attr('width', xScale(rangeEnd) - xScale(rangeStart));
       }
-      drawAreaGraph(getPartial(data, rangeStart.current, rangeEnd.current), g_w, g_h);
-    }
-    function getTrueMouseValue(mouseValue) {
-      return xScale.invert(mouseValue);
-    }
+      drawAreaGraph(getPartial(rangeStart, rangeEnd, data), g_w, g_h);      
+    }    
   });
 
   //draw slider graph
@@ -309,15 +316,15 @@ const AreaGraph = ({ data, currency,  column, width, height }) => {
         <rect className="barZone" x={0} width={s_w} height={s_h} fill="transparent" />
         <rect
           className="rectFillBar"
-          x={xScale(rangeStart.current)}
-          width={xScale(rangeEnd.current) - xScale(rangeStart.current)}
+          x={xScale(rangeStart)}
+          width={xScale(rangeEnd) - xScale(rangeStart)}
           height={s_h}
           fill="rgba(150, 150, 150, 0.3)"
         />
         <rect
           className="leftHandler"
           style={{ cursor: 'pointer' }}
-          x={xScale(rangeStart.current) - 5}
+          x={xScale(rangeStart) - 5}
           y={-2}
           width="10"
           rx="3"
@@ -328,7 +335,7 @@ const AreaGraph = ({ data, currency,  column, width, height }) => {
         <rect
           className="rightHandler"
           style={{ cursor: 'pointer' }}
-          x={xScale(rangeEnd.current) - 5}
+          x={xScale(rangeEnd) - 5}
           y={-2}
           width="10"
           rx="3"
@@ -372,22 +379,7 @@ const AreaGraphContainer = props => {
 
   const sorted_data = preCorrection(data).sort((x, y) => d3.ascending(parseTime(x.Date), parseTime(y.Date)));
 
-  //initial State
-  const getPartial = (start, end) => {
-    if (sorted_data.length == 0) return [];
-    let partial = [];
-    let y, m, d;
-    y = new Date(start).getFullYear();
-    m = new Date(start).getMonth() + 1;
-    d = new Date(start).getDate();
-    start = parseTime(y + '-' + m + '-' + d);
-    for (let i = 0; i < sorted_data.length; i++) {
-      if (parseTime(sorted_data[i].Date) >= start && parseTime(sorted_data[i].Date) <= end) {
-        partial.push(sorted_data[i]);
-      }
-    }
-    return { partial: partial };
-  };
+  //initial State  
   const initStore = {
     partial: sorted_data
   };
@@ -398,29 +390,29 @@ const AreaGraphContainer = props => {
       case 'RANGE_1_MONTH':
         end = sorted_data[sorted_data.length - 1].Date;
         start = end.split('-')[0] + '-' + (end.split('-')[1] - 1) + '-' + end.split('-')[2];
-        return getPartial(parseTime(start), parseTime(end));
+        return {partial: getPartial(parseTime(start), parseTime(end), sorted_data)}
       case 'RANGE_6_MONTH':
         end = sorted_data[sorted_data.length - 1].Date;
         start = end.split('-')[0] + '-' + (end.split('-')[1] - 6) + '-' + end.split('-')[2];
-        return getPartial(parseTime(start), parseTime(end));
+        return {partial: getPartial(parseTime(start), parseTime(end), sorted_data)}
       case 'RANGE_1_YEAR':
         end = sorted_data[sorted_data.length - 1].Date;
         start = end.split('-')[0] - 1 + '-' + end.split('-')[1] + '-' + end.split('-')[2];
-        return getPartial(parseTime(start), parseTime(end));
+        return {partial: getPartial(parseTime(start), parseTime(end), sorted_data)}
       case 'RANGE_3_YEAR':
         end = sorted_data[sorted_data.length - 1].Date;
         start = end.split('-')[0] - 3 + '-' + end.split('-')[1] + '-' + end.split('-')[2];
-        return getPartial(parseTime(start), parseTime(end));
+        return {partial: getPartial(parseTime(start), parseTime(end), sorted_data)}
       case 'RANGE_5_YEAR':
         end = sorted_data[sorted_data.length - 1].Date;
         start = end.split('-')[0] - 5 + '-' + end.split('-')[1] + '-' + end.split('-')[2];
-        return getPartial(parseTime(start), parseTime(end));
+        return {partial: getPartial(parseTime(start), parseTime(end), sorted_data)}
       case 'RANGE_ALL':
         end = sorted_data[sorted_data.length - 1].Date;
         start = sorted_data[0].Date;
-        return getPartial(parseTime(start), parseTime(end));
+        return {partial: getPartial(parseTime(start), parseTime(end), sorted_data)}
       case 'CHANGE_RANGE':
-        return getPartial(action.value.startDate, action.value.endDate);
+        return {partial: getPartial(action.value.startDate, action.value.endDate, sorted_data)}
       default:
         throw new Error();
     }
@@ -455,7 +447,7 @@ const AreaGraphContainer = props => {
       }
     }
   };
-
+  
   return (
     <AreaContext.Provider value={{ areaStore, areaDispatch }}>
       <div>

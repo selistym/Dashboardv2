@@ -2,12 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Scroll from 'react-awesome-scroll';
 import NegativeGraphContainer from '../NegativeGraphContainer';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faChartBar } from '@fortawesome/free-solid-svg-icons';
-
-library.add(faChartBar);
+import Loading from '../Loading';
 
 const CashFlowContainer = ({security}) => 
     <div className="box  has-text-grey">
@@ -47,7 +42,7 @@ const CashFlowContainer = ({security}) =>
             <div className="column is-6" style={{textAlign: 'center'}}>
                 {security && security.calculated5Y ?
                     <NegativeGraphContainer data={security.calculated5Y} sector={security.sector} />
-                    : <FontAwesomeIcon icon={faChartBar} size={"10x"} style={{opacity: 0.1, marginTop: 80}}/>
+                    : <Loading style={{height: 300}}/>
                 }
             </div>
             <div className="column is-6" style={{ height: 380 }}>

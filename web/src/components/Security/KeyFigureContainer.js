@@ -5,12 +5,7 @@ import Scroll from 'react-awesome-scroll';
 
 import { formatIntl } from '../../lib/format-intl';
 import RoundGraphContainer from '../RoundGraphContainer';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faAlignLeft, faChartPie } from '@fortawesome/free-solid-svg-icons';
-
-library.add(faAlignLeft);
-library.add(faChartPie);
+import Loading from '../Loading';
 
 const KeyFigureContainer = ({security, isInPortfolio, togglePortfolio, lastPointed}) => 
     <div className="box has-text-grey">
@@ -49,7 +44,7 @@ const KeyFigureContainer = ({security, isInPortfolio, togglePortfolio, lastPoint
                     <Scroll>
                         {security.longBusinessDescription ?
                             <p style={{textAlign: 'left'}}>{security.longBusinessDescription}</p>
-                            : <FontAwesomeIcon icon={faAlignLeft} size={"10x"} style={{opacity: 0.1, marginTop: 80}}/>}
+                            : <Loading style={{height: 300}}/>}
                     </Scroll>
                 </div>
                 <div
@@ -66,7 +61,7 @@ const KeyFigureContainer = ({security, isInPortfolio, togglePortfolio, lastPoint
                                 height={220}
                             />
                         ) : (
-                            <FontAwesomeIcon icon={faChartPie} size={"10x"} style={{opacity: 0.1}}/>
+                            <Loading style={{height: 220}}/>
                         )}
                     </div>
                 </div>

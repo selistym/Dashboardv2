@@ -21,7 +21,7 @@ const select_btStyle = {
 };
 
 const CubismGraph = ({ data, period, width }) => {
-  console.log(data, 'cubism data')
+  
   const graphRef = useRef();
   let toDate, fromDate, dateLen;  
   const getDateArray = (_start, _end) => {

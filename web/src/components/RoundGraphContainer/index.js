@@ -6,8 +6,7 @@ const RoundGraphContainer = props => {
   const { params, idx, filterCondition, width, height } = props;
   let strFilter = filterCondition ? filterCondition.sort().toString() : '';      
   
-  const roundRef = useRef();
-  const lineRef = useRef();
+  const roundRef = useRef();  
 
   useEffect(() => {
     const drawRound = () => {
@@ -176,7 +175,6 @@ const RoundGraphContainer = props => {
   return (
       <svg className={'roundChart' + idx} width={width} height={height}>
         <g className={'round' + idx} ref={roundRef} transform={`translate(${width / 2}, ${height / 2})`} />
-        {/* <g className={'line' + idx} ref={lineRef} transform={`translate(${width / 2}, ${height })`} /> */}
       </svg>
   );
 };

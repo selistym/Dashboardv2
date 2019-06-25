@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 import gql from 'graphql-tag';
 import Query from 'react-apollo/Query';
-import Loading from '../Loading';
 import Security from './Security';
 import SecurityLayout from './SecurityLayout';
 

@@ -483,7 +483,7 @@ const GaugeGraphContainer = ({ data }) => {
             </div>
           </div>
         </div>
-        <div className="column" style={{ width: '100%', height: 230, textAlign: 'left' }}>
+        <div className="column" style={{ width: '100%', height: 230 }}>
           <Scroll>
             <strong>PE ratio </strong>
             is a measure that gives an indication on how expensive a share is. It is calculated as the share price divided

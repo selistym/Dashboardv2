@@ -139,7 +139,7 @@ const SecuritiesContainer = ({ suggestions }) => {
             });
           }
         };
-        console.log(data, 'fecteched')
+        
         return (
           <SecuritiesSection
             securities={data.securities}

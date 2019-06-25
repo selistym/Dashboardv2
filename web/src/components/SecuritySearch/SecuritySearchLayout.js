@@ -17,7 +17,7 @@ const SecuritySearchLayout = () => {
       <SecuritySearchDropdownSection />
       <div className="columns is-mobile">
         <div className="column">
-          <h3 className="subtitle is-6 has-text-centered" style={{ height: '20px', color: '#a9a9a9' }}>
+          <h3 className="subtitle is-6 has-text-centered" style={{ height: '20px', color: '#a9a9a9', paddingTop:'20px' }}>
             All stocks show an average rating score based on Dividend, Balance, Growth and Value.
           </h3>
         </div>

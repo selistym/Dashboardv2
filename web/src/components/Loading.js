@@ -9,7 +9,7 @@ library.add(faSpinner);
 const Loading = ({ marginTop }) => (
   <div
     className="columns is-mobile"
-    style={{ justifyContent: 'center', marginTop: `${marginTop ? marginTop : '0px'}` }}
+    style={{minHeight:'700px', justifyContent: 'center', marginTop: `${marginTop ? marginTop : '0px'}` }}
   >
     <FontAwesomeIcon icon="spinner" spin data-testid="spinner" />
   </div>

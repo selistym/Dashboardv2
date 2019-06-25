@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 let AppContext = createContext(null);
 
 const allMarketSizes = [
-  { code: 'LARGE', name: 'Large Caps' },
-  { code: 'MEDIUM', name: 'Medium Caps' },
-  { code: 'SMALL', name: 'Small Caps' }
+  { code: 'LARGE', name: 'LargeCaps' },
+  { code: 'MEDIUM', name: 'MediumCaps' },
+  { code: 'SMALL', name: 'SmallCaps' }
 ];
 
 const allCountries = [

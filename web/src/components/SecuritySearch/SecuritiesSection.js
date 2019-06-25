@@ -35,10 +35,10 @@ const SecuritiesSection = ({ securities, loadMoreSecurities, subscribeToSecuriti
     return canBeShow.filter(show => show == true).length > 0;
   }
   return (
-    <section style={{ paddingTop: '20px' }}>
+    <section style={{ minHeight:'500px' }}>
       <div
         className="columns is-mobile"
-        style={{ display: 'flex', flexFlow: 'wrap', justifyContent: 'space-around', padding:'40px' }}
+        style={{ display: 'flex', flexFlow: 'wrap', justifyContent: 'space-around', padding:'30px' }}
         data-testid="filtered-securities"
       >
         {securities.map(s => (

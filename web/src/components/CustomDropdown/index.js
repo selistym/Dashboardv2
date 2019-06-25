@@ -14,7 +14,7 @@ const DropdownItem = props => {
   const onChangeHandler = () => onDropDownItemChange(actions[parent_index], item.code);
 
   return (
-    <div className="dropdown-item" style={{width: 250}}>
+    <div className="dropdown-item" style={{width: 250, padding:'15px'}}>
       {useMemo(
         () => (
           <div style={{display: 'flex', width: '100%'}}>

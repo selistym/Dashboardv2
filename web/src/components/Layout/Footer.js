@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const Footer = () => (
-  <footer className="page-footer fz-14" style={{ marginTop: '0px' }}>
+  <footer className="page-footer fz-14" style={{ marginTop: '0px', paddingTop:'0px' }}>
     <div className="footer-top bg-gray">
       <div className="container">
         <div className="columns is-vcentered">

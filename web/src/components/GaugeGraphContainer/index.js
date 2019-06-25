@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Scrollbars } from 'react-custom-scrollbars';
+import Scroll from 'react-awesome-scroll';
 import useDimensions from '../Dimensions';
 import * as d3 from 'd3';
 
@@ -483,8 +483,8 @@ const GaugeGraphContainer = ({ data }) => {
             </div>
           </div>
         </div>
-        <div className="column">
-          <Scrollbars style={{ width: '100%', height: 230 }}>
+        <div className="column" style={{ width: '100%', height: 230, textAlign: 'left' }}>
+          <Scroll>
             <strong>PE ratio </strong>
             is a measure that gives an indication on how expensive a share is. It is calculated as the share price divided
             by the profits per share. A high PE ratio means that the share is expensive.
@@ -511,7 +511,7 @@ const GaugeGraphContainer = ({ data }) => {
             is made to the debt position by subtracting the amount of cash a company has on it’s balance sheet. The result
             is then compared to the EBITDA, which is a common indicator of the operating result of a company.
             <p />
-          </Scrollbars>
+          </Scroll>
         </div>
       </div>
     </div>

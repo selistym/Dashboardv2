@@ -19,9 +19,11 @@ const FILTERED_SECURITIES_QUERY = gql`
       id
       name
       sector
-      ticker
-      
+      ticker      
       currency
+      calculated3Y {
+        SalesOrRevenueLY
+      }
       country {
         code
       }
@@ -137,7 +139,7 @@ const SecuritiesContainer = ({ suggestions }) => {
             });
           }
         };
-
+        console.log(data, 'fecteched')
         return (
           <SecuritiesSection
             securities={data.securities}

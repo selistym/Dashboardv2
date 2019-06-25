@@ -18,6 +18,7 @@ const FILTERED_SECURITIES_QUERY = gql`
     securities(filter: $filter, offset: $offset, limit: $limit) {
       id
       name
+      longBusinessDescription
       sector
       ticker      
       currency

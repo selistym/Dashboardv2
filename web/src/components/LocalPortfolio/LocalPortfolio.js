@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import Link from 'next/link';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faChartPie } from '@fortawesome/free-solid-svg-icons';
 
 import RoundGraphContainer from '../RoundGraphContainer';
 import { AppContext } from '../AppContext';
@@ -10,6 +12,8 @@ import { AppContext } from '../AppContext';
 import { useHighlight, usePortfolio } from '../../lib/custom-hooks';
 
 import { formatIntl, formatPercentage } from '../../lib/format-intl';
+
+library.add(faChartPie);
 
 const LocalPortfolio = ({ security, index }) => {
   let { store } = useContext(AppContext);
@@ -20,8 +24,8 @@ const LocalPortfolio = ({ security, index }) => {
 
   let curData = security.calculatedCircular
     ? security.calculatedCircular.filter(e => e.Year === store.securityFilterYear)[0]
-    : null;
-  
+    : null;  
+  security.longBusinessDescription = security.longBusinessDescription.replace('&', '^'); // for parse exception
   return (
     <div
       className="box has-text-grey"
@@ -30,7 +34,7 @@ const LocalPortfolio = ({ security, index }) => {
     >
       <div className="columns" style={{ minWidth: '250px', height: '28px', display: 'flex' }}>
         <div className="column is-7">
-          <Link key={security.id} href={`/security?id=${security.id}&short_security=${JSON.stringify(security)}`} as={`/security/${security.id}`}>
+          <Link key={security.id} href={`/security?id=${security.id}&short=${JSON.stringify(security)}`} as={`/security/${security.id}`}>
             <h3
               className="subtitle is-5 has-text-weight-bold has-text-grey"
               style={{
@@ -56,7 +60,7 @@ const LocalPortfolio = ({ security, index }) => {
           </a>
         </div>
         <div className="column is-1">
-          <Link key={security.id} href={`/security?id=${security.id}&short_security=${JSON.stringify(security)}`} as={`/security/${security.id}`}>
+          <Link key={security.id} href={`/security?id=${security.id}&short=${JSON.stringify(security)}`} as={`/security/${security.id}`}>
             <a className="button is-dark is-small has-text-weight-bold" style={{ backgroundColor: '#7d7d7d' }}>
               <FontAwesomeIcon icon="search" />
             </a>
@@ -82,7 +86,7 @@ const LocalPortfolio = ({ security, index }) => {
               height={190}
             />
           ) : (
-            <p>No data</p>
+            <FontAwesomeIcon icon={faChartPie} size={"10x"} style={{opacity: 0.1}}/>
           )}
       </div>
     </div>

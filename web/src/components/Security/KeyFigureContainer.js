@@ -44,8 +44,8 @@ const KeyFigureContainer = ({security, isInPortfolio, togglePortfolio, lastPoint
             <hr style={{ marginTop: '5px' }} />
             <div className="columns is-desktop" style={{height: 360}}>
                 <div className="column is-full-mobile is-full-tablet is-two-thirds-desktop is-two-thirds-widescreen is-two-thirds-fullhd" 
-                    style={{textAlign: 'center', height: 360}}
-                >                        
+                    style={{textAlign: 'center', height: 340}}
+                >
                     <Scroll>
                         {security.longBusinessDescription ?
                             <p style={{textAlign: 'left'}}>{security.longBusinessDescription}</p>

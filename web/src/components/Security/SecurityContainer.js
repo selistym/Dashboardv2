@@ -203,6 +203,7 @@ const SecurityContainer = ({ securityId, session, short_security}) => {
         if (loading) {
           if(short_security){
             security = short_security;
+            security.longBusinessDescription = security.longBusinessDescription.replace('^', '&');
           }
           
         }else{//full loading
@@ -230,7 +231,8 @@ const SecurityContainer = ({ securityId, session, short_security}) => {
 SecurityContainer.propTypes = {
   short_security: PropTypes.object,
   session: PropTypes.object.isRequired,
-  securityId: PropTypes.string.isRequired
+  securityId: PropTypes.string.isRequired,
+  longDescription: PropTypes.string
 };
 
 export default SecurityContainer;

@@ -2,6 +2,8 @@ import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import RoundGraphContainer from '../RoundGraphContainer';
 import { AppContext } from '../AppContext';
 
@@ -56,7 +58,7 @@ const LocalPortfolio = ({ security, index }) => {
         <div className="column is-1">
           <Link key={security.id} href={`/security?id=${security.id}&short_security=${JSON.stringify(security)}`} as={`/security/${security.id}`}>
             <a className="button is-dark is-small has-text-weight-bold" style={{ backgroundColor: '#7d7d7d' }}>
-              ...
+              <FontAwesomeIcon icon="search" />
             </a>
           </Link>
         </div>

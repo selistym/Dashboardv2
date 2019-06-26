@@ -13,9 +13,9 @@ const BalanceContainer = ({security}) =>
         <hr />
         <div className="columns">
             <div className="column is-6" style={{textAlign:'center'}}>
-                {security && security.last5AnnualTotals && security.last5AnnualTotals.length > 0 ?
-                    <BalanceGraphContainer data={security.last5AnnualTotals} />            
-                    : <Loading style={{height: 300}}/>
+                {security === undefined || security.last5AnnualTotals === undefined ? <Loading style={{height: 300}}/>
+                    : security === null || security.last5AnnualTotals === null || security.last5AnnualTotals.length == 0 ? <span>No Data</span>
+                    : <BalanceGraphContainer data={security.last5AnnualTotals} />
                 }
             </div>
             

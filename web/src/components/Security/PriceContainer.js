@@ -7,6 +7,7 @@ import AreaGraphContainer from '../AreaGraphContainer';
 import Loading from '../Loading';
 
 const PriceContainer = ({security, lastPointed}) => {
+    
     const highlightClass = useHighlight(lastPointed);
     let changeClass = '';
     if (security && security.liveData && security.liveData.netChange < 0) changeClass = 'has-text-danger';
@@ -111,13 +112,15 @@ const PriceContainer = ({security, lastPointed}) => {
                 </table>
                 </div>
                 <div className="column is-8" style={{textAlign: 'center', alignSelf: 'center'}}>
-                    {security && security.historyPrice100 && security.historyPrice100.length > 0 ?                    
-                        <AreaGraphContainer
-                            data={security.historyPrice100}
-                            companyName={security.name}
-                            currency={security.currency}
-                        />
-                        : <Loading style={{height: 400}}/>}
+
+                    {security === undefined || security.historyPrice100 === undefined ? <Loading style={{height: 400}}/>
+                        : security === null || security.historyPrice100 === null || security.historyPrice100.length == 0 ? <span>No Data</span>
+                            : <AreaGraphContainer
+                                data={security.historyPrice100}
+                                companyName={security.name}
+                                currency={security.currency}
+                              />
+                    }
                 </div>
             </div>
         </div>

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import KeyFigureContainer from './KeyFigureContainer';
 import PriceContainer from './PriceContainer';
-import PriceBasicContainer from './PriceBasicsContainer';
+import KeyPerformanceContainer from './KeyPerformanceContainer';
 import HistoricPerformanceContainer from './HistoricPerformanceContainer';
 import ProfitDistributionContainer from './ProfitDistributionContainer';
 import DividendYieldContainer from './DividendYieldContainer';
@@ -21,7 +21,7 @@ const Security = props => {
         <>
             <KeyFigureContainer security={security} isInPortfolio={isInPortfolio} togglePortfolio={togglePortfolio} lastPointed={last}/>
             <PriceContainer security={security} lastPointed={last} />
-            <PriceBasicContainer security={security} />      
+            <KeyPerformanceContainer security={security} />      
             <HistoricPerformanceContainer security={security} />
             <div className="columns is-desktop">
               <ProfitDistributionContainer security={security} />

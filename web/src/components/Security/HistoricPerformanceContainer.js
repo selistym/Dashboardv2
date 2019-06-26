@@ -9,11 +9,12 @@ const HistoricPerformanceContainer = ({security}) =>
            Historical price performance in relation to Industry peers
         </h3>        
         <hr />
-        <div className="columns" style={{ height: 400 }}>
+        <div className="columns" style={{ height: security.globalQuotes && security.top5IndustryHistory ? 400 : 'auto'}}>
             <div className="column" style={{textAlign: 'center'}}>
-                {security && security.globalQuotes && security.top5IndustryHistory ? 
-                    <CubismGraphContainer data={[security, ...security.top5IndustryHistory.map(t => t.security)]} />
-                : <Loading style={{height: 300}}/>}
+                {security === undefined || security.globalQuotes === undefined || security.top5IndustryHistory === undefined ? <Loading style={{height: 300}}/>
+                    : security === null || security.globalQuotes === null || security.top5IndustryHistory === null ? <span>No Data</span>
+                    : <CubismGraphContainer data={[security, ...security.top5IndustryHistory.map(t => t.security)]} />
+                }
             </div>
         </div>
     </div>

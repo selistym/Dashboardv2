@@ -100,9 +100,10 @@ const ProfitDistributionContainer = ({security}) =>
                 </table>
                 </div>                
                 <div className="column is-6" style={{textAlign: 'center'}}>
-                    {security && security.last3YearsDividend && security.last3YearsDividend.length > 0 ?
-                        <StockGraphContainer data={security.last3YearsDividend} />
-                        : <Loading style={{height: 300}}/>}
+                    {security === undefined || security.last3YearsDividend === undefined ? <Loading style={{height: 300}}/>
+                        : security === null || security.last3YearsDividend === null || security.last3YearsDividend.length == 0 ? <span>No Data</span>
+                        : <StockGraphContainer data={security.last3YearsDividend} />
+                    }
                 </div>
                 
             </div>

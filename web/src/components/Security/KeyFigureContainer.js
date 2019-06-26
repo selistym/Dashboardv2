@@ -37,14 +37,15 @@ const KeyFigureContainer = ({security, isInPortfolio, togglePortfolio, lastPoint
                 </div>
             </div>
             <hr style={{ marginTop: '5px' }} />
-            <div className="columns is-desktop" style={{height: 360}}>
+            <div className="columns is-desktop">
                 <div className="column is-full-mobile is-full-tablet is-two-thirds-desktop is-two-thirds-widescreen is-two-thirds-fullhd" 
                     style={{textAlign: 'center', height: 340}}
                 >
                     <Scroll>
-                        {security.longBusinessDescription ?
-                            <p style={{textAlign: 'left'}}>{security.longBusinessDescription}</p>
-                            : <Loading style={{height: 300}}/>}
+                        {security.longBusinessDescription === undefined ? <Loading style={{height: 300}}/>
+                            : security.longBusinessDescription === null ? <span>No Data</span>
+                            : <p style={{textAlign: 'left'}}>{security.longBusinessDescription}</p>
+                        }
                     </Scroll>
                 </div>
                 <div
@@ -52,17 +53,16 @@ const KeyFigureContainer = ({security, isInPortfolio, togglePortfolio, lastPoint
                     style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
                 >
                     <div className={'RoundGraph' + security.id} style={{ width: '220px', height: '230px' }}>
-                        {security && security.calculatedCircular && security.calculatedCircular[0] != null ? (
-                            <RoundGraphContainer
+                        {security === undefined || security.calculatedCircular[0] === undefined ? <Loading style={{height: 220}} />
+                            : security === null || security.calculatedCircular[0] === null ? <span>No Data</span>
+                            : <RoundGraphContainer
                                 key={security.id}
                                 idx={security.id}
                                 params={security.calculatedCircular[security.calculatedCircular.length - 1]}
                                 width={230}
                                 height={220}
-                            />
-                        ) : (
-                            <Loading style={{height: 220}}/>
-                        )}
+                             />
+                        }
                     </div>
                 </div>
             </div>

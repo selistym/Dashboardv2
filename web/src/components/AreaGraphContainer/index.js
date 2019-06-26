@@ -255,7 +255,7 @@ const AreaGraph = ({ data, currency,  column, width, height }) => {
         d3.select('.rectFillBar').attr('width', xScale(rangeEnd) - xScale(rangeStart));
       }
       drawAreaGraph(getPartial(rangeStart, rangeEnd, data), g_w, g_h);      
-    }    
+    }
   });
 
   //draw slider graph

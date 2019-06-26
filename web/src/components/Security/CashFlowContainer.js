@@ -40,9 +40,9 @@ const CashFlowContainer = ({security}) =>
         </div>
         <div className="columns">            
             <div className="column is-6" style={{textAlign: 'center'}}>
-                {security && security.calculated5Y ?
-                    <NegativeGraphContainer data={security.calculated5Y} sector={security.sector} />
-                    : <Loading style={{height: 300}}/>
+                {security === undefined || security.calculated5Y === undefined ? <Loading style={{height: 300}}/>
+                    : security === null || security.calculated5Y === null ? <span>No Data</span>
+                    : <NegativeGraphContainer data={security.calculated5Y} sector={security.sector} />
                 }
             </div>
             <div className="column is-6" style={{ height: 380 }}>

@@ -22,6 +22,7 @@ const FILTERED_SECURITIES_QUERY = gql`
       sector
       ticker      
       currency
+      mic
       calculated3Y {
         SalesOrRevenueLY
       }

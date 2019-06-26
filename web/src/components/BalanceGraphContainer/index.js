@@ -160,14 +160,14 @@ const BalanceGraphContainer = ({data}) => {
       </div>
       <div style={{width:'15%'}}>
       <div className="columns" style={{height: 90}}></div>
-        <div className="columns">
+        <div className="columns" style={{textAlign: 'left'}}>
           <ul>
             <li>
-              <span style={{ color: '#63ae2d', fontWeight: '600', fontSize: '15pt' }}>&nbsp;&nbsp;●&nbsp;</span>
+              <span style={{ color: '#63ae2d', fontWeight: '600', fontSize: '15pt'}}>&nbsp;&nbsp;●&nbsp;</span>
               <span style={{fontSize: '10pt'}}>Equity</span>
             </li>
             <li>
-              <span style={{ color: '#de0730', fontWeight: '600', fontSize: '15pt' }}>&nbsp;&nbsp;●&nbsp;</span>
+              <span style={{ color: '#de0730', fontWeight: '600', fontSize: '15pt'}}>&nbsp;&nbsp;●&nbsp;</span>
               <span style={{fontSize: '10pt'}}>Debt</span>
             </li>            
           </ul>

@@ -55,9 +55,8 @@ const PriceContainer = ({security, lastPointed}) => {
                         <td>Difference (%)</td>
                         <td className={changeClass}>
                         {security && security.liveData && security.liveData.changePercent
-                            ? formatIntl(security.liveData.changePercent)
+                            ? <span>{formatIntl(security.liveData.changePercent)}%</span>
                             : 'N/A'}
-                        %
                         </td>
                     </tr>
                     <tr style={{ backgroundColor: 'gainsboro' }}>

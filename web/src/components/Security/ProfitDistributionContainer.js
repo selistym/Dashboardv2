@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import StockGraphContainer from '../StockGraphContainer';
+import { formatIntl } from '../../lib/format-intl';
 import Loading from '../Loading';
 
 const ProfitDistributionContainer = ({security}) => 
@@ -11,12 +12,12 @@ const ProfitDistributionContainer = ({security}) =>
             </h3>
             <hr />
             <div className="columns">
-                <div className="column is-6">
+                <div className="column is-7">
                 <p style={{ fontStyle: 'italic' }}>In millions &euro;</p>
                 <table style={{ verticalAlign: 'middle', width: '100%' }}>
-                    <tbody style={{ lineHeight: 2 }}>
+                    <tbody style={{ lineHeight: 2.5 }}>
                     <tr>
-                        <td />
+                        <td style={{width: '40%'}}/>
                         <td>
                         <strong>2016</strong>
                         </td>
@@ -27,55 +28,55 @@ const ProfitDistributionContainer = ({security}) =>
                         <strong>2018</strong>
                         </td>
                     </tr>
-                    <tr style={{ backgroundColor: 'gainsboro' }}>
+                    <tr style={{ backgroundColor: 'gainsboro'}}>
                         <td>
                         <strong>Revenue</strong>
                         </td>
-                        <td>
+                        <td style={{fontSize: 15, verticalAlign: 'middle'}}>
                         {security && security.calculated3Y && security.calculated3Y.SalesOrRevenueLYMin2
-                            ? security.calculated3Y.SalesOrRevenueLYMin2.toFixed(0) : 0}
+                            ? formatIntl(security.calculated3Y.SalesOrRevenueLYMin2) : 0}
                         </td>
-                        <td>
+                        <td style={{fontSize: 15, verticalAlign: 'middle'}}>
                         {security && security.calculated3Y && security.calculated3Y.SalesOrRevenueLYMin1
-                            ? security.calculated3Y.SalesOrRevenueLYMin1.toFixed(0) : 0}
+                            ? formatIntl(security.calculated3Y.SalesOrRevenueLYMin1) : 0}
                         </td>
-                        <td>
+                        <td style={{fontSize: 15, verticalAlign: 'middle'}}>
                         {security && security.calculated3Y && security.calculated3Y.SalesOrRevenueLY
-                            ? security.calculated3Y.SalesOrRevenueLY.toFixed(0) : 0}
+                            ? formatIntl(security.calculated3Y.SalesOrRevenueLY) : 0}
                         </td>
                     </tr>
                     <tr>
                         <td>
                         <strong>Gross profit</strong>
                         </td>
-                        <td style={{ verticalAlign: 'middle' }}>
+                        <td style={{fontSize: 15, verticalAlign: 'middle'}}>
                         {security && security.calculated3Y && security.calculated3Y.GrossIncomeLYMin2
-                            ? security.calculated3Y.GrossIncomeLYMin2.toFixed(0) : 0}
+                            ? formatIntl(security.calculated3Y.GrossIncomeLYMin2) : 0}
                         </td>
-                        <td style={{ verticalAlign: 'middle' }}>
+                        <td style={{fontSize: 15, verticalAlign: 'middle'}}>
                         {security && security.calculated3Y && security.calculated3Y.GrossIncomeLYMin1
-                            ? security.calculated3Y.GrossIncomeLYMin1.toFixed(0) : 0}
+                            ? formatIntl(security.calculated3Y.GrossIncomeLYMin1) : 0}
                         </td>
-                        <td style={{ verticalAlign: 'middle' }}>
+                        <td style={{fontSize: 15, verticalAlign: 'middle'}}>
                         {security && security.calculated3Y && security.calculated3Y.GrossIncomeLY
-                            ? security.calculated3Y.GrossIncomeLY.toFixed(0) : 0}
+                            ? formatIntl(security.calculated3Y.GrossIncomeLY) : 0}
                         </td>
                     </tr>
                     <tr style={{ backgroundColor: 'gainsboro' }}>
                         <td>
                         <strong>Operating income</strong>
                         </td>
-                        <td style={{ verticalAlign: 'middle' }}>
+                        <td style={{fontSize: 15, verticalAlign: 'middle'}}>
                         {security && security.calculated3Y && security.calculated3Y.OperatingIncomeLYMin2
-                            ? security.calculated3Y.OperatingIncomeLYMin2.toFixed(0) : 0}
+                            ? formatIntl(security.calculated3Y.OperatingIncomeLYMin2) : 0}
                         </td>
-                        <td style={{ verticalAlign: 'middle' }}>
+                        <td style={{fontSize: 15, verticalAlign: 'middle'}}>
                         {security && security.calculated3Y && security.calculated3Y.OperatingIncomeLYMin1
-                            ? security.calculated3Y.OperatingIncomeLYMin1.toFixed(0) : 0}
+                            ? formatIntl(security.calculated3Y.OperatingIncomeLYMin1) : 0}
                         </td>
-                        <td style={{ verticalAlign: 'middle' }}>
+                        <td style={{fontSize: 15, verticalAlign: 'middle'}}>
                         {security && security.calculated3Y && security.calculated3Y.OperatingIncomeLY
-                            ? security.calculated3Y.OperatingIncomeLY.toFixed(0) : 0}
+                            ? formatIntl(security.calculated3Y.OperatingIncomeLY) : 0}
                         </td>
                     </tr>
                     <tr className="has-text-weight-bold">
@@ -83,23 +84,23 @@ const ProfitDistributionContainer = ({security}) =>
                         <strong>Net income</strong>
                         <strong className="has-text-danger">*</strong>
                         </td>
-                        <td style={{ verticalAlign: 'middle' }}>
+                        <td style={{fontSize: 15, verticalAlign: 'middle'}}>
                         {security && security.calculated3Y && security.calculated3Y.ConsolidatedNetIncomeLYMin2
-                            ? security.calculated3Y.ConsolidatedNetIncomeLYMin2.toFixed(0) : 0}
+                            ? formatIntl(security.calculated3Y.ConsolidatedNetIncomeLYMin2) : 0}
                         </td>
-                        <td style={{ verticalAlign: 'middle' }}>
+                        <td style={{fontSize: 15, verticalAlign: 'middle'}}>
                         {security && security.calculated3Y && security.calculated3Y.ConsolidatedNetIncomeLYMin1
-                            ? security.calculated3Y.ConsolidatedNetIncomeLYMin1.toFixed(0) : 0}
+                            ? formatIntl(security.calculated3Y.ConsolidatedNetIncomeLYMin1) : 0}
                         </td>
-                        <td style={{ verticalAlign: 'middle' }}>
+                        <td style={{fontSize: 15, verticalAlign: 'middle'}}>
                         {security && security.calculated3Y && security.calculated3Y.ConsolidatedNetIncomeLY
-                            ? security.calculated3Y.ConsolidatedNetIncomeLY.toFixed(0) : 0}
+                            ? formatIntl(security.calculated3Y.ConsolidatedNetIncomeLY) : 0}
                         </td>
                     </tr>
                     </tbody>
                 </table>
                 </div>                
-                <div className="column is-6" style={{textAlign: 'center'}}>
+                <div className="column is-5" style={{textAlign: 'center'}}>
                     {security === undefined || security.last3YearsDividend === undefined ? <Loading style={{height: 300}}/>
                         : security === null || security.last3YearsDividend === null || security.last3YearsDividend.length == 0 ? <span>No Data</span>
                         : <StockGraphContainer data={security.last3YearsDividend} />

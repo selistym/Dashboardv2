@@ -106,7 +106,7 @@ const KeyFigureContainer = ({security, isInPortfolio, togglePortfolio, lastPoint
             </div>
             <div className="columns" style={{ height: '50px' }}>
             <h3 className="subtitle is-4 has-text-weight-bold has-text-grey">
-                {security.calculated3Y ? security.calculated3Y.SalesOrRevenueLY : 'N/A'}
+                {security.calculated3Y ? formatIntl(security.calculated3Y.SalesOrRevenueLY) : 'N/A'}
             </h3>
             </div>
         </div>
@@ -120,8 +120,8 @@ const KeyFigureContainer = ({security, isInPortfolio, togglePortfolio, lastPoint
             <div className="columns" style={{ height: '50px' }}>
             <h3 className="subtitle is-4 has-text-weight-bold has-text-grey">
                 {security && security.factsetData && security.factsetData.MarketCapitalization
-                ? `${security.factsetData.MarketCapitalization.toFixed(1)}B`
-                : 'N/A'}
+                ? <span>{formatIntl(security.factsetData.MarketCapitalization)}M</span>
+                : 'N/A'}                
             </h3>
             </div>
         </div>

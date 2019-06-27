@@ -34,7 +34,7 @@ const StockGraph = ({ data, width, height }) => {
     } else {
       domain_min = 0;
       domain_max = 0;
-    }
+    }    
 
     let x = d3
         .scaleBand()
@@ -225,7 +225,8 @@ const StockGraph = ({ data, width, height }) => {
         }
         return strPath;
       });
-
+    
+    
     stock
       .append('g')
       .attr('class', 'group-red-stock')
@@ -251,14 +252,19 @@ const StockGraph = ({ data, width, height }) => {
       .select('.group-red-stock')
       .selectAll('path')
       .transition()
-      .duration(durate)
-      .attr('d', d => {
+      .duration(durate)        
+      .attr('d', function(d){
         let strPath = '',
           b_w = 30,
           x_pos = x(formatTime(new Date(d.Date))) + x.bandwidth() / 2;
         let ratio = d.DividendPayoutRatio > 100 ? 100 : d.DividendPayoutRatio,
           h = Math.abs(y((d.ConsolidatedNetIncome * ratio) / 100) - y(0));
-
+        if( y((d.ConsolidatedNetIncome * ratio) / 100) <= y(0) ) {
+          d3.select(this).attr('opacity', 1);
+        }else{
+          d3.select(this).attr('opacity', 0);
+        }
+        
         if (d.ConsolidatedNetIncome > 0) {
           strPath =
             'M' + (x_pos - b_w / 2) + ',0' + 'l' + b_w + ',0' + 'l0,' + -h + 'l' + -b_w + ',0' + 'l0,' + h + 'Z';
@@ -289,10 +295,15 @@ const StockGraph = ({ data, width, height }) => {
       .selectAll('path')
       .transition()
       .duration(durate)
-      .attr('d', d => {
+      .attr('d', function(d){
         let ratio = d.DividendPayoutRatio > 100 ? 100 : d.DividendPayoutRatio,
           h = Math.abs(y((d.ConsolidatedNetIncome * ratio) / 100) - y(0)),
           x_pos = x(formatTime(new Date(d.Date))) + x.bandwidth() / 2;
+        if( y((d.ConsolidatedNetIncome * ratio) / 100) <= y(0) ) {
+          d3.select(this).attr('opacity', 1);
+        }else{
+          d3.select(this).attr('opacity', 0);
+        }
         if (d.ConsolidatedNetIncome < 0) {
           return 'M' + x_pos + ',' + (h - 10) + 'l0,20';
         } else {
@@ -320,13 +331,18 @@ const StockGraph = ({ data, width, height }) => {
       .select('.text-percents')
       .selectAll('text')
       .transition()
-      .duration(durate)
-      .attr('opacity', 1)
-      .attr('y', d => {
+      .duration(durate)      
+      .attr('y', function(d) {
         let ratio = d.DividendPayoutRatio > 100 ? 100 : d.DividendPayoutRatio,
           h = Math.abs(y((d.ConsolidatedNetIncome * ratio) / 100) - y(0));
+        if( y((d.ConsolidatedNetIncome * ratio) / 100) <= y(0) ) {
+          d3.select(this).attr('opacity', 1);
+        }else{
+          d3.select(this).attr('opacity', 0);
+        }
         return d.ConsolidatedNetIncome < 0 ? h : -h;
       });
+    
   };
   useEffect(() => drawGraph(width - margin, height, data), [width, height, JSON.stringify(data)]); //eslint-disable-line
   return (

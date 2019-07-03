@@ -135,13 +135,13 @@ const GaugeGraph = ({ data, width, height, kind }) => {
           .data(field)
           .enter()
           .append('path')
-          .attr('stroke', (d, i) =>
-            i + 1 <= (Math.abs(data.min) + data.company) * step
+          .attr('stroke', (d, i) => kind == 0 && data.company == 0 ? 'grey' 
+            : i + 1 <= (Math.abs(data.min) + data.company) * step
               ? linearColor(Math.abs(data.min) + data.company)
               : '#e4e7ec'
           )
-          .attr('fill', (d, i) =>
-            i + 1 <= (Math.abs(data.min) + data.company) * step
+          .attr('fill', (d, i) => kind == 0 && data.company == 0 ? 'grey' 
+            : i + 1 <= (Math.abs(data.min) + data.company) * step
               ? linearColor(Math.abs(data.min) + data.company)
               : '#e4e7ec'
           )
@@ -164,7 +164,7 @@ const GaugeGraph = ({ data, width, height, kind }) => {
         .attr('class', 'needle')
         .attr(
           'fill',
-          kind == 0 || kind == 4 || kind == 5 ? linearColor(Math.abs(data.min) + data.company) : linearColor(step1)
+          kind == 0 && data.company == 0 ? 'grey' : kind == 0 || kind == 4 || kind == 5 ? linearColor(Math.abs(data.min) + data.company) : linearColor(step1)
         );
 
       let ticks = scale.ticks(n);
@@ -257,11 +257,9 @@ const GaugeGraph = ({ data, width, height, kind }) => {
         .style('font-weight', '600')
         .attr('fill', 'black')
         .text(d => {
-          
             if (d === Math.floor((Math.abs(data.min) + data.market) * step)) {
               return 'Market';
             }
-          
           return '';
         });
 
@@ -349,7 +347,7 @@ const GaugeGraph = ({ data, width, height, kind }) => {
       >
         <div className="column" style={{ padding: 0 }}>
           <span>{kind==0 || kind==4 || kind==5 ?
-                  data.company == Math.floor(data.company) ? -data.company.toFixed(0) : -data.company.toFixed(1)
+                  kind == 0 && data.company == 0 ? 'N/A' : data.company == Math.floor(data.company) ? -data.company.toFixed(0) : -data.company.toFixed(1)
                   : data.company == Math.floor(data.company) ? data.company.toFixed(0) : data.company.toFixed(1)
                 }</span>
           <span>{kind == 1 || kind == 2 || kind == 3 ? '%' : ''}</span>

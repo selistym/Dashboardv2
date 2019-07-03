@@ -21,14 +21,14 @@ const Security = props => {
         <>
             <KeyFigureContainer security={security} isInPortfolio={isInPortfolio} togglePortfolio={togglePortfolio} lastPointed={last}/>
             <PriceContainer security={security} lastPointed={last} />
-            <KeyPerformanceContainer security={security} />      
-            <HistoricPerformanceContainer security={security} />
+            <KeyPerformanceContainer security={security} />
             <div className="columns is-desktop">
               <ProfitDistributionContainer security={security} />
               <DividendYieldContainer security={security} />
             </div>
             <CashFlowContainer security={security} />
             <BalanceContainer security={security} />
+            <HistoricPerformanceContainer security={security} />
         </>
       : 'Empty Security'}
     </div>

@@ -8,7 +8,7 @@ library.add(faSpinner);
 
 const Loading = ({ style }) => (
   <div style={{...style, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-    <FontAwesomeIcon icon="spinner" spin data-testid="spinner" />
+    <FontAwesomeIcon icon="spinner" size="2x" spin data-testid="spinner" />
   </div>
 );
 

@@ -135,12 +135,12 @@ const GaugeGraph = ({ data, width, height, kind }) => {
           .data(field)
           .enter()
           .append('path')
-          .attr('stroke', (d, i) => kind == 0 && data.company == 0 ? 'grey' 
+          .attr('stroke', (d, i) => kind == 0 && data.company <= 0 ? 'grey' 
             : i + 1 <= (Math.abs(data.min) + data.company) * step
               ? linearColor(Math.abs(data.min) + data.company)
               : '#e4e7ec'
           )
-          .attr('fill', (d, i) => kind == 0 && data.company == 0 ? 'grey' 
+          .attr('fill', (d, i) => kind == 0 && data.company <= 0 ? 'grey' 
             : i + 1 <= (Math.abs(data.min) + data.company) * step
               ? linearColor(Math.abs(data.min) + data.company)
               : '#e4e7ec'
@@ -153,8 +153,8 @@ const GaugeGraph = ({ data, width, height, kind }) => {
           .data(field)
           .enter()
           .append('path')
-          .attr('stroke', (d, i) => (i + 1 + rmin <= data.company ? linearColor(step1) : '#e4e7ec'))
-          .attr('fill', (d, i) => (i + 1 + rmin <= data.company ? linearColor(step1) : '#e4e7ec'))
+          .attr('stroke', (d, i) => data.company <= 0 ? 'grey' : (i + 1 + rmin <= data.company ? linearColor(step1) : '#e4e7ec'))
+          .attr('fill', (d, i) => data.company <= 0 ? 'grey' : (i + 1 + rmin <= data.company ? linearColor(step1) : '#e4e7ec'))
           .attr('d', arc);
       //draw needle
 
@@ -164,7 +164,7 @@ const GaugeGraph = ({ data, width, height, kind }) => {
         .attr('class', 'needle')
         .attr(
           'fill',
-          kind == 0 && data.company == 0 ? 'grey' : kind == 0 || kind == 4 || kind == 5 ? linearColor(Math.abs(data.min) + data.company) : linearColor(step1)
+          kind < 4 && data.company <= 0 ? 'grey' : kind == 0 || kind == 4 || kind == 5 ? linearColor(Math.abs(data.min) + data.company) : linearColor(step1)
         );
 
       let ticks = scale.ticks(n);
@@ -347,8 +347,8 @@ const GaugeGraph = ({ data, width, height, kind }) => {
       >
         <div className="column" style={{ padding: 0 }}>
           <span>{kind==0 || kind==4 || kind==5 ?
-                  kind == 0 && data.company == 0 ? 'N/A' : data.company == Math.floor(data.company) ? -data.company.toFixed(0) : -data.company.toFixed(1)
-                  : data.company == Math.floor(data.company) ? data.company.toFixed(0) : data.company.toFixed(1)
+                  kind == 0 && data.company <= 0 ? 'N/A' : data.company == Math.floor(data.company) ? -data.company.toFixed(0) : -data.company.toFixed(1)
+                  : data.company <= 0 ? 'N/A' : data.company == Math.floor(data.company) ? data.company.toFixed(0) : data.company.toFixed(1)
                 }</span>
           <span>{kind == 1 || kind == 2 || kind == 3 ? '%' : ''}</span>
         </div>

@@ -403,7 +403,7 @@ const GaugeGraphContainer = ({ data }) => {
       market: c_data.ROICMarket,
       title: 'ROIC',
       min: 0,
-      max: 0.2,
+      max: 0.25,
       dir: 1
     },
     {
@@ -412,7 +412,7 @@ const GaugeGraphContainer = ({ data }) => {
       market: c_data.ROEMarket,
       title: 'Return on equity',
       min: 0,
-      max: 0.2,
+      max: 0.25,
       dir: 1
     },
     {
@@ -420,8 +420,8 @@ const GaugeGraphContainer = ({ data }) => {
       branch: c_data.RevenueGrowthBranche,
       market: c_data.RevenueGrowthMarket,
       title: 'Revenue Growth per Share',
-      min: -30,
-      max: 60,
+      min: 0,
+      max: 2,
       dir: 1
     },
     {

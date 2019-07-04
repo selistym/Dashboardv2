@@ -5,7 +5,6 @@ import useDimensions from '../Dimensions';
 import * as d3 from 'd3';
 
 const GaugeGraph = ({ data, width, height, kind }) => {
-  console.log(data, 'from gauge')
   const graphRef = useRef();
   const w = Math.min(width, height),
         h = Math.min(width, height);
@@ -18,22 +17,39 @@ const GaugeGraph = ({ data, width, height, kind }) => {
         pi = Math.PI,
         halfPi = pi / 2,
         endAngle = pi / 2,
-        startAngle = -endAngle,      
+        startAngle = -endAngle,
+        n,
+        rmin,
+        rmax,
         diff;
 
       switch (Number(kind)) {
         case 1:
         case 2:
+          n = 25;
+          rmin = 0;
+          rmax = 25;
           diff = 2;
           break;
-        case 3:      
+        case 3:
+          n = 200;
+          rmin = -100;
+          rmax = 100;
           diff = 15;
           break;
         case 0:
         case 4:
-        case 5:    
+        case 5:
+          n = 100;
+          rmin = 0;
+          rmax = 100;
           diff = 8;
-          break;    
+          break;
+        default:
+          n = 100;
+          rmin = 0;
+          rmax = 100;
+          break;
       }
 
       let scale = d3
@@ -42,7 +58,53 @@ const GaugeGraph = ({ data, width, height, kind }) => {
         .range([startAngle, endAngle]);
 
       let field = d3.range(startAngle, endAngle, pi / 100);
-      let linearColor;
+      let range = Math.abs(data.max - data.min),
+        step = n / range,
+        preStep1 = data.company > rmax ? rmax : data.company,
+        preStep = preStep1 < rmin ? rmin : preStep1,
+        step1 = (range / n) * preStep,
+        linearColor = d3
+          .scaleLinear()
+          .range(['#e2062a', '#ee7e00', '#66ad2b'])
+          .domain([0, range / 2, range]);
+
+      if (data.dir == 1) {
+        linearColor = d3
+          .scaleLinear()
+          .range(['#dc143c', '#ffa500', '#008000'])
+          .domain([0, range / 2, range]);
+      } else {
+        linearColor = d3
+          .scaleLinear()
+          .range(['#008000', '#ffa500', '#dc143c'])
+          .domain([0, range / 2, range]);
+      }
+      if (kind == 0) {
+        linearColor = d3
+          .scaleLinear()
+          .range(['#dc143c', '#ffa500','#32cd32', '#008000' ])
+          .domain([0, 30, 31, 100]);
+      }
+      if (kind == 3) {
+        if (data.company > 0) {
+          linearColor = d3
+            .scaleLinear()
+            .range(['#32cd32', '#008000'])
+            .domain([0, range / 2]);
+        } else {
+          linearColor = d3
+            .scaleLinear()
+            .range(['#dc143c', '#ffa500'])
+            .domain([-range / 2, 0]);
+        }
+      }
+      
+      if (kind == 5) {
+        linearColor = d3
+          .scaleLinear()
+          .range(['#dc143c', '#ffa500', '#32cd32',  '#008000'])
+          .domain([0, (range * 1) / 6, (range * 1) / 6 + range * 0.01, range]);
+      }
 
       d3.select(graphRef.current)
         .selectAll('*')
@@ -52,40 +114,61 @@ const GaugeGraph = ({ data, width, height, kind }) => {
         .arc()
         .innerRadius(radius - radius / 5)
         .outerRadius(radius)
-        .startAngle((d, i) => scale(i))
-        .endAngle((d, i) => scale(i + 1));
+        .startAngle((d, i) => scale(i + rmin))
+        .endAngle((d, i) => scale(i + rmin + 1));
 
-      switch (kind){
-        case 0: 
-          linearColor = d3.scaleLinear().range(['#dc143c', '#ffa500', '#32cd32', '#008000' ]).domain([0, 70, 71, 100]);
-          break;
-        case 1: case 2: 
-          linearColor = d3.scaleLinear().range(['#dc143c', '#ffa500', '#008000' ]).domain([0, 50, 100]);
-          break;
-      }
-      
-      d3.select(graphRef.current)
-        .append('g')
-        .selectAll('path')
-        .data(field)
-        .enter()
-        .append('path')
-        .attr('stroke', (d, i) => data.company >= 100 ? 'grey' 
-          : i + 1 <= data.company ? linearColor(data.company) : '#e4e7ec')
-        .attr('fill', (d, i) => data.company >= 100 ? 'grey' 
-          : i + 1 <= data.company ? linearColor(data.company) : '#e4e7ec')
-        .attr('d', arc);     
+      if (kind == 0 || kind > 3)
+        d3.select(graphRef.current)
+          .append('g')
+          .selectAll('path')
+          .data(field)
+          .enter()
+          .append('path')
+          .attr('stroke', (d, i) => kind == 0 && data.company >= 0 ? 'grey' 
+            : i + 1 <= (Math.abs(data.min) + data.company) * step
+              ? linearColor(Math.abs(data.min) + data.company)
+              : '#e4e7ec'
+          )
+          .attr('fill', (d, i) => kind == 0 && data.company >= 0 ? 'grey' 
+            : i + 1 <= (Math.abs(data.min) + data.company) * step
+              ? linearColor(Math.abs(data.min) + data.company)
+              : '#e4e7ec'
+          )
+          .attr('d', arc);
+      else
+        d3.select(graphRef.current)
+          .append('g')
+          .selectAll('path')
+          .data(field)
+          .enter()
+          .append('path')
+          .attr('stroke', (d, i) => kind != 3 && data.company <= 0 ? 'grey' : (i + 1 + rmin <= data.company ? linearColor(step1) : '#e4e7ec'))
+          .attr('fill', (d, i) => kind != 3 && data.company <= 0 ? 'grey' : (i + 1 + rmin <= data.company ? linearColor(step1) : '#e4e7ec'))
+          .attr('d', arc);
 
       //draw needle
-      let needle;      
-      needle = d3
+      let needle;
+      if(kind == 0){
+        needle = d3
         .select(graphRef.current)
         .append('path')
         .attr('class', 'needle')
-        .attr('fill', data.company >= 100 ? 'grey' : linearColor(Math.abs(data.min) + data.company));
-      
+        .attr(
+          'fill',
+          data.company >= 0 ? 'grey' : kind == 0 || kind == 4 || kind == 5 ? linearColor(Math.abs(data.min) + data.company) : linearColor(step1)
+        );
+      }else{
+        needle = d3
+        .select(graphRef.current)
+        .append('path')
+        .attr('class', 'needle')
+        .attr(
+          'fill',
+          kind < 3 && data.company <= 0 ? 'grey' : kind == 0 || kind == 4 || kind == 5 ? linearColor(Math.abs(data.min) + data.company) : linearColor(step1)
+        );
+      }      
 
-      let ticks = scale.ticks(100);
+      let ticks = scale.ticks(n);
 
       // add marker
       d3.select(graphRef.current)
@@ -97,10 +180,10 @@ const GaugeGraph = ({ data, width, height, kind }) => {
         .append('path')
         .style('stroke', '#929292')
         .style('stroke-width', function(d) {
-          if (d === Math.floor(data.branch)) {
+          if (d === Math.floor((Math.abs(data.min) + data.branch) * step)) {
             return 3;
           }
-          if (d === Math.floor(data.market)) {
+          if (d === Math.floor((Math.abs(data.min) + data.market) * step)) {
             return 3;
           }
           return 0;
@@ -128,12 +211,12 @@ const GaugeGraph = ({ data, width, height, kind }) => {
             topY = (radius + 5) * Math.sin(_in);
           return 'translate(' + topX + ',' + topY + ')';
         })
-        .style('text-anchor', d => (d < 50 ? 'end' : 'start'))
+        .style('text-anchor', d => (d < (rmax + rmin) / 2 ? 'end' : 'start'))
         .style('font-size', '8pt')
         .style('font-weight', '600')
         .attr('fill', 'black')
         .text(d => {
-          if (d === Math.floor(data.branch)) {
+          if (d === Math.floor((Math.abs(data.min) + data.branch) * step)) {
             return 'Industry';
           }
           return '';
@@ -152,17 +235,17 @@ const GaugeGraph = ({ data, width, height, kind }) => {
           return 'translate(' + topX + ',' + topY + ')';
         })
         .attr('dy', () => {
-          let branch = Math.floor(data.branch),
-              market = Math.floor(data.market);
+          let branch = Math.floor((Math.abs(data.min) + data.branch) * step),
+            market = Math.floor((Math.abs(data.min) + data.market) * step);
           if (Math.abs(branch - market) <= diff) {
             if (branch < market) {
-              if (branch < 50 && market < 50) {
+              if (branch < (rmax + rmin) / 2 && market < (rmax + rmin) / 2) {
                 return -10;
               } else {
                 return 10;
               }
             } else {
-              if (branch < 50 && market < 50) {
+              if (branch < (rmax + rmin) / 2 && market < (rmax + rmin) / 2) {
                 return 10;
               } else {
                 return -10;
@@ -170,12 +253,12 @@ const GaugeGraph = ({ data, width, height, kind }) => {
             }
           } else return 0;
         })
-        .style('text-anchor', d => (d < 50 ? 'end' : 'start'))
+        .style('text-anchor', d => (d < (rmax + rmin) / 2 ? 'end' : 'start'))
         .style('font-size', '8pt')
         .style('font-weight', '600')
         .attr('fill', 'black')
         .text(d => {
-            if (d === Math.floor(data.market)) {
+            if (d === Math.floor((Math.abs(data.min) + data.market) * step)) {
               return 'Market';
             }
           return '';
@@ -247,7 +330,7 @@ const GaugeGraph = ({ data, width, height, kind }) => {
       }
       updateNeedle(
         scale(0),
-        scale(Math.abs(data.min) + data.company) + 0.01
+        scale(kind == 0 || kind == 4 || kind == 5 ? (Math.abs(data.min) + data.company) * step : preStep) + 0.01
       );
       updatePercent(0, data.company);
     };
@@ -337,30 +420,32 @@ const GaugeGraphContainer = ({ data }) => {
 
   const preCorrection = param => {
     //PE-ratio 
-    const pe_ratio_step = Math.abs(100 / (i_data[0].max - i_data[0].min));
-   
-    if(param.PERatioCompany){
-      i_data[0].company = param.PERatioCompany < i_data[0].min ? i_data[0].min : param.PERatioCompany > i_data[0].max ? i_data[0].max : param.PERatioCompany;
-    }else{
-      i_data[0].company = 101;
-    }
-    
-    if(param.PERatioBranche){
-      i_data[0].branch = param.PERatioBranche < i_data[0].min ? i_data[0].min : param.PERatioBranche > i_data[0].max ? i_data[0].max : param.PERatioBranche;
-    }else{
-      i_data[0].branch = 101;
-    }
-    
-    if(param.PERatioMarket){
-      i_data[0].market = param.PERatioMarket < i_data[0].min ? i_data[0].min : param.PERatioMarket > i_data[0].max ? i_data[0].max : param.PERatioMarket;
-    }else{
-      i_data[0].market = 101;
-    }
+    let pe_ratio_step = Math.abs(100 / (i_data[0].max - i_data[0].min));
 
-    if(param.PERatioCompany) i_data[0].company = 100 - (i_data[0].company * pe_ratio_step);
-    i_data[0].branch = 100 - (i_data[0].branch * pe_ratio_step);
-    i_data[0].market = 100 - (i_data[0].market * pe_ratio_step);
+    if(param.PERatioCompany && param.PERatioCompany < i_data[0].min){
+      i_data[0].company = i_data[0].min;
+    }else if(param.PERatioCompany && param.PERatioCompany > i_data[0].max){
+      i_data[0].company = i_data[0].max;
+    }
+    if(!param.PERatioCompany) i_data[0].company = -9999;
+    
+    if(param.PERatioBranche && param.PERatioBranche < i_data[0].min){
+      i_data[0].branch = i_data[0].min;
+    }else if(param.PERatioBranche && param.PERatioBranche > i_data[0].max){
+      i_data[0].branch = i_data[0].max;
+    }
+    if(!param.PERatioBranche) i_data[0].branch = -9999;
+    
+    if(param.PERatioMarket && param.PERatioMarket < i_data[0].min){
+      i_data[0].market = i_data[0].min;
+    }else if(param.PERatioMarket && param.PERatioMarket > i_data[0].max){
+      i_data[0].market = i_data[0].max;
+    }
+    if(!param.PERatioMarket) i_data[0].market = -9999;
 
+    i_data[0].company = 100 - (param.PERatioCompany * pe_ratio_step);
+    i_data[0].branch = 100 - (param.PERatioBranche * pe_ratio_step);
+    i_data[0].market = 100 - (param.PERatioMarket * pe_ratio_step);
     if(!param.PERatioCompany || param.PERatioCompany == 0) {
       i_data[0].realCompany = 'N/A';
     }else{
@@ -368,99 +453,13 @@ const GaugeGraphContainer = ({ data }) => {
     }
 
     //ROIC
-    const roic_ratio_step = Math.abs(100 / (i_data[1].max - i_data[1].min));
-   
-    if(param.ROICCompany){
-      i_data[1].company = param.ROICCompany < i_data[1].min ? i_data[1].min : param.ROICCompany > i_data[1].max ? i_data[1].max : param.ROICCompany;
-    }else{
-      i_data[1].company = 101;
-    }
-    
-    if(param.ROICBranche){
-      i_data[1].branch = param.ROICBranche < i_data[1].min ? i_data[1].min : param.ROICBranche > i_data[1].max ? i_data[1].max : param.ROICBranche;
-    }else{
-      i_data[1].branch = 101;
-    }
-    
-    if(param.ROICMarket){
-      i_data[1].market = param.ROICMarket < i_data[1].min ? i_data[1].min : param.ROICMarket > i_data[1].max ? i_data[1].max : param.ROICMarket;
-    }else{
-      i_data[1].market = 101;
-    }
 
-    if(param.ROICCompany) i_data[1].company = i_data[1].company * roic_ratio_step;
-    i_data[1].branch = i_data[1].branch * roic_ratio_step;
-    i_data[1].market = i_data[1].market * roic_ratio_step;
-
-    if(!param.ROICCompany || param.ROICCompany == 0) {
-      i_data[1].realCompany = 'N/A';
-    }else{
-      i_data[1].realCompany = (param.ROICCompany * 100).toFixed(1) + '%';
-    }
     //ROE
-
-    const roe_ratio_step = Math.abs(100 / (i_data[2].max - i_data[2].min));
-   
-    if(param.ROECompany){
-      i_data[2].company = param.ROECompany < i_data[2].min ? i_data[2].min : param.ROECompany > i_data[2].max ? i_data[2].max : param.ROECompany;
-    }else{
-      i_data[2].company = 101;
-    }
-    
-    if(param.ROICBranche){
-      i_data[2].branch = param.ROEBranche < i_data[2].min ? i_data[2].min : param.ROEBranche > i_data[2].max ? i_data[2].max : param.ROEBranche;
-    }else{
-      i_data[2].branch = 101;
-    }
-    
-    if(param.ROICMarket){
-      i_data[2].market = param.ROEMarket < i_data[2].min ? i_data[2].min : param.ROEMarket > i_data[2].max ? i_data[2].max : param.ROEMarket;
-    }else{
-      i_data[2].market = 101;
-    }
-
-    if(param.ROECompany) i_data[2].company = i_data[2].company * roe_ratio_step;
-    i_data[2].branch = i_data[2].branch * roe_ratio_step;
-    i_data[2].market = i_data[2].market * roe_ratio_step;
-
-    if(!param.ROECompany || param.ROECompany == 0) {
-      i_data[2].realCompany = 'N/A';
-    }else{
-      i_data[2].realCompany = (param.ROECompany * 100).toFixed(1) + '%';
-    }
 
     //Revenue
 
     //Debt-ratio
-    const pe_ratio_step = Math.abs(100 / (i_data[0].max - i_data[0].min));
-   
-    if(param.PERatioCompany){
-      i_data[0].company = param.PERatioCompany < i_data[0].min ? i_data[0].min : param.PERatioCompany > i_data[0].max ? i_data[0].max : param.PERatioCompany;
-    }else{
-      i_data[0].company = 101;
-    }
-    
-    if(param.PERatioBranche){
-      i_data[0].branch = param.PERatioBranche < i_data[0].min ? i_data[0].min : param.PERatioBranche > i_data[0].max ? i_data[0].max : param.PERatioBranche;
-    }else{
-      i_data[0].branch = 101;
-    }
-    
-    if(param.PERatioMarket){
-      i_data[0].market = param.PERatioMarket < i_data[0].min ? i_data[0].min : param.PERatioMarket > i_data[0].max ? i_data[0].max : param.PERatioMarket;
-    }else{
-      i_data[0].market = 101;
-    }
 
-    if(param.PERatioCompany) i_data[0].company = 100 - (i_data[0].company * pe_ratio_step);
-    i_data[0].branch = 100 - (i_data[0].branch * pe_ratio_step);
-    i_data[0].market = 100 - (i_data[0].market * pe_ratio_step);
-
-    if(!param.PERatioCompany || param.PERatioCompany == 0) {
-      i_data[0].realCompany = 'N/A';
-    }else{
-      i_data[0].realCompany = Math.floor(param.PERatioCompany) == param.PERatioCompany ? param.PERatioCompany.toFixed(0) : param.PERatioCompany.toFixed(1);
-    }
     //Nett-Debt
 
     // param.DebtRatioBranche = param.DebtRatioBranche ? param.DebtRatioBranche : 0;
@@ -492,14 +491,10 @@ const GaugeGraphContainer = ({ data }) => {
           </div>
         </div>
         <div className="column" style={{ textAlign: 'center' }}>
-          <div style={{ width: '100%' }} ref={svgContainerRef}>
-            {svgSize.width && <GaugeGraph key={1} kind={1} data={i_data[1]} width={svgSize.width} height={270} />}
-          </div>
+          
         </div>
         <div className="column" style={{ textAlign: 'center' }}>
-          <div style={{ width: '100%' }} ref={svgContainerRef}>
-            {svgSize.width && <GaugeGraph key={1} kind={2} data={i_data[2]} width={svgSize.width} height={270} />}
-          </div>
+          
         </div>
         <div className="column" style={{ textAlign: 'center' }}>
           

@@ -5,6 +5,7 @@ import FreeScrollBar from 'react-free-scrollbar';
 import BalanceGraphContainer from '../BalanceGraphContainer';
 import Loading from '../Loading';
 
+
 const BalanceContainer = ({security}) => 
     <div className="box  has-text-grey">
         <h3 className="subtitle is-5 has-text-weight-bold has-text-grey" style={{ height: '10px' }}>
@@ -18,8 +19,8 @@ const BalanceContainer = ({security}) =>
                     : <BalanceGraphContainer data={security.last5AnnualTotals} />
                 }
             </div>            
-            <div className="column is-6" style={{height: 400}}>
-                <FreeScrollBar >
+            <div className="column is-6" style={{height: 400}}>                
+                <FreeScrollBar>
                     <div style={{padding: 10}}>
                         <p>
                             The balance diagram consists of two sides, assets and liabilities. At both sides the total of the

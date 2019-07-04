@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import Scroll from 'react-awesome-scroll';
+import FreeScrollBar from 'react-free-scrollbar';
 import useDimensions from '../Dimensions';
 import * as d3 from 'd3';
 
@@ -135,12 +135,12 @@ const GaugeGraph = ({ data, width, height, kind }) => {
           .data(field)
           .enter()
           .append('path')
-          .attr('stroke', (d, i) => kind == 0 && data.company <= 0 ? 'grey' 
+          .attr('stroke', (d, i) => kind == 0 && data.company >= 0 ? 'grey' 
             : i + 1 <= (Math.abs(data.min) + data.company) * step
               ? linearColor(Math.abs(data.min) + data.company)
               : '#e4e7ec'
           )
-          .attr('fill', (d, i) => kind == 0 && data.company <= 0 ? 'grey' 
+          .attr('fill', (d, i) => kind == 0 && data.company >= 0 ? 'grey' 
             : i + 1 <= (Math.abs(data.min) + data.company) * step
               ? linearColor(Math.abs(data.min) + data.company)
               : '#e4e7ec'
@@ -153,19 +153,31 @@ const GaugeGraph = ({ data, width, height, kind }) => {
           .data(field)
           .enter()
           .append('path')
-          .attr('stroke', (d, i) => data.company <= 0 ? 'grey' : (i + 1 + rmin <= data.company ? linearColor(step1) : '#e4e7ec'))
-          .attr('fill', (d, i) => data.company <= 0 ? 'grey' : (i + 1 + rmin <= data.company ? linearColor(step1) : '#e4e7ec'))
+          .attr('stroke', (d, i) => kind != 3 && data.company <= 0 ? 'grey' : (i + 1 + rmin <= data.company ? linearColor(step1) : '#e4e7ec'))
+          .attr('fill', (d, i) => kind != 3 && data.company <= 0 ? 'grey' : (i + 1 + rmin <= data.company ? linearColor(step1) : '#e4e7ec'))
           .attr('d', arc);
-      //draw needle
 
-      let needle = d3
+      //draw needle
+      let needle;
+      if(kind == 0){
+        needle = d3
         .select(graphRef.current)
         .append('path')
         .attr('class', 'needle')
         .attr(
           'fill',
-          kind < 4 && data.company <= 0 ? 'grey' : kind == 0 || kind == 4 || kind == 5 ? linearColor(Math.abs(data.min) + data.company) : linearColor(step1)
+          data.company >= 0 ? 'grey' : kind == 0 || kind == 4 || kind == 5 ? linearColor(Math.abs(data.min) + data.company) : linearColor(step1)
         );
+      }else{
+        needle = d3
+        .select(graphRef.current)
+        .append('path')
+        .attr('class', 'needle')
+        .attr(
+          'fill',
+          kind < 3 && data.company <= 0 ? 'grey' : kind == 0 || kind == 4 || kind == 5 ? linearColor(Math.abs(data.min) + data.company) : linearColor(step1)
+        );
+      }      
 
       let ticks = scale.ticks(n);
 
@@ -216,7 +228,7 @@ const GaugeGraph = ({ data, width, height, kind }) => {
         .attr('fill', 'black')
         .text(d => {
           if (d === Math.floor((Math.abs(data.min) + data.branch) * step)) {
-            return 'Branche';
+            return 'Industry';
           }
           return '';
         });
@@ -346,9 +358,9 @@ const GaugeGraph = ({ data, width, height, kind }) => {
         style={{ padding: 0, fontSize: '22pt', fontWeight: 'bold', color: 'grey', textAlign: 'center' }}
       >
         <div className="column" style={{ padding: 0 }}>
-          <span>{kind==0 || kind==4 || kind==5 ?
-                  kind == 0 && data.company <= 0 ? 'N/A' : data.company == Math.floor(data.company) ? -data.company.toFixed(0) : -data.company.toFixed(1)
-                  : data.company <= 0 ? 'N/A' : data.company == Math.floor(data.company) ? data.company.toFixed(0) : data.company.toFixed(1)
+          <span>{kind==0  || kind==4 || kind == 5
+                  ? kind == 0 && data.company >= 0 ? 'N/A' : data.company == Math.floor(data.company) ? -data.company.toFixed(0) : -data.company.toFixed(1)
+                  : kind!=3 && data.company <= 0 ? 'N/A' : data.company == Math.floor(data.company) ? data.company.toFixed(0) : data.company.toFixed(1)
                 }</span>
           <span>{kind == 1 || kind == 2 || kind == 3 ? '%' : ''}</span>
         </div>
@@ -482,34 +494,36 @@ const GaugeGraphContainer = ({ data }) => {
           </div>
         </div>
         <div className="column" style={{ width: '100%', textAlign:'left', height: 230 }}>
-          <Scroll>
-            <strong>PE ratio </strong>
-            is a measure that gives an indication on how expensive a share is. It is calculated as the share price divided
-            by the profits per share. A high PE ratio means that the share is expensive.
-            <p />
-            <strong>ROIC </strong>
-            gives the Rate On Invested Capital. It shows how well the company is able to generate a return on all the
-            invested assets, like buildings, machinery etc.
-            <p />
-            <strong>ROE </strong>
-            gives the Rate On Equity. It shows how well the company is able to generate profits on the amount invested by
-            shareholders. It’s therefore a measure on how efficient the company is in deploying capital.
-            <p />
-            <strong>Revenue Growth Per Share </strong>
-            shows the annual revenue growth (or decline) divided by all outstanding shares. By taking into account the
-            number of shares, effects of (possible) new shares that were issued or effects of acquisitions are reflected
-            in this number.
-            <p />
-            <strong>Debt Ratio </strong>
-            shows the ratio of shareholders Equity to Debt. The higher this ratio is, the more debt the company has
-            relative to its equity. Therefore it becomes more risky.
-            <p />
-            <strong>Nett-Debt / EBITDA </strong>
-            is another way to give an indication of the level of debt of a company. In this measure, a correction
-            is made to the debt position by subtracting the amount of cash a company has on it’s balance sheet. The result
-            is then compared to the EBITDA, which is a common indicator of the operating result of a company.
-            <p />
-          </Scroll>
+          <FreeScrollBar>
+            <div style={{padding: 10}}>
+              <strong>PE ratio </strong>
+              is a measure that gives an indication on how expensive a share is. It is calculated as the share price divided
+              by the profits per share. A high PE ratio means that the share is expensive.
+              <p />
+              <strong>ROIC </strong>
+              gives the Rate On Invested Capital. It shows how well the company is able to generate a return on all the
+              invested assets, like buildings, machinery etc.
+              <p />
+              <strong>ROE </strong>
+              gives the Rate On Equity. It shows how well the company is able to generate profits on the amount invested by
+              shareholders. It’s therefore a measure on how efficient the company is in deploying capital.
+              <p />
+              <strong>Revenue Growth Per Share </strong>
+              shows the annual revenue growth (or decline) divided by all outstanding shares. By taking into account the
+              number of shares, effects of (possible) new shares that were issued or effects of acquisitions are reflected
+              in this number.
+              <p />
+              <strong>Debt Ratio </strong>
+              shows the ratio of shareholders Equity to Debt. The higher this ratio is, the more debt the company has
+              relative to its equity. Therefore it becomes more risky.
+              <p />
+              <strong>Nett-Debt / EBITDA </strong>
+              is another way to give an indication of the level of debt of a company. In this measure, a correction
+              is made to the debt position by subtracting the amount of cash a company has on it’s balance sheet. The result
+              is then compared to the EBITDA, which is a common indicator of the operating result of a company.
+              <p />
+            </div>
+          </FreeScrollBar>
         </div>
       </div>
     </div>

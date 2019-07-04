@@ -7387,7 +7387,7 @@ react-dom@^15.6.1:
     object-assign "^4.1.0"
     prop-types "^15.5.10"
 
-react-dom@^16.8.2:
+react-dom@^16.1.1, react-dom@^16.8.2:
   version "16.8.6"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.8.6.tgz#71d6303f631e8b0097f56165ef608f051ff6e10f"
   integrity sha512-1nL7PIq9LTL3fthPqwkvr2zY7phIPjYrT0jp4HjyEQrEROnw4dG41VVwi/wfoCneoleqrNX7iAD+pXebJZwrwA==
@@ -7406,6 +7406,14 @@ react-fast-compare@^2.0.1:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/react-fast-compare/-/react-fast-compare-2.0.4.tgz#e84b4d455b0fec113e0402c329352715196f81f9"
   integrity sha512-suNP+J1VU1MWFKcyt7RtjiSWUjvidmQSlqu+eHslq+342xCbGTYmC0mEhPCOHxlW0CywylOC1u2DFAT+bv4dBw==
+
+react-free-scrollbar@^0.3.4:
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/react-free-scrollbar/-/react-free-scrollbar-0.3.4.tgz#9f891806fc706f550e18bbaf4a396b9d5a5aa5a2"
+  integrity sha512-MXzWAhR9jfsxe2UjWq6E8xaQtV5zmTg12qsM/p4f9ihR2ERAVHcx7wxu5zt9ifE7ngXyC++o+Ut4RN2iDoPJNg==
+  dependencies:
+    react "^16.1.1"
+    react-dom "^16.1.1"
 
 react-intl@^2.8.0:
   version "2.9.0"
@@ -7474,7 +7482,7 @@ react@^15.6.1:
     object-assign "^4.1.0"
     prop-types "^15.5.10"
 
-react@^16.8.2:
+react@^16.1.1, react@^16.8.2:
   version "16.8.6"
   resolved "https://registry.yarnpkg.com/react/-/react-16.8.6.tgz#ad6c3a9614fd3a4e9ef51117f54d888da01f2bbe"
   integrity sha512-pC0uMkhLaHm11ZSJULfOBqV4tIZkx87ZLvbbQYunNixAAvjnC+snJCg0XQXn9VIsttVsbZP/H/ewzgsd5fxKXw==

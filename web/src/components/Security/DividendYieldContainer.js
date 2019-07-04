@@ -1,5 +1,5 @@
 import React from 'react';
-import Scroll from 'react-awesome-scroll';
+import FreeScrollBar from 'react-free-scrollbar';
 import PropTypes from 'prop-types';
 import Loading from '../Loading';
 
@@ -25,18 +25,20 @@ const DividendYieldContainer = ({security}) =>
                 <div className="column is-one-two-mobile is-one-two-tablet has-text-centered">Dividend Yield</div>
                 </div>
                 <div style={{height: 285 }}>
-                    <Scroll>
-                        <ul>
-                            <li>
-                            The Dividend Yield is the percentual income you get from dividend, based on the current share price.
-                            </li>
-                            <li>
-                            The graph shows the total income of the last three book years, along with the percentage that has
-                            been payed out to shareholders, the pay-out ratio. Higher values of this ratio correspond to a
-                            higher risk whether this level of dividend can be maintained.
-                            </li>
-                        </ul>
-                    </Scroll>
+                    <FreeScrollBar>
+                        <div style={{width: '100%', padding: 10}}>
+                            <ul>
+                                <li>
+                                The Dividend Yield is the percentual income you get from dividend, based on the current share price.
+                                </li>
+                                <li>
+                                The graph shows the total income of the last three book years, along with the percentage that has
+                                been payed out to shareholders, the pay-out ratio. Higher values of this ratio correspond to a
+                                higher risk whether this level of dividend can be maintained.
+                                </li>
+                            </ul>
+                        </div>
+                    </FreeScrollBar>
                 </div>
             </div>
         </div>

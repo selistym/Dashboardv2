@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import Scroll from 'react-awesome-scroll';
+import FreeScrollBar from 'react-free-scrollbar';
 
 import { formatIntl } from '../../lib/format-intl';
 import RoundGraphContainer from '../RoundGraphContainer';
@@ -41,12 +41,14 @@ const KeyFigureContainer = ({security, isInPortfolio, togglePortfolio, lastPoint
                 <div className="column is-full-mobile is-full-tablet is-two-thirds-desktop is-two-thirds-widescreen is-two-thirds-fullhd" 
                     style={{textAlign: 'center', height: 340}}
                 >
-                    <Scroll>
+                    <FreeScrollBar>
+                        <div style={{width: '100%', padding: 10}}>
                         {security.longBusinessDescription === undefined ? <Loading style={{height: 300}}/>
                             : security.longBusinessDescription === null ? <span>No Data</span>
                             : <p style={{textAlign: 'left'}}>{security.longBusinessDescription}</p>
                         }
-                    </Scroll>
+                        </div>
+                    </FreeScrollBar>
                 </div>
                 <div
                     className="column is-full-mobile is-full-tablet is-one-third-desktop is-one-third-widescreen is-one-third-fullhd"

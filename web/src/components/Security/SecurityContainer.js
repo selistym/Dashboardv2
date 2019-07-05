@@ -1,12 +1,12 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
-import gql from 'graphql-tag';
-import Query from 'react-apollo/Query';
-import Security from './Security';
-import SecurityLayout from './SecurityLayout';
+import gql from 'graphql-tag'
+import Query from 'react-apollo/Query'
+import Security from './Security'
+import SecurityLayout from './SecurityLayout'
 
-import { usePortfolio } from '../../lib/custom-hooks';
+import { usePortfolio } from '../../lib/custom-hooks'
 
 export const SECURITY_QUERY = gql`
   query GetSecurityDetails($id: String!) {
@@ -172,7 +172,7 @@ export const SECURITY_QUERY = gql`
       }
     }
   }
-`;
+`
 
 export const SECURITY_SUBSCRIPTION = gql`
   subscription SecuritySearchSubscription($securityIds: [String]!) {
@@ -188,30 +188,33 @@ export const SECURITY_SUBSCRIPTION = gql`
       }
     }
   }
-`;
+`
 
-const SecurityContainer = ({ securityId, session, short_security}) => {
-  const { togglePortfolio, isInPortfolio } = usePortfolio({});
-  
+const SecurityContainer = ({ securityId, session, short_security }) => {
+  const { togglePortfolio, isInPortfolio } = usePortfolio({})
+
   return (
     <Query query={SECURITY_QUERY} variables={{ id: securityId }}>
       {({ loading, error, data, subscribeToMore }) => {
-        if (error) return `Error! ${error}`;
+        if (error) return `Error! ${error}`
 
-        let security = null;
+        let security = null
 
         if (loading) {
-          if(short_security){
-            security = short_security;
-            security.longBusinessDescription = security.longBusinessDescription.replace('^', '&');
+          if (short_security) {
+            security = short_security
+            security.longBusinessDescription = security.longBusinessDescription.replace(
+              '^',
+              '&'
+            )
           }
-          
-        }else{//full loading
-          security = data.security;
+        } else {
+          // full loading
+          security = data.security
           subscribeToMore({
             document: SECURITY_SUBSCRIPTION,
             variables: { securityIds: [security.id] }
-          });
+          })
         }
 
         return (
@@ -222,17 +225,17 @@ const SecurityContainer = ({ securityId, session, short_security}) => {
               isInPortfolio={isInPortfolio(securityId)}
             />
           </SecurityLayout>
-        );
+        )
       }}
     </Query>
-  );
-};
+  )
+}
 
 SecurityContainer.propTypes = {
   short_security: PropTypes.object,
   session: PropTypes.object.isRequired,
   securityId: PropTypes.string.isRequired,
   longDescription: PropTypes.string
-};
+}
 
-export default SecurityContainer;
+export default SecurityContainer

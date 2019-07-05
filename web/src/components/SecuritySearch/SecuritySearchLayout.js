@@ -1,30 +1,34 @@
-import React from 'react';
+import React from 'react'
 
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
-library.add(faSpinner);
-library.add(faSearch);
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faSpinner } from '@fortawesome/free-solid-svg-icons'
+import { faSearch } from '@fortawesome/free-solid-svg-icons'
 
-import SecuritySearchSearchBarSection from './SecuritySearchSearchBarSection';
-import SecuritySearchDropdownSection from './SecuritySearchDropdownSection';
-import SuggestionsContainer from './SuggestionsContainer';
+import SecuritySearchSearchBarSection from './SecuritySearchSearchBarSection'
+import SecuritySearchDropdownSection from './SecuritySearchDropdownSection'
+import SuggestionsContainer from './SuggestionsContainer'
+library.add(faSpinner)
+library.add(faSearch)
 
 const SecuritySearchLayout = () => {
   return (
     <div>
       <SecuritySearchSearchBarSection />
       <SecuritySearchDropdownSection />
-      <div className="columns is-mobile">
-        <div className="column">
-          <h3 className="subtitle is-6 has-text-centered" style={{ height: '20px', color: '#a9a9a9', paddingTop:'20px' }}>
-            All stocks show an average rating score based on Dividend, Balance, Growth and Value.
+      <div className='columns is-mobile'>
+        <div className='column'>
+          <h3
+            className='subtitle is-6 has-text-centered'
+            style={{ height: '20px', color: '#a9a9a9', paddingTop: '20px' }}
+          >
+            All stocks show an average rating score based on Dividend, Balance,
+            Growth and Value.
           </h3>
         </div>
       </div>
       <SuggestionsContainer />
     </div>
-  );
-};
+  )
+}
 
-export default SecuritySearchLayout;
+export default SecuritySearchLayout

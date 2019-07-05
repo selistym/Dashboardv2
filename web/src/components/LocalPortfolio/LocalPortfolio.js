@@ -1,42 +1,61 @@
-import React, { useContext } from 'react';
-import PropTypes from 'prop-types';
-import Link from 'next/link';
+import React, { useContext } from 'react'
+import PropTypes from 'prop-types'
+import Link from 'next/link'
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faChartPie } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faChartPie } from '@fortawesome/free-solid-svg-icons'
 
-import RoundGraphContainer from '../RoundGraphContainer';
-import { AppContext } from '../AppContext';
+import RoundGraphContainer from '../RoundGraphContainer'
+import { AppContext } from '../AppContext'
 
-import { useHighlight, usePortfolio } from '../../lib/custom-hooks';
+import { useHighlight, usePortfolio } from '../../lib/custom-hooks'
 
-import { formatIntl, formatPercentage } from '../../lib/format-intl';
+import { formatIntl, formatPercentage } from '../../lib/format-intl'
 
-library.add(faChartPie);
+library.add(faChartPie)
 
 const LocalPortfolio = ({ security, index }) => {
-  let { store } = useContext(AppContext);
-  const { togglePortfolio, isInPortfolio } = usePortfolio({});
+  let { store } = useContext(AppContext)
+  const { togglePortfolio, isInPortfolio } = usePortfolio({})
 
-  const last = +(security && security.liveData && security.liveData.last);
-  const highlightClass = useHighlight(last);
+  const last = +(security && security.liveData && security.liveData.last)
+  const highlightClass = useHighlight(last)
 
   let curData = security.calculatedCircular
-    ? security.calculatedCircular.filter(e => e.Year === store.securityFilterYear)[0]
-    : null;  
-  security.longBusinessDescription = security.longBusinessDescription.replace('&', '^'); // for parse exception
+    ? security.calculatedCircular.filter(
+      e => e.Year === store.securityFilterYear
+    )[0]
+    : null
+  security.longBusinessDescription = security.longBusinessDescription.replace(
+    '&',
+    '^'
+  ) // for parse exception
   return (
     <div
-      className="box has-text-grey"
+      className='box has-text-grey'
       key={security.id}
-      style={{ borderRadius: '1px', height: '320px', padding: '10px', margin: '10px' }}
+      style={{
+        borderRadius: '1px',
+        height: '320px',
+        padding: '10px',
+        margin: '10px'
+      }}
     >
-      <div className="columns" style={{ minWidth: '250px', height: '28px', display: 'flex' }}>
-        <div className="column is-7">
-          <Link key={security.id} href={`/security?id=${security.id}&short=${JSON.stringify(security)}`} as={`/security/${security.id}`}>
+      <div
+        className='columns'
+        style={{ minWidth: '250px', height: '28px', display: 'flex' }}
+      >
+        <div className='column is-7'>
+          <Link
+            key={security.id}
+            href={`/security?id=${security.id}&short=${JSON.stringify(
+              security
+            )}`}
+            as={`/security/${security.id}`}
+          >
             <h3
-              className="subtitle is-5 has-text-weight-bold has-text-grey"
+              className='subtitle is-5 has-text-weight-bold has-text-grey'
               style={{
                 width: '130px',
                 height: '50px',
@@ -49,7 +68,7 @@ const LocalPortfolio = ({ security, index }) => {
             </h3>
           </Link>
         </div>
-        <div className="column is-2">
+        <div className='column is-2'>
           <a
             className={'button is-dark is-small has-text-weight-bold ' + index}
             id={'addbutton' + index}
@@ -59,39 +78,59 @@ const LocalPortfolio = ({ security, index }) => {
             {isInPortfolio(security.id) ? '-' : '+'}
           </a>
         </div>
-        <div className="column is-1">
-          <Link key={security.id} href={`/security?id=${security.id}&short=${JSON.stringify(security)}`} as={`/security/${security.id}`}>
-            <a className="button is-dark is-small has-text-weight-bold" style={{ backgroundColor: '#7d7d7d' }}>
-              <FontAwesomeIcon icon="search" />
+        <div className='column is-1'>
+          <Link
+            key={security.id}
+            href={`/security?id=${security.id}&short=${JSON.stringify(
+              security
+            )}`}
+            as={`/security/${security.id}`}
+          >
+            <a
+              className='button is-dark is-small has-text-weight-bold'
+              style={{ backgroundColor: '#7d7d7d' }}
+            >
+              <FontAwesomeIcon icon='search' />
             </a>
           </Link>
         </div>
       </div>
       <div style={{ height: '18px', fontSize: '11pt' }}>
-        <span className={highlightClass}>{formatIntl(last, security.currency)}</span>
+        <span className={highlightClass}>
+          {formatIntl(last, security.currency)}
+        </span>
 
-        <span className="is-pulled-right">
-          {security.liveData && security.liveData.changePercent && formatPercentage(+security.liveData.changePercent)}
+        <span className='is-pulled-right'>
+          {security.liveData &&
+            security.liveData.changePercent &&
+            formatPercentage(+security.liveData.changePercent)}
         </span>
       </div>
       <div style={{ height: '2px', fontSize: '11pt' }}>{security.sector}</div>
       <hr />
-      <div className={'RoundGraph' + security.id} style={{textAlign:'center'}}>
-          {curData != null ? (
-            <RoundGraphContainer
-              key={security.id}
-              idx={security.id + index}
-              params={curData}
-              width={220}
-              height={190}
-            />
-          ) : (
-            <FontAwesomeIcon icon={faChartPie} size={"10x"} style={{opacity: 0.1}}/>
-          )}
+      <div
+        className={'RoundGraph' + security.id}
+        style={{ textAlign: 'center' }}
+      >
+        {curData != null ? (
+          <RoundGraphContainer
+            key={security.id}
+            idx={security.id + index}
+            params={curData}
+            width={220}
+            height={190}
+          />
+        ) : (
+          <FontAwesomeIcon
+            icon={faChartPie}
+            size={'10x'}
+            style={{ opacity: 0.1 }}
+          />
+        )}
       </div>
     </div>
-  );
-};
+  )
+}
 
 LocalPortfolio.propTypes = {
   index: PropTypes.string.isRequired,
@@ -115,6 +154,6 @@ LocalPortfolio.propTypes = {
     name: PropTypes.string.isRequired,
     sector: PropTypes.string.isRequired
   }).isRequired
-};
+}
 
-export default LocalPortfolio;
+export default LocalPortfolio

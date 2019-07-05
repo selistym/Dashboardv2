@@ -1,18 +1,18 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
-import LeftNavbar from '../LeftNavbar';
-import Footer from '../Layout/Footer';
+import LeftNavbar from '../LeftNavbar'
+import Footer from '../Layout/Footer'
 
 const SecurityLayout = ({ children, security, session }) => (
   <div>
-    <div className="columns" style={{ marginBottom: '0px' }}>
-      <div className="column is-2" style={{ backgroundColor: '#fff' }}>
+    <div className='columns' style={{ marginBottom: '0px' }}>
+      <div className='column is-2' style={{ backgroundColor: '#fff' }}>
         <LeftNavbar security={security} session={session} />
       </div>
-      <div className="column is-10">
+      <div className='column is-10'>
         <div
-          className="column is-full-mobile is-full-tablet is-12-desktop is-12-widescreen is-12-fullhd"
+          className='column is-full-mobile is-full-tablet is-12-desktop is-12-widescreen is-12-fullhd'
           style={{ padding: '50px' }}
         >
           {children}
@@ -21,7 +21,7 @@ const SecurityLayout = ({ children, security, session }) => (
     </div>
     <Footer />
   </div>
-);
+)
 
 SecurityLayout.propTypes = {
   children: PropTypes.object.isRequired,
@@ -38,6 +38,6 @@ SecurityLayout.propTypes = {
     )
   }).isRequired,
   session: PropTypes.object.isRequired
-};
+}
 
-export default SecurityLayout;
+export default SecurityLayout
